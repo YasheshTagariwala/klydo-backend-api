@@ -1,14 +1,13 @@
-var express = require('express');
-var app = express();
-var UserProfile = require('../app/Controller/UserController');
-var router = express.Router();
+var UserController = require('../app/Controller/UserController');
 
-router.get('/getAllUsers', UserProfile.getAllUsers);
-router.get('/getlogin', UserProfile.getLoginVerify);
+module.exports = function(app) {
 
-// Define the home page route
-router.get('/', function(req, res) {
-  res.send('Write whole URL you lazy ass.');
-});
+	//all user controller routes
+	app.get('/getAllUsers', UserController.getAllUsers);
+	app.get('/getlogin', UserController.getLoginVerify);
 
-module.exports = router;
+	// Define the home page route
+	app.get('/', function(req, res) {
+		res.send('Write whole URL you lazy ass.');
+	});
+};
