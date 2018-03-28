@@ -12,6 +12,7 @@
     "bookshelf": "^0.12.1",
     "bookshelf-eloquent": "^0.1.15",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.0",
     "knex": "^0.14.4",
     "pg": "^7.4.1"
   }
