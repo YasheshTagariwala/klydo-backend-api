@@ -1,60 +1,42 @@
-const UserExtra = require('../Models/UserExtra');
-const UserProfile = require('../Models/UserProfile');
-const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+let UserExtra = require('../Models/UserExtra');
+let UserProfile = require('../Models/UserProfile');
+let authenticate = require('../../security/authenticate');
 
 
-var getAllUsers = function (req, res) {
-	new UserExtra().with('userProfile').get()
-		.then(function(users){
-			res.json(users);
-		}).catch(function(error){
-			console.log(error);
-		});
+let getAllUsers = async function (req, res) {
+	let users = await UserExtra.with('userProfile').get();
+	res.json(users);			
 };
 
-var getLoginVerify = function (req,res){
-	new UserProfile().select(['user_email','user_password']).get()
-		.then(function(users){
-			res.json(users);
-		}).catch(function(error){
-			console.log(error);
-		});
+let getLoginVerify = async function (req,res){
+	let users = await UserProfile.select(['user_email','user_password']).get();
+	res.json(users);		
 }
 
-var loginCheck = function(req, res) {
-	var uname = req.body.uname;
-	var password = req.body.password;
-	new UserProfile().select(['user_email','first_name','last_name']).where({'username': uname, 'user_password': password}).get()
-		.then(function(users){
-			if(users.toJSON() == '') {
-				res.json({auth: false, msg: 'Authentication failed.'});
-			} else {
-				var jwt_token = jwt.sign({'uname':users.uname}, 'testsecretkey', {expiresIn:60})
-				res.status(200).json({auth: true, msg: 'Save your token.', token: jwt_token});
-			}
-		}).catch(function(error){
-			console.log(error);
-		});
-}
-
-var checkToken = function(req, res) {
-	var token = req.body.token;
-	if(token.length > 0) {
-		jwt.verify(token, 'testsecretkey', function(err, decoded) {
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });
-      } else {
-        // if everything is good, save to request for use in other routes
-				res.json({auth: true, msg: 'Token Valid.'});
-      }
-    });
+let loginCheck = async function(req, res) {
+	let uname = req.body.uname;
+	let password = req.body.password;
+	let users = await UserProfile.select(['user_email','first_name','last_name']).where({'username': uname, 'user_password': password}).get();		
+	if(users.length == '') {
+		res.json({auth: false, msg: 'Authentication failed.'});
+	} else {
+		let jwt_token = await authenticate.createToken(users.uname);
+		res.status(200).json({auth: true, msg: 'Save your token.', token: jwt_token});
 	}
+}
 
+let validateMe = async function(req,res) {
+	let verification = await authenticate.validateToken(req.body.token);	
+	if(verification.auth){
+		res.json('Valid');
+	}else{
+		res.json('Fuck Off You AssHole');
+	}
 }
 
 module.exports = {
 	'getAllUsers':getAllUsers,
 	'getLoginVerify':getLoginVerify,
 	'loginCheck' :loginCheck,
-	'checkToken' :checkToken
+	'validateMe' : validateMe
 }

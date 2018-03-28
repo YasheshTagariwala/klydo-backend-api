@@ -6,7 +6,7 @@ module.exports = function(app) {
 	app.get('/getAllUsers', UserController.getAllUsers);
 	app.get('/getlogin', UserController.getLoginVerify);
 	app.post('/loginCheck', UserController.loginCheck);
-	app.post('/checkToken', UserController.checkToken);
+	app.post('/validate', UserController.validateMe);
 
 	// Define the home page route
 	app.get('/', function(req, res) {

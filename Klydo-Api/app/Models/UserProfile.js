@@ -4,7 +4,7 @@ var UserProfile = {
 	tableName:'user_profile',
 	hasTimestamp:false,
 
-	userExtra:function(){
+	userExtra: function(){
 		return this.belongsTo('UserExtra', 'id', 'user_profile_id');
 	}
 };
