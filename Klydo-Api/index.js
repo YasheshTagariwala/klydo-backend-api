@@ -1,11 +1,35 @@
 const express = require('express');
 var app = express();
+var authenticate = require('./security/authenticate');
+var LoginController = require('./app/Controller/LoginController');
+let catchError = require('./Config/ErrorHandling');
+
+
 app.use(express.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.json());
 
-//All Application routes
-require('./routes/route.js')(app);
+app.post('/loginCheck', LoginController.loginCheck);
+
+//validate user before calling any routes
+app.use(async function(req, res, next){	
+	if(req.originalUrl === '/loginCheck'){
+		next();
+	}else{				
+		let [verification,err] = await catchError(authenticate.validateToken(req.body.token));
+		if(err){
+			console.log('err');
+		}else{
+			if(verification.auth){									
+				//All Application routes
+				require('./routes/route.js')(app);
+				next();			
+			}else{						
+				res.json(verification);
+			}
+		}				
+	}
+});
 
 app.listen(3000, () => {
-  	console.log('Listening on 3000');
-  })
+	console.log('Listening on 3000');
+});
