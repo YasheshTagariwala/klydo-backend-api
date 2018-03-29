@@ -1,4 +1,4 @@
-const bookshelf = require('../../bookshelf.js');
+const bookshelf = require('../../config/bookshelf.js');
 
 require('./UserProfile');
 

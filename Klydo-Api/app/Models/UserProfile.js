@@ -1,4 +1,4 @@
-const bookshelf = require('../../bookshelf.js');
+const bookshelf = require('../../config/bookshelf.js');
 require('./UserExtra');
 var UserProfile = {
 	tableName:'user_profile',
