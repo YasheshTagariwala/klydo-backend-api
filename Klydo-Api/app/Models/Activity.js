@@ -3,8 +3,7 @@ const bookshelf = require('../../config/bookshelf.js');
 require('./Posts');
 
 var Activity = {
-	tableName:'activity',
-	hasTimestamp:false,
+	tableName:'activity'
 
   	posts : function(){
   		return this.belongsTo('Posts','id','activity_id');

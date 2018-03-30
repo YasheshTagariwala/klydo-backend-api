@@ -5,7 +5,7 @@ module.exports = function(app) {
 
 	//all user controller routes
 	app.get('/getAllUsers', UserController.getAllUsers);
-	app.get('/getlogin', UserController.getLoginVerify);	
+	app.get('/getlogin', UserController.getLoginVerify);
 	app.post('/validate', UserController.validateMe);
 
 

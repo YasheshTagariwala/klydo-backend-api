@@ -5,8 +5,7 @@ require('./Posts');
 
 
 var UserProfile = {
-	tableName:'user_profile',
-	hasTimestamp:false,
+	tableName:'user_profile'
 
 	userExtra: function(){
 		return this.belongsTo('UserExtra', 'id', 'user_profile_id');

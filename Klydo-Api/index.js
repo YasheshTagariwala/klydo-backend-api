@@ -11,22 +11,23 @@ app.use(express.json());
 app.post('/loginCheck', LoginController.loginCheck);
 
 //validate user before calling any routes
-app.use(async function(req, res, next){	
-	if(req.originalUrl === '/loginCheck'){
+app.use(async function(req, res, next) {
+	if(req.originalUrl === '/loginCheck') {
 		next();
-	}else{				
+	} else {
 		let [verification,err] = await catchError(authenticate.validateToken(req.body.token));
-		if(err){
-			console.log('err');
-		}else{
-			if(verification.auth){									
+		if(err) {
+			console.log(err);
+			res.json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
+		} else {
+			if(verification.auth) {
 				//All Application routes
 				require('./routes/route.js')(app);
-				next();			
-			}else{						
+				next();
+			} else {
 				res.json(verification);
 			}
-		}				
+		}
 	}
 });
 

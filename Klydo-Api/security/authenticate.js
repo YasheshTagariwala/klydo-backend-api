@@ -19,7 +19,7 @@ let validateToken = async function(token) {
 
 
 let createToken = async function(value) {
-	return await jwt.sign({'uname':value}, 'testsecretkey', {expiresIn:60})
+	return await jwt.sign({'uname':value}, 'testsecretkey', {expiresIn:120})
 }
 
 

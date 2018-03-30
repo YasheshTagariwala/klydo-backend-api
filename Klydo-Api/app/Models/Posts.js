@@ -4,15 +4,14 @@ require('./UserProfile');
 require('./Activity');
 
 var Posts = {
-	tableName:'new_posts',
-	hasTimestamp:false,
+	tableName:'new_posts'
 
 	userProfile: function() {
 		return this.hasOne('UserProfile','id','profile_id');
 	},
 
 	activity : function(){
-		return this.hasOne('Activity','id','activity_id');	
+		return this.hasOne('Activity','id','activity_id');
 	}
 }
 
