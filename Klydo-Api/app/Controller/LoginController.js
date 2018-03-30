@@ -2,7 +2,7 @@ let UserProfile = require('../Models/UserProfile');
 let authenticate = require('../../security/authenticate');
 let catchError = require('../../Config/ErrorHandling');
 
-let loginCheck = async function(req, res) {
+let loginCheck = async (req, res) => {
 	let uname = req.body.uname;
 	let password = req.body.password;
 	let [users,err] = await catchError(UserProfile.select(['user_email','first_name','last_name']).

@@ -1,9 +1,9 @@
 let jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
-let validateToken = async function(token) {
+let validateToken = async token => {
 	let valid = '';
 	if(token.length > 0) {
-		await jwt.verify(token, 'testsecretkey', function(err, decoded) {
+		await jwt.verify(token, 'testsecretkey', (err, decoded) => {
 			if (err) {
 				valid = JSON.stringify({'auth': false, 'msg': 'Failed to authenticate token.' });
 			} else {
@@ -18,7 +18,7 @@ let validateToken = async function(token) {
 }
 
 
-let createToken = async function(value) {
+let createToken = async value => {
 	return await jwt.sign({'uname':value}, 'testsecretkey', {expiresIn:120})
 }
 

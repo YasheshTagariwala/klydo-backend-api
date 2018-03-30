@@ -1,7 +1,7 @@
 var UserController = require('../app/Controller/UserController');
 var PostController = require('../app/Controller/PostController');
 
-module.exports = function(app) {
+module.exports = app => {
 
 	//all user controller routes
 	app.get('/getAllUsers', UserController.getAllUsers);
@@ -13,7 +13,7 @@ module.exports = function(app) {
 	app.post('/getAllUserPost',PostController.getAllUserPost);
 
 	// Define the home page route
-	app.get('/', function(req, res) {
+	app.get('/', (req, res) => {
 		res.send('Write the whole URL you lazy ass.');
 	});
 };
