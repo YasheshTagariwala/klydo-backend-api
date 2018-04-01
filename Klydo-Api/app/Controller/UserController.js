@@ -3,42 +3,18 @@ let UserProfile = require('../Models/UserProfile');
 let authenticate = require('../../security/authenticate');
 let catchError = require('../../Config/ErrorHandling');
 
-let getAllUsers = async  (req, res) => {
-	let [users,err] = await catchError(UserExtra.with('userProfile').get());
+//Get User details
+let getUsersDetails = async  (req, res) => {
+	let [users,err] = await catchError(UserExtra.with('userProfile').where({'id': req.body.user_id}).get());
 	if(err){
 		console.log(err);
+		res.status(404).json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
 	}else{
-		res.json(users);
-	}	
+		res.status(200).json({auth: true, msg:'Success', data: users});
+	}
+
 };
 
-let getLoginVerify = async  (req, res) => {
-	let [users,err] = await catchError(UserProfile.select(['user_email','user_password']).get());
-	if(err){
-		console.log(err);
-	}else{
-		res.json(users);
-	}	
-}
-
-let validateMe = async (req, res) => {
-	let [data,err] = await catchError(UserProfile.select(['id']).get());	
-	if(err)
-		console.log(err);
-	else 
-		res.json(data);
-}
-
-// let validateMe = (req, res) => {
-// 	UserProfile.forge({'id',3104}).destroy().then((data) => {
-// 		res.json(data);
-// 	}).catch((err) => {
-// 		console.log(err);
-// 	})
-// }
-
 module.exports = {
-	'getAllUsers': getAllUsers,
-	'getLoginVerify': getLoginVerify,
-	'validateMe': validateMe
+	'getUsersDetails': getUsersDetails,
 }

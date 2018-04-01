@@ -9,7 +9,6 @@ app.use(express.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.json());
 
 app.post('/loginCheck', LoginController.loginCheck);
-
 //validate user before calling any routes
 app.use(async (req, res, next) => {
 	if(req.originalUrl === '/loginCheck') {
@@ -28,7 +27,7 @@ app.use(async (req, res, next) => {
 		// 		res.json(verification);
 		// 	}
 		// }
-		
+
 	}
 });
 
