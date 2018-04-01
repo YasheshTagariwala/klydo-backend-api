@@ -1,6 +1,6 @@
 const express = require('express');
 var app = express();
-var authenticate = require('./security/authenticate');
+var authenticate = require('./security/Authenticate');
 var LoginController = require('./app/Controller/LoginController');
 let catchError = require('./Config/ErrorHandling');
 

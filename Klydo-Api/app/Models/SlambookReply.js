@@ -1,4 +1,4 @@
-const bookshelf = require('../../config/bookshelf.js');
+const bookshelf = require('../../Config/Bookshelf.js');
 
 require('./Activity');
 require('./Slambook');

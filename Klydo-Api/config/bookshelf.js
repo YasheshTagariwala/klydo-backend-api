@@ -1,4 +1,4 @@
-const config = require('./config.js');
+const config = require('./Config.js');
 const knex = require('knex')(config.db);
 const bookshelf = require('bookshelf')(knex);
 
