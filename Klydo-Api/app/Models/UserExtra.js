@@ -7,7 +7,7 @@ var UserExtra = {
 	hasTimestamps: true,
 	softDelete: true,
 	
-	userProfile: () => {
+	userProfile: function() {
 		return this.hasOne('UserProfile','id','user_profile_id');
 	}
 };

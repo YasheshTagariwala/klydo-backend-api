@@ -9,15 +9,15 @@ var SlambookReply = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	activity : () => {
+	activity : function() {
 		return this.hasOne('Activity','id','activity_id');
 	},
 
-	slambook : () => {
+	slambook : function() {
 		return this.hasMany('Slambook','id','slam_id');
 	},
 
-	replier : () => {
+	replier : function() {
 		return this.hasMany('UserProfile','id','replier_id');
 	}
 }

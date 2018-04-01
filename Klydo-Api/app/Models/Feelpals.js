@@ -7,7 +7,7 @@ var Feelpals = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	activity : () => {
+	activity : function() {
 		return this.hasOne('Activity','id','activity_id');
 	}
 }

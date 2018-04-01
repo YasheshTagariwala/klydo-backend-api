@@ -10,19 +10,19 @@ var PostComment = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	commentTag : () => {
+	commentTag : function() {
 		return this.blongsTo('CommentTag','id','comment_id');
 	},
 
-	activity : () => {
+	activity : function() {
 		return this.hasOne('Activity','id','activity_id');
 	},
 
-	posts : () => {
+	posts : function() {
 		return this.hasMany('Posts','id','post_id');
 	},
 
-	commenter : () => {
+	commenter : function() {
 		return this.hasMany('UserProfile','id','profile_id');	
 	}
 

@@ -7,7 +7,7 @@ var PostReaction = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	posts : () => {
+	posts : function() {
 		return this.hasMany('Posts','id','post_id');
 	}
 }

@@ -10,19 +10,19 @@ var Activity = {
 	hasTimestamps: true,
 	softDelete: true,
 
-  	posts : () => {
+  	posts : function() {
   		return this.belongsTo('Posts','id','activity_id');
   	},
 
-  	feelpals : () => {
+  	feelpals : function() {
   		return this.belongsTo('Feelpals','id','activity_id');	
   	},
 
-  	comments : () => {
+  	comments : function() {
   		return this.belongsTo('PostComment','id','activity_id');	
   	},
 
-    slamReply : () => {
+    slamReply : function() {
       return this.belongsTo('SlambookReply','id','activity_id');
     }
 }

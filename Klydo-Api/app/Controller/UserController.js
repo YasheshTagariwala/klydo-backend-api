@@ -1,20 +1,20 @@
 let UserExtra = require('../Models/UserExtra');
 let UserProfile = require('../Models/UserProfile');
-let authenticate = require('../../security/authenticate');
 let catchError = require('../../Config/ErrorHandling');
+let statusCode = require('../Utility/HTTPStatusCodes');
 
-//Get User details
-let getUsersDetails = async  (req, res) => {
+//Get single User details
+let getUserDetail = async  (req, res) => {
 	let [users,err] = await catchError(UserExtra.with('userProfile').where({'id': req.body.user_id}).get());
 	if(err){
 		console.log(err);
-		res.status(404).json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
+		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg:statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
+		return;
 	}else{
-		res.status(200).json({auth: true, msg:'Success', data: users});
+		res.status(statusCode.OK_CODE).json({auth: true, msg:'Success', data: users});
 	}
-
 };
 
 module.exports = {
-	'getUsersDetails': getUsersDetails,
+	'getUserDetail': getUserDetail,
 }

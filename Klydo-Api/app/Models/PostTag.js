@@ -7,7 +7,7 @@ var PostTag = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	posts : () => {
+	posts : function() {
 		return this.hasOne('Posts','id','post_id');
 	}
 }

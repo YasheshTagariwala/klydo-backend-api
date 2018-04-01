@@ -4,10 +4,11 @@ var PostController = require('../app/Controller/PostController');
 module.exports = app => {
 
 	//all user controller routes
-	app.get('/getUsersDetails', UserController.getUsersDetails);
+	app.post('/getUserDetail', UserController.getUserDetail);
 
 	//all post controller routes
 	app.post('/getAllUserPost',PostController.getAllUserPost);
+	app.post('/getSinglePost',PostController.getSinglePostWithComments);
 
 	// Define the home page route
 	app.get('/', (req, res) => {

@@ -8,11 +8,11 @@ var Slambook = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	user : () => {
+	user : function() {
 		return this.hasOne('UserProfile','id','user_profile_id');
 	},
 
-	slamReply : () => {
+	slamReply : function() {
 		return this.belongToMany('SlambookReply','id','slam_id');
 	}
 }

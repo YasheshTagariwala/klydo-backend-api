@@ -7,7 +7,7 @@ var CommentTag = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	comments : () => {
+	comments : function() {
 		return this.hasOne('PostComment','id','comment_id');
 	}
 

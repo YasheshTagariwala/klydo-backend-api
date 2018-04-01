@@ -11,23 +11,23 @@ var Posts = {
 	hasTimestamps: true,
 	softDelete: true,
 
-	userProfile: () => {
+	userProfile : function() {
 		return this.hasOne('UserProfile','id','profile_id');
 	},
 
-	activity : () => {
+	activity : function() {
 		return this.hasOne('Activity','id','activity_id');
 	},
 
-	comments : () => {
+	comments : function() {
 		return this.belongsToMany('PostComment','id','post_id');
 	},
 
-	reaction : () => {
+	reaction : function() {
 		return this.belongsToMany('PostReaction','id','post_id');
 	},
 
-	postTag : () => {
+	postTag : function() {
 		return this.belongsTo('PostTag','id','post_id');
 	}
 }

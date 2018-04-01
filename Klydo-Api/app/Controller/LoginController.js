@@ -14,7 +14,7 @@ let loginCheck = async (req, res) => {
 		return;
 	}
 	if(validations.empty(password)) {
-		res.status(200).json({auth: false, msg:'Invalid Credantials.'});
+		res.status(statusCode.OK_CODE).json({auth: false, msg:statusCode.OK_MESSAGE});
 		return;
 	}
 
@@ -22,31 +22,33 @@ let loginCheck = async (req, res) => {
 										where({'username': uname, 'user_password': password}).get());
 	if(err) {
 		console.log('err');
-		res.status(404).json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
+		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg:statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	} else {
 		if(validations.objectEmpty(users)) {
-			res.json({auth: false, msg: 'No user found.'});
+			res.status(statusCode.NOT_FOUND_CODE).json({auth: false, msg: statusCode.NOT_FOUND_MESSAGE});
 			return;
 		} else {
 			let [jwt_token,err] = await catchError(authenticate.createToken(users.uname));
 			if(err) {
 				console.log(err);
-				res.status(validations.UNAUTHORIZED_CODE).json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
+				res.status(statusCode.UNAUTHORIZED_CODE).json({auth: false, msg:statusCode.UNAUTHORIZED_MESSAGE});
 				return;
 			} else {
-				res.status(200).json({auth: true, msg: 'Save your token.', token: jwt_token});
-				return;
+				res.status(statusCode.OK_CODE).json({auth: true, msg: 'Save your token.', token: jwt_token});				
 			}
 		}
 	}
 }
 
+TODO:'signupUser Api remians'
+
 //sign up users
 let signupUser = async (req, res) => {
 	let requestData = req.body;
 	if(validations.objectEmpty(requestData)) {
-		res.status(200).json({auth: false, msg:'Invalid Credantials.'});
+		res.status(statusCode.NOT_FOUND_CODE).json({auth: false, msg:statusCode.NOT_FOUND_MESSAGE});
+		return;
 	}
 
 }
