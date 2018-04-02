@@ -9,6 +9,7 @@ module.exports = app => {
 	//all post controller routes
 	app.post('/getAllUserPost',PostController.getAllUserPost);
 	app.post('/getSinglePost',PostController.getSinglePostWithComments);
+	app.post('/createPost',PostController.createPost);
 
 	// Define the home page route
 	app.get('/', (req, res) => {
