@@ -20,25 +20,37 @@ let getSinglePostWithComments = async (req ,res) => {
 		console.log(err);
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
-	}else{
+	}else
 		res.status(statusCode.OK_CODE).json({auth : true, msg : 'Success', data : postWithComment});		
-	}
 }
 
 let createPost = async (req, res) => {	
-	let activityId = await Activity.createActivity(1);	
-	console.log(activityId);
-	res.json(activityId);
-	// let newPost = new Post();
-	// newPost.profile_id = req.body.user_id;
-	// newPost.post_content = req.body.content;
-	// newPost.post_media = (req.body.post_media) ? req.body.post_media : null;
-	// newPost.post_hashes = req.body.post_hashes;
-	// newPost.post_published = req.body.post_published;
-	// newPost.post_type = (req.body.post_media) ? 2 : 1;
-	// newPost.emotion = req.body.emotion;
-	// newPost.activity_id = activityId;
-	// newPost.save();
+	let [activityId,err] = await catchError(Activity.createActivity(1));	
+	if(activityId == null || err){
+		console.log(err);
+		res.status(statuscode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		return;
+	}
+
+	let newPostData = {
+		profile_id : req.body.user_id,
+		post_content : req.body.content,
+		post_media : (req.body.post_media) ? req.body.post_media : null,
+		post_hashes : req.body.post_hashes,
+		post_published : req.body.post_published,
+		post_type : (req.body.post_media) ? 2 : 1,
+		emotion : req.body.emotion,
+		activity_id : activityId
+	}			
+	
+	let [data,err1] = await catchError(Post.forge(newPostData).save());	
+	if(err1){
+		console.log(err1);
+		res.status(statuscode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		return;
+	}else{
+		res.status(statusCode.OK_CODE).json({auth : true,msg : "Success"})
+	}
 }
 
 module.exports = {
