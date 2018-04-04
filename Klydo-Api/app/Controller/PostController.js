@@ -1,4 +1,5 @@
 let Post = require('../Models/Posts');
+let Comment = require('../Models/PostComment');
 let catchError = require('../../Config/ErrorHandling');
 let statusCode = require('../Utility/HTTPStatusCodes');
 let Activity = require('./ActivityController');
@@ -14,7 +15,7 @@ let getAllUserPost = async (req, res) => {
 	}	
 };
 
-let getSinglePostWithComments = async (req ,res) => {
+let getSinglePostWithComments = async (req ,res) => {	
 	let [postWithComment,err] = await catchError(Post.with('comments').where('id',req.body.post_id).get());
 	if(err){
 		console.log(err);
@@ -82,11 +83,8 @@ let updatePost = async (req, res) => {
 let deletePost = async (req, res) => {
 
 	let postId = req.body.post_id;
-	
-	let [data,err1] = await catchError(Post
-		.where({id : postId})
-		.delete()
-	);
+
+	let [data,err1] = await catchError(Post.forge({id : postId}).destroy());
 	if(err1) {
 		console.log(err1);
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})

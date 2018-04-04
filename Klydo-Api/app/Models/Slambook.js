@@ -1,20 +1,9 @@
 const bookshelf = require('../../Config/Bookshelf.js');
 
-require('./UserProfile');
-require('./SlambookReply');
-
-var Slambook = {
+var Slambook = bookshelf.Model.extend({
 	tableName:'slambook',
 	hasTimestamps: true,
 	softDelete: true,
+})
 
-	user : function() {
-		return this.hasOne('UserProfile','id','user_profile_id');
-	},
-
-	slamReply : function() {
-		return this.belongToMany('SlambookReply','id','slam_id');
-	}
-}
-
-module.exports = bookshelf.model('Slambook', Slambook)
+module.exports = Slambook;

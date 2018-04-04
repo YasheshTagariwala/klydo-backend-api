@@ -1,16 +1,9 @@
 const bookshelf = require('../../Config/Bookshelf.js');
 
-require('./PostComment');
-
-var CommentTag = {
+var CommentTag = bookshelf.Model.extend({
 	tableName:'comment_tag',
 	hasTimestamps: true,
 	softDelete: true,
+})
 
-	comments : function() {
-		return this.hasOne('PostComment','id','comment_id');
-	}
-
-}
-
-module.exports = bookshelf.model('CommentTag', CommentTag)
+module.exports = CommentTag;

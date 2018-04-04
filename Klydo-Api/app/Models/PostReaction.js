@@ -1,15 +1,9 @@
 const bookshelf = require('../../Config/Bookshelf.js');
 
-require('./Posts');
-
-var PostReaction = {
+var PostReaction = bookshelf.Model.extend({
 	tableName:'post_reaction',
 	hasTimestamps: true,
 	softDelete: true,
+})
 
-	posts : function() {
-		return this.hasMany('Posts','id','post_id');
-	}
-}
-
-module.exports = bookshelf.model('PostReaction', PostReaction)
+module.exports = PostReaction;
