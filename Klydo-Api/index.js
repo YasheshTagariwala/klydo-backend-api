@@ -12,7 +12,7 @@ app.post('/loginCheck', LoginController.loginCheck);
 //validate user before calling any routes
 app.use(async (req, res, next) => {
 	if(req.originalUrl === '/loginCheck') {
-		next();
+	next();
 	} else {
 		// let [verification,err] = await catchError(authenticate.validateToken(req.body.token));
 		// if(err) {

@@ -53,8 +53,53 @@ let createPost = async (req, res) => {
 	}
 }
 
+let updatePost = async (req, res) => {
+
+	let postId = req.body.post_id;
+
+	let updatePostData = {
+		post_content : req.body.content,
+		post_media : (req.body.post_media) ? req.body.post_media : null,
+		post_hashes : req.body.post_hashes,
+		post_published : req.body.post_published,
+		post_type : (req.body.post_media) ? 2 : 1,
+		emotion : req.body.emotion
+	}
+	
+	let [data,err1] = await catchError(Post
+		.where({id : postId})
+		.save(updatePostData,{patch: true})
+	);
+	if(err1) {
+		console.log(err1);
+		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		return;
+	} else {
+		res.status(statusCode.OK_CODE).json({auth : true,msg : "Success"})
+	}
+}
+
+let deletePost = async (req, res) => {
+
+	let postId = req.body.post_id;
+	
+	let [data,err1] = await catchError(Post
+		.where({id : postId})
+		.delete()
+	);
+	if(err1) {
+		console.log(err1);
+		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		return;
+	} else {
+		res.status(statusCode.OK_CODE).json({auth : true,msg : "Success"})
+	}
+}
+
 module.exports = {
 	'getAllUserPost': getAllUserPost,
 	'getSinglePostWithComments' : getSinglePostWithComments,
-	'createPost' : createPost
+	'createPost' : createPost,
+	'updatePost' : updatePost,
+	'deletePost' : deletePost
 }
