@@ -1,4 +1,4 @@
-const bookshelf = require('../../config/bookshelf.js');
+const bookshelf = require('../../../Config/Bookshelf.js');
 
 var Activity = bookshelf.Model.extend({
 	tableName:'activity',

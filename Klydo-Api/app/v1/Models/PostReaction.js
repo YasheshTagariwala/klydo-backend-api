@@ -1,4 +1,4 @@
-const bookshelf = require('../../Config/Bookshelf.js');
+const bookshelf = require('../../../Config/Bookshelf.js');
 
 var PostReaction = bookshelf.Model.extend({
 	tableName:'post_reaction',

@@ -1,6 +1,6 @@
 let UserProfile = require('../Models/UserProfile');
-let authenticate = require('../../security/Authenticate');
-let catchError = require('../../Config/ErrorHandling');
+let authenticate = require('../../../security/Authenticate');
+let catchError = require('../../../Config/ErrorHandling');
 let validations = require('../Utility/Validations');
 let statusCode = require('../Utility/HTTPStatusCodes');
 

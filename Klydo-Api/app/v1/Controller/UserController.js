@@ -1,5 +1,5 @@
 let UserProfile = require('../Models/UserProfile');
-let catchError = require('../../Config/ErrorHandling');
+let catchError = require('../../../Config/ErrorHandling');
 let statusCode = require('../Utility/HTTPStatusCodes');
 
 //Get single User details

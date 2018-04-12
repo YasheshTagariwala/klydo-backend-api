@@ -1,6 +1,6 @@
 let Post = require('../Models/Posts');
 let Comment = require('../Models/PostComment');
-let catchError = require('../../Config/ErrorHandling');
+let catchError = require('../../../Config/ErrorHandling');
 let statusCode = require('../Utility/HTTPStatusCodes');
 let Activity = require('./ActivityController');
 

@@ -1,4 +1,4 @@
-const bookshelf = require('../../Config/Bookshelf.js');
+const bookshelf = require('../../../Config/Bookshelf.js');
 
 var UserProfile = bookshelf.Model.extend({
 	tableName:'user_profile',
