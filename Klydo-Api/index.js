@@ -1,17 +1,17 @@
 const express = require('express');
 var app = express();
 var authenticate = require('./security/Authenticate');
-var LoginController = require('./app/Controller/LoginController');
+var LoginController = require('./appV1/Controller/LoginController');
 let catchError = require('./Config/ErrorHandling');
 
 
 app.use(express.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.json());
 
-app.post('/loginCheck', LoginController.loginCheck);
+app.post('/app/v1/login/authenticate', LoginController.loginCheck);
 //validate user before calling any routes
 app.use(async (req, res, next) => {
-	if(req.originalUrl === '/loginCheck') {
+	if(req.originalUrl === '/app/v1/login/authenticate') {
 	next();
 	} else {
 		// let [verification,err] = await catchError(authenticate.validateToken(req.body.token));
@@ -21,7 +21,7 @@ app.use(async (req, res, next) => {
 		// } else {
 		// 	if(verification.auth) {
 		// 		//All Application routes
-				require('./routes/route.js')(app);
+				require('./routes/routeV1.js')(app);
 				next();
 		// 	} else {
 		// 		res.json(verification);

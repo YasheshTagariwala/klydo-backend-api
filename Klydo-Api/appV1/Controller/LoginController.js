@@ -21,7 +21,7 @@ let loginCheck = async (req, res) => {
 	let [users,err] = await catchError(UserProfile.select(['user_email','first_name','last_name']).
 										where({'username': uname, 'user_password': password}).get());
 	if(err) {
-		console.log('err');
+		console.log(err);
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg:statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	} else {
