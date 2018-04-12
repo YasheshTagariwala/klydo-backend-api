@@ -5,7 +5,7 @@ let statusCode = require('../Utility/HTTPStatusCodes');
 let Activity = require('./ActivityController');
 
 let getAllUserPost = async (req, res) => {
-	let [singlePost,err] = await catchError(Post.with('userProfile').where('profile_id',req.params.id).get());
+	let [singlePost,err] = await catchError(Post.where('profile_id',req.params.id).get());
 	if(err){
 		console.log(err);
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
