@@ -3,17 +3,45 @@ let Comment = require('../Models/PostComment');
 let catchError = require('../../../Config/ErrorHandling');
 let statusCode = require('../Utility/HTTPStatusCodes');
 let Activity = require('./ActivityController');
+let _ = require('underscore');
 
 //diary posts
 let getAllUserPost = async (req, res) => {
-	let [singlePost,err] = await catchError(Post.select(['emotion','profile_id as uid','id','post_content','post_hashes','created_at'])
-	.where('profile_id',req.params.id).get());
+	let [singlePost,err] = await catchError(Post				
+		.withSelect('userProfile',['first_name','last_name'], (q) =>{
+			q.with({'userExtra': (q1) => {
+				q1.select('profile_image');
+			}});			
+		})		
+		.where({'profile_id':req.params.id,'post_published' : false})
+		.select(['emotion','profile_id','id','post_content','post_hashes','created_at'])
+		.orderBy('id','desc')			
+		.get());		
+		
+	let finalData = _.map(singlePost.toJSON() , (data) => {
+		return {
+			'emotion' : data.emotion,
+			'uid' : data.profile_id, 
+			'pid' : data.pid,
+			'content' : data.post_content,
+			'hash' : data.post_hashes,
+			'date' : data.created_at,
+			'user' : {
+				'name' : data.userProfile.first_name,
+				'lname' : data.userProfile.last_name,
+				'extra' : {
+					"dp" : data.userProfile.userExtra.profile_image
+				}					
+			}
+		}
+	});
+	
 	if(err){
 		console.log(err);
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		res.status(statusCode.OK_CODE).json({auth : true, msg : 'Success', data : singlePost});		
+		res.status(statusCode.OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
 	}	
 };
 
