@@ -4,8 +4,10 @@ let catchError = require('../../../Config/ErrorHandling');
 let statusCode = require('../Utility/HTTPStatusCodes');
 let Activity = require('./ActivityController');
 
+//diary posts
 let getAllUserPost = async (req, res) => {
-	let [singlePost,err] = await catchError(Post.where('profile_id',req.params.id).get());
+	let [singlePost,err] = await catchError(Post.select(['emotion','profile_id as uid','id','post_content','post_hashes','created_at'])
+	.where('profile_id',req.params.id).get());
 	if(err){
 		console.log(err);
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
