@@ -6,33 +6,61 @@ let Activity = require('./ActivityController');
 let _ = require('underscore');
 
 //diary posts
-let getAllUserPost = async (req, res) => {
-	let [singlePost,err] = await catchError(Post				
+let getAllDiaryPost = async (req, res) => {
+	let [diaryPosts,err] = await catchError(Post				
 		.withSelect('userProfile',['first_name','last_name'], (q) =>{
-			q.with({'userExtra': (q1) => {
-				q1.select('profile_image');
-			}});			
+			q.withSelect('userExtra',['profile_image'])			
 		})		
 		.where({'profile_id':req.params.id,'post_published' : false})
-		.select(['emotion','profile_id','id','post_content','post_hashes','created_at'])
+		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])		
 		.orderBy('id','desc')			
 		.get());		
-		
-	let finalData = _.map(singlePost.toJSON() , (data) => {
+			
+	let finalData = _.map(diaryPosts.toJSON() , (data) => {
 		return {
-			'emotion' : data.emotion,
-			'uid' : data.profile_id, 
-			'pid' : data.pid,
-			'content' : data.post_content,
-			'hash' : data.post_hashes,
+			'emotion' : data.emotion.trim(),
+			'uid' : data.profile_id.trim(), 
+			'pid' : data.id.trim(),
+			'content' : data.post_content.trim(),
+			'published' : data.post_published,
+			'hash' : data.post_hashes.trim(),
 			'date' : data.created_at,
 			'user' : {
-				'name' : data.userProfile.first_name,
-				'lname' : data.userProfile.last_name,
+				'name' : data.userProfile.first_name.trim(),
+				'lname' : data.userProfile.last_name.trim(),
 				'extra' : {
-					"dp" : data.userProfile.userExtra.profile_image
+					"dp" : (data.userProfile.userExtra.profile_image == null) ? data.userProfile.userExtra.profile_image : data.userProfile.userExtra.profile_image.trim()
 				}					
 			}
+		}
+	});
+	
+	if(err){
+		console.log(err);
+		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
+		return;
+	}else{
+		res.status(statusCode.OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+	}	
+};
+
+//profile posts
+let getAllProfilePost = async (req, res) => {
+	let [profilePost,err] = await catchError(Post								
+		.where({'profile_id':req.params.id,'post_published' : true})
+		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])		
+		.orderBy('id','desc')			
+		.get());		
+			
+	let finalData = _.map(profilePost.toJSON() , (data) => {
+		return {
+			'emotion' : data.emotion.trim(),
+			'uid' : data.profile_id.trim(), 
+			'pid' : data.id.trim(),
+			'content' : data.post_content.trim(),
+			'published' : data.post_published,
+			'hash' : data.post_hashes.trim(),
+			'date' : data.created_at,			
 		}
 	});
 	
@@ -80,7 +108,7 @@ let createPost = async (req, res) => {
 		res.status(statuscode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	}else{
-		res.status(statusCode.OK_CODE).json({auth : true,msg : "Success"})
+		res.status(statusCode.OK_CODE).json({auth : true,msg : "Posted"})
 	}
 }
 
@@ -106,7 +134,7 @@ let updatePost = async (req, res) => {
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	} else {
-		res.status(statusCode.OK_CODE).json({auth : true,msg : "Success"})
+		res.status(statusCode.OK_CODE).json({auth : true,msg : "Post Updated"})
 	}
 }
 
@@ -120,12 +148,13 @@ let deletePost = async (req, res) => {
 		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	} else {
-		res.status(statusCode.OK_CODE).json({auth : true,msg : "Success"})
+		res.status(statusCode.OK_CODE).json({auth : true,msg : "Post Deleted"})
 	}
 }
 
 module.exports = {
-	'getAllUserPost': getAllUserPost,
+	'getAllDiaryPost': getAllDiaryPost,
+	'getAllProfilePost' : getAllProfilePost,
 	'getSinglePostWithComments' : getSinglePostWithComments,
 	'createPost' : createPost,
 	'updatePost' : updatePost,
