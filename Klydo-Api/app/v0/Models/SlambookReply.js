@@ -1,4 +1,4 @@
-const bookshelf = require('../../../Config/Bookshelf.js');
+const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
 
 var SlambookReply = bookshelf.Model.extend({
 	tableName:'slambook_reply',

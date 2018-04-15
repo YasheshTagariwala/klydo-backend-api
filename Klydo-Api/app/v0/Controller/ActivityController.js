@@ -1,5 +1,4 @@
-let Activity = require('../Models/Activity');
-let catchError = require('../../../Config/ErrorHandling');
+let Activity = require(APP_MODEL_PATH + 'Activity');
 
 let createActivity = async activityType => {
     let [data,err] = await catchError(Activity.forge({activity_type : activityType}).save());    

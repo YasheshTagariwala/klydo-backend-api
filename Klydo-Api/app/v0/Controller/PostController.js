@@ -1,8 +1,6 @@
-let Post = require('../Models/Posts');
-let Comment = require('../Models/PostComment');
-let catchError = require('../../../Config/ErrorHandling');
-let statusCode = require('../Utility/HTTPStatusCodes');
-let Activity = require('./ActivityController');
+let Post = require(APP_MODEL_PATH + 'Posts');
+let Comment = require(APP_MODEL_PATH + 'PostComment');
+let Activity = require(APP_CONTROLLER_PATH + 'ActivityController');
 let _ = require('underscore');
 
 //diary posts
@@ -37,10 +35,10 @@ let getAllDiaryPost = async (req, res) => {
 	
 	if(err){
 		console.log(err);
-		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		res.status(statusCode.OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
 	}	
 };
 
@@ -66,10 +64,10 @@ let getAllProfilePost = async (req, res) => {
 	
 	if(err){
 		console.log(err);
-		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		res.status(statusCode.OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
 	}	
 };
 
@@ -77,17 +75,17 @@ let getSinglePostWithComments = async (req ,res) => {
 	let [postWithComment,err] = await catchError(Post.with('comments').where('id',req.params.id).get());
 	if(err){
 		console.log(err);
-		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE});
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else
-		res.status(statusCode.OK_CODE).json({auth : true, msg : 'Success', data : postWithComment});		
+		res.status(OK_CODE).json({auth : true, msg : 'Success', data : postWithComment});		
 }
 
 let createPost = async (req, res) => {	
 	let [activityId,err] = await catchError(Activity.createActivity(1));	
 	if(activityId == null || err){
 		console.log(err);
-		res.status(statuscode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	}
 
@@ -105,10 +103,10 @@ let createPost = async (req, res) => {
 	let [data,err1] = await catchError(Post.forge(newPostData).save());	
 	if(err1){
 		console.log(err1);
-		res.status(statuscode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	}else{
-		res.status(statusCode.OK_CODE).json({auth : true,msg : "Posted"})
+		res.status(OK_CODE).json({auth : true,msg : "Posted"})
 	}
 }
 
@@ -131,10 +129,10 @@ let updatePost = async (req, res) => {
 	);
 	if(err1) {
 		console.log(err1);
-		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	} else {
-		res.status(statusCode.OK_CODE).json({auth : true,msg : "Post Updated"})
+		res.status(OK_CODE).json({auth : true,msg : "Post Updated"})
 	}
 }
 
@@ -145,10 +143,10 @@ let deletePost = async (req, res) => {
 	let [data,err1] = await catchError(Post.forge({id : postId}).destroy());
 	if(err1) {
 		console.log(err1);
-		res.status(statusCode.INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : statusCode.INTERNAL_SERVER_ERROR_MESSAGE})
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	} else {
-		res.status(statusCode.OK_CODE).json({auth : true,msg : "Post Deleted"})
+		res.status(OK_CODE).json({auth : true,msg : "Post Deleted"})
 	}
 }
 

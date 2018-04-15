@@ -1,8 +1,13 @@
+global.APP_ROOT_PATH = __dirname;
+
+require('./Config/paths');
+require(APP_UTILITY_PATH + 'HTTPStatusCodes');
+global.catchError = require(APP_CONFIG_PATH + 'ErrorHandling');
+
 const express = require('express');
 var app = express();
-var authenticate = require('./security/Authenticate');
-var LoginController = require('./app/v1/Controller/LoginController');
-let catchError = require('./Config/ErrorHandling');
+var authenticate = require(APP_SECURITY_PATH  + 'Authenticate');
+var LoginController = require(APP_CONTROLLER_PATH + 'LoginController');
 
 app.use(express.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.json());
@@ -20,7 +25,7 @@ app.use(async (req, res, next) => {
 		// } else {
 		// 	if(verification.auth) {
 		// 		//All Application routes
-				require('./routes/v1/route.js')(app,express);
+				require(APP_ROUTES_PATH + 'route')(app,express);
 				next();
 		// 	} else {
 		// 		res.json(verification);
