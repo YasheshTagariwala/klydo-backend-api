@@ -21,6 +21,8 @@ module.exports = (app,express) => {
 	router.post('/friend/add',FriendController.addFriend);
 	router.put('/friend/accept/:id',FriendController.acceptFriend);
 	router.delete('/friend/reject/:id',FriendController.rejectFriend);
+	router.get('/friend/followers/:id',FriendController.getFollowers);
+	router.get('/friend/followings/:id',FriendController.getFollowings);
 
 	// Define the home page route
 	router.get('/', (req, res) => {

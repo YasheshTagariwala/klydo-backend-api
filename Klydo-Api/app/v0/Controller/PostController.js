@@ -2,83 +2,138 @@ let Post = require(APP_MODEL_PATH + 'Posts');
 let Comment = require(APP_MODEL_PATH + 'PostComment');
 let Activity = require(APP_CONTROLLER_PATH + 'ActivityController');
 let _ = require('underscore');
+let Validation = require(APP_UTILITY_PATH + 'Validations');
+const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
 
 //diary posts
 let getAllDiaryPost = async (req, res) => {
 	let [diaryPosts,err] = await catchError(Post				
-		.withSelect('userProfile',['first_name','last_name'], (q) =>{
-			q.withSelect('userExtra',['profile_image'])			
-		})		
+		.with({'userProfile' : (q) => {
+			q.select(bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname']));			
+			q.withSelect('userExtra',[bookshelf.knex.raw('trim(profile_image) as dp')]);			
+		}})		
 		.where({'profile_id':req.params.id,'post_published' : false})
-		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])		
-		.orderBy('id','desc')			
+		.select(bookshelf.knex.raw(['trim(emotion) as emotion','profile_id','id'
+					,'trim(post_content) as content','post_published','trim(post_hashes) as hashes','to_char(created_at,\'DD-MM-YYYY\') as date']))		
+		.orderBy('id','desc')					
+		.limit(10)		
 		.get());		
 			
-	let finalData = _.map(diaryPosts.toJSON() , (data) => {
-		return {
-			'emotion' : data.emotion.trim(),
-			'uid' : data.profile_id.trim(), 
-			'pid' : data.id.trim(),
-			'content' : data.post_content.trim(),
-			'published' : data.post_published,
-			'hash' : data.post_hashes.trim(),
-			'date' : data.created_at,
-			'user' : {
-				'name' : data.userProfile.first_name.trim(),
-				'lname' : data.userProfile.last_name.trim(),
-				'extra' : {
-					"dp" : (data.userProfile.userExtra.profile_image == null) ? data.userProfile.userExtra.profile_image : data.userProfile.userExtra.profile_image.trim()
-				}					
-			}
-		}
-	});
-	
 	if(err){
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		if(!Validation.objectEmpty(diaryPosts)){
+			let finalData = _.map(diaryPosts.toJSON() , (data) => {
+				return {
+					'emotion' : data.emotion,
+					'uid' : data.profile_id, 
+					'pid' : data.id,
+					'content' : data.content,
+					'published' : data.post_published,
+					'hash' : data.hashes,
+					'date' : data.date,			
+					'name' : data.userProfile.fname,
+					'lname' : data.userProfile.lame,				
+					"dp" : data.userProfile.userExtra.dp				
+				}
+			});
+			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		}else{
+			res.status(OK_CODE).json({auth : true, msg : 'No Data Found' , data : []});		
+		}					
 	}	
 };
 
 //profile posts
 let getAllProfilePost = async (req, res) => {
-	let [profilePost,err] = await catchError(Post								
-		.where({'profile_id':req.params.id,'post_published' : true})
-		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])		
-		.orderBy('id','desc')			
-		.get());		
-			
-	let finalData = _.map(profilePost.toJSON() , (data) => {
-		return {
-			'emotion' : data.emotion.trim(),
-			'uid' : data.profile_id.trim(), 
-			'pid' : data.id.trim(),
-			'content' : data.post_content.trim(),
-			'published' : data.post_published,
-			'hash' : data.post_hashes.trim(),
-			'date' : data.created_at,			
-		}
-	});
+	let [profilePost,err] = await catchError(Post					
+		.select(bookshelf.knex.raw(['trim(emotion) as emotion','profile_id','id','trim(post_content) as content'
+					,'trim(post_hashes) as hash','to_char(created_at,\'DD-MM-YYYY\') as date','post_published']))			
+		.where({'profile_id':req.params.id,'post_published' : true})		
+		.orderBy('id','desc')
+		.get());				
 	
 	if(err){
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		if(!Validation.objectEmpty(profilePost)){
+			let finalData = _.map(profilePost.toJSON() , (data) => {
+				return {
+					'emotion' : data.emotion,
+					'uid' : data.profile_id, 
+					'pid' : data.id,
+					'content' : data.content,
+					'published' : data.post_published,
+					'hash' : data.hash,
+					'date' : data.date,			
+				}
+			});
+			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		}else{
+			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		
+		}		
 	}	
 };
 
 let getSinglePostWithComments = async (req ,res) => {	
-	let [postWithComment,err] = await catchError(Post.with('comments').where('id',req.params.id).get());
+	let [postWithComment,err] = await catchError(Post
+		.select(bookshelf.knex.raw(['trim(emotion) as emotion','profile_id','id','trim(post_content) as content'
+					,'trim(post_hashes) as hash','to_char(created_at,\'DD-MM-YYYY\') as date','post_published']))
+		.with({'userProfile' : (q) => {			
+				q.select(bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname']));
+				q.withSelect('userExtra',[bookshelf.knex.raw('trim(profile_image) as dp')]);			
+			}})
+		.with({'comments' : (q1) => {
+				q1.select([bookshelf.knex.raw(['trim(comment_content) as content','to_char(created_at,\'DD-MM-YYYY\')','profile_id','id'])]);				
+				q1.withSelect('userProfile', [bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname','id'])] , (q2) => {
+					q2.withSelect('userExtra',[bookshelf.knex.raw('trim(profile_image) as dp')]);			
+				})
+		}})								
+		.where('id',req.params.id)
+		.get());				
+
 	if(err){
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
-	}else
-		res.status(OK_CODE).json({auth : true, msg : 'Success', data : postWithComment});		
+	}else{
+		if(!Validation.objectEmpty()){
+			let finalData = _.map(postWithComment.toJSON() , (data) =>{
+				let temp_data = [];
+				let comment_array = data.comments.forEach(comment => {					
+						temp_data.push({
+							'content' : comment.content,
+							'date' : comment.date,	
+							'uid' : comment.profile_id,
+							'cid' : comment.id,												
+							'name' : comment.userProfile.fname,
+							'lname' : comment.userProfile.lname,							
+							'dp' : comment.userProfile.userExtra.dp																			
+						});											
+				})
+				return {
+					'emotion' : data.emotion,
+					'uid' : data.profile_id, 
+					'pid' : data.id,
+					'content' : data.content,
+					'published' : data.post_published,
+					'hash' : data.hashes,
+					'date' : data.date,				
+					'name' : data.userProfile.fname,
+					'lname' : data.userProfile.lname,					
+					"dp" : data.userProfile.userExtra.dp,
+					'comments' : temp_data		
+				}
+			});
+			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		}else{
+			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		
+		}
+	}			
 }
 
 let createPost = async (req, res) => {	
