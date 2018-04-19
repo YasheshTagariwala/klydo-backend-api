@@ -13,11 +13,14 @@ app.use(express.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.json());
 
 app.post('/login/authenticate', LoginController.loginCheck);
+app.post('/login/signup', LoginController.signupUser);
 //validate user before calling any routes
 app.use(async (req, res, next) => {
 	if(req.originalUrl === '/login/authenticate') {
-	next();
-	} else {
+		next();
+	} else if(req.originalUrl === '/login/signup') {
+		next();
+	}else {
 		// let [verification,err] = await catchError(authenticate.validateToken(req.body.token));
 		// if(err) {
 		// 	console.log(err);
