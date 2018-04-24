@@ -26,7 +26,7 @@ module.exports = (app,express) => {
 	router.get('/friend/followings/:id',FriendController.getFollowings);
 
 	//all activity controlller routes
-	router.get('/activity/all',ActivityController.getActivity);
+	router.get('/activity/all/:id',ActivityController.getUserActivity);
 
 	// Define the home page route
 	router.get('/', (req, res) => {

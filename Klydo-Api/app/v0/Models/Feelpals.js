@@ -5,8 +5,12 @@ var Feelpals = bookshelf.Model.extend({
 	hasTimestamps: true,
 	softDelete: true,
 
-	userProfile : function() {
-		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'followings' || 'followers');
+	userProfileFollowing : function() {
+		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'followings');
+	},
+
+	userProfileFollower : function() {
+		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'followers');
 	}
 });
 

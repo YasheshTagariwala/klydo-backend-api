@@ -12,6 +12,8 @@ var LoginController = require(APP_CONTROLLER_PATH + 'LoginController');
 app.use(express.urlencoded({ extended: true })); // support encoded bodies
 app.use(express.json());
 
+TODO:'use concat in user names where neccessary'
+
 app.post('/login/authenticate', LoginController.loginCheck);
 app.post('/login/signup', LoginController.signupUser);
 //validate user before calling any routes
