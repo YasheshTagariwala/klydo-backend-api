@@ -1,6 +1,7 @@
 var UserController = require(APP_CONTROLLER_PATH + 'UserController');
 var PostController = require(APP_CONTROLLER_PATH + 'PostController');
 var FriendController = require(APP_CONTROLLER_PATH + 'FriendsController');
+var ActivityController = require(APP_CONTROLLER_PATH + 'ActivityController');
 
 module.exports = (app,express) => {
 
@@ -23,6 +24,9 @@ module.exports = (app,express) => {
 	router.delete('/friend/reject/:id',FriendController.rejectFriend);
 	router.get('/friend/followers/:id',FriendController.getFollowers);
 	router.get('/friend/followings/:id',FriendController.getFollowings);
+
+	//all activity controlller routes
+	router.get('/activity/all',ActivityController.getActivity);
 
 	// Define the home page route
 	router.get('/', (req, res) => {

@@ -8,6 +8,18 @@ let createActivity = async activityType => {
         return data.id;        
 }
 
+let getActivity = async (req, res) => {
+    let[activityData ,err] = await catchError(Activity.get());
+    if(err){
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
+		return;
+    }else{
+        res.status(OK_CODE).json({auth : true, msg : "Success" ,data : activityData});
+    }
+}
+
 module.exports = {
-    'createActivity' : createActivity
+    'createActivity' : createActivity,
+    'getActivity' : getActivity
 }
