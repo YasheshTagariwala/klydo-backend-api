@@ -5,7 +5,7 @@ var ActivityController = require(APP_CONTROLLER_PATH + 'ActivityController');
 
 module.exports = (app,express) => {
 
-	let router = express.Router();
+	let router = express.Router();	
 	
 	//all user controller routes
 	router.get('/user/:id', UserController.getUserDetail);

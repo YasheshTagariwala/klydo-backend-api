@@ -13,5 +13,5 @@ let getUserDetail = async  (req, res) => {
 };
 
 module.exports = {
-	'getUserDetail': getUserDetail,
+	'getUserDetail': getUserDetail,	
 }

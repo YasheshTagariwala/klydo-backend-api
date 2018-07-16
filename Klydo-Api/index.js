@@ -6,7 +6,7 @@ global.catchError = require(APP_CONFIG_PATH + 'ErrorHandling');
 
 const express = require('express');
 var app = express();
-var authenticate = require(APP_SECURITY_PATH  + 'Authenticate');
+var authenticate = require(APP_SECURITY_PATH  + 'authenticate');
 var LoginController = require(APP_CONTROLLER_PATH + 'LoginController');
 
 app.use(express.urlencoded({ extended: true })); // support encoded bodies

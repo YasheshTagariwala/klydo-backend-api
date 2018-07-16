@@ -77,7 +77,7 @@ let rejectFriend = async (req , res) => {
 
 let getFollowers = async (req , res) => {
 	let [friendData ,err] = await catchError(FeelPals				
-		.withSelect('userProfile',[bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname'])], (q) => {
+		.withSelect('userProfileFollower',[bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname'])], (q) => {
 			q.withSelect('userExtra',[bookshelf.knex.raw(['trim(profile_image) as dp','trim(emotion) as emotion'])])
 		})
 		.where({'followings' : req.params.id , 'accepted' : true , 'blocked' : false})
@@ -92,12 +92,12 @@ let getFollowers = async (req , res) => {
 		if(!Validation.objectEmpty(friendData)){
 			let finalData = _.map(friendData.toJSON() , (data) => {
 				return {
-					'name' : data.userProfile.fname,
-					'lname' : data.userProfile.lname,
-					'uid' : data.userProfile.id,
+					'name' : data.userProfileFollower.fname,
+					'lname' : data.userProfileFollower.lname,
+					'uid' : data.userProfileFollower.id,
 					'fid' : data.id,
-					'dp' : data.userProfile.userExtra.dp,
-					'emotion' : data.userProfile.userExtra.emotion
+					'dp' : data.userProfileFollower.userExtra.dp,
+					'emotion' : data.userProfileFollower.userExtra.emotion
 				}
 			});	
 			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
@@ -109,7 +109,7 @@ let getFollowers = async (req , res) => {
 
 let getFollowings = async (req , res) => {
 	let [friendData ,err] = await catchError(FeelPals				
-		.withSelect('userProfile',[bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname'])], (q) => {
+		.withSelect('userProfileFollowing',[bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname'])], (q) => {
 			q.withSelect('userExtra',[bookshelf.knex.raw(['trim(profile_image) as dp','trim(emotion) as emotion'])])
 		})
 		.where({'followers' : req.params.id , 'accepted' : true , 'blocked' : false})
@@ -124,12 +124,12 @@ let getFollowings = async (req , res) => {
 		if(!Validation.objectEmpty(friendData)){
 			let finalData = _.map(friendData.toJSON() , (data) => {
 				return {
-					'name' : data.userProfile.fname,
-					'lname' : data.userProfile.lname,
-					'uid' : data.userProfile.id,
+					'name' : data.userProfileFollowing.fname,
+					'lname' : data.userProfileFollowing.lname,
+					'uid' : data.userProfileFollowing.id,
 					'fid' : data.id,
-					'dp' : data.userProfile.userExtra.dp,
-					'emotion' : data.userProfile.userExtra.emotion
+					'dp' : data.userProfileFollowing.userExtra.dp,
+					'emotion' : data.userProfileFollowing.userExtra.emotion
 				}
 			});	
 			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		

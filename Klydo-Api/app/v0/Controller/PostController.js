@@ -101,7 +101,7 @@ let getSinglePostWithComments = async (req ,res) => {
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		if(!Validation.objectEmpty()){
+		if(!Validation.objectEmpty(postWithComment)){
 			let finalData = _.map(postWithComment.toJSON() , (data) =>{
 				let temp_data = [];
 				let comment_array = data.comments.forEach(comment => {					

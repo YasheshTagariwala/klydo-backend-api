@@ -1,6 +1,6 @@
 let UserProfile = require(APP_MODEL_PATH + 'UserProfile');
 let UserExtra = require(APP_MODEL_PATH + 'UserExtra');
-let authenticate = require(APP_SECURITY_PATH + 'Authenticate');
+let authenticate = require(APP_SECURITY_PATH + 'authenticate');
 let validations = require(APP_UTILITY_PATH + 'Validations');
 
 //login users
