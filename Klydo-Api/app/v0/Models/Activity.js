@@ -10,7 +10,7 @@ var Activity = bookshelf.Model.extend({
 	},
 
 	feelpals : function() {
-		return this.belongsTo(require(APP_MODEL_PATH + 'FeelPals'),'id','activity_id');
+		return this.belongsTo(require(APP_MODEL_PATH + 'Feelpals'),'id','activity_id');
 	},
 
 	comments : function() {
