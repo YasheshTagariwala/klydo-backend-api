@@ -17,13 +17,14 @@ let loginCheck = async (req, res) => {
 		return;
 	}
 
-	let [users,err] = await catchError(UserProfile.select(['user_email','first_name','last_name']).
-										where({'username': uname, 'user_password': password}).get());
+	let [users,err] = await catchError(UserProfile.withSelect('userExtra',['profile_image']).select(['id']).
+										where({'username': uname, 'user_password': password})
+										.orWhere({'user_email' : uname ,'user_password' : password}).first());
 	if(err) {
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg:INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
-	} else {
+	} else {		
 		if(validations.objectEmpty(users)) {
 			res.status(NOT_FOUND_CODE).json({auth: false, msg: NOT_FOUND_MESSAGE});
 			return;
@@ -34,7 +35,7 @@ let loginCheck = async (req, res) => {
 				res.status(UNAUTHORIZED_CODE).json({auth: false, msg:UNAUTHORIZED_MESSAGE});
 				return;
 			} else {
-				res.status(OK_CODE).json({auth: true, msg: 'Save your token.', token: jwt_token});				
+				res.status(OK_CODE).json({auth: true, msg: 'Save your token.', token: jwt_token ,data : users});				
 			}
 		}
 	}

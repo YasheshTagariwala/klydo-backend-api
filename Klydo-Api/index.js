@@ -14,13 +14,13 @@ app.use(express.json());
 
 TODO:'use concat in user names where neccessary'
 
-app.post('/login/authenticate', LoginController.loginCheck);
-app.post('/login/signup', LoginController.signupUser);
+app.post('/app/v0/login/authenticate', LoginController.loginCheck);
+app.post('/app/v0/login/signup', LoginController.signupUser);
 //validate user before calling any routes
-app.use(async (req, res, next) => {
-	if(req.originalUrl === '/login/authenticate') {
+app.use(async (req, res, next) => {	
+	if(req.originalUrl === '/app/v0/login/authenticate') {
 		next();
-	} else if(req.originalUrl === '/login/signup') {
+	} else if(req.originalUrl === '/app/v0/login/signup') {
 		next();
 	}else {
 		// let [verification,err] = await catchError(authenticate.validateToken(req.body.token));
