@@ -2,10 +2,10 @@ module.exports = {
 	db:{
 		client:'postgresql',
 		connection:{
-			host:'localhost',
+			host:'192.168.31.193',
 			user:'postgres',
-			password:'admin',
-			database:'klydo',
+			password:'root',
+			database:'klydo_new',
 			charset:'utf-8'
 		}
 	}

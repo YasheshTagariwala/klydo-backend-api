@@ -60,19 +60,8 @@ let getAllProfilePost = async (req, res) => {
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		if(!Validation.objectEmpty(profilePost)){
-			let finalData = _.map(profilePost.toJSON() , (data) => {
-				return {
-					'emotion' : data.emotion,
-					'uid' : data.profile_id, 
-					'pid' : data.id,
-					'content' : data.content,
-					'published' : data.post_published,
-					'hash' : data.hash,
-					'date' : data.date,			
-				}
-			});
-			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		if(!Validation.objectEmpty(profilePost)){			
+			res.status(OK_CODE).json({auth : true, msg : 'Success', data : profilePost});		
 		}else{
 			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		
 		}		
@@ -101,35 +90,8 @@ let getSinglePostWithComments = async (req ,res) => {
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		if(!Validation.objectEmpty(postWithComment)){
-			let finalData = _.map(postWithComment.toJSON() , (data) =>{
-				let temp_data = [];
-				let comment_array = data.comments.forEach(comment => {					
-						temp_data.push({
-							'content' : comment.content,
-							'date' : comment.date,	
-							'uid' : comment.profile_id,
-							'cid' : comment.id,												
-							'name' : comment.userProfile.fname,
-							'lname' : comment.userProfile.lname,							
-							'dp' : comment.userProfile.userExtra.dp																			
-						});											
-				})
-				return {
-					'emotion' : data.emotion,
-					'uid' : data.profile_id, 
-					'pid' : data.id,
-					'content' : data.content,
-					'published' : data.post_published,
-					'hash' : data.hashes,
-					'date' : data.date,				
-					'name' : data.userProfile.fname,
-					'lname' : data.userProfile.lname,					
-					"dp" : data.userProfile.userExtra.dp,
-					'comments' : temp_data		
-				}
-			});
-			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		if(!Validation.objectEmpty(postWithComment)){			
+			res.status(OK_CODE).json({auth : true, msg : 'Success', data : postWithComment});		
 		}else{
 			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		
 		}

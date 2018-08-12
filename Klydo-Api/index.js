@@ -23,7 +23,7 @@ app.use(async (req, res, next) => {
 	} else if(req.originalUrl === '/app/v0/login/signup') {
 		next();
 	}else {
-		// let [verification,err] = await catchError(authenticate.validateToken(req.body.token));
+		// let [verification,err] = await catchError(authenticate.validateToken(req.method == "POST" ? req.body.token : req.headers.token));
 		// if(err) {
 		// 	console.log(err);
 		// 	res.json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});

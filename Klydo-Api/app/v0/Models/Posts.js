@@ -6,11 +6,11 @@ var Posts = bookshelf.Model.extend({
 	softDelete: true,
 
 	comments : function() {
-		return this.hasMany(require(APP_MODEL_PATH + 'PostComment'),'post_id');
+		return this.belongsToMany(require(APP_MODEL_PATH + 'PostComment'),'post_comment','post_id','id');
 	},
 
 	userProfile : function() {
-		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'profile_id');
+		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'profile_id','id');
 	}
 });
 

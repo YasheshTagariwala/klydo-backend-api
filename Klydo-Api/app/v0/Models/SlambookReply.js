@@ -6,7 +6,7 @@ var SlambookReply = bookshelf.Model.extend({
 	softDelete: true,
 
 	userProfile : function(){
-		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'replier_id');
+		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'replier_id','id');
 	}
 })
 
