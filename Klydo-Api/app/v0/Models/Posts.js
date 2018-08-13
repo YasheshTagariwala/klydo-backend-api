@@ -6,7 +6,7 @@ var Posts = bookshelf.Model.extend({
 	softDelete: true,
 
 	comments : function() {
-		return this.belongsToMany(require(APP_MODEL_PATH + 'PostComment'),'post_comment','post_id','id');
+		return this.hasMany(require(APP_MODEL_PATH + 'PostComment'),'post_id','id');
 	},
 
 	userProfile : function() {

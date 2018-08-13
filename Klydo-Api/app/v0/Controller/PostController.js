@@ -9,14 +9,13 @@ const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
 let getAllDiaryPost = async (req, res) => {
 	let [diaryPosts,err] = await catchError(Post				
 		.with({'userProfile' : (q) => {
-			q.select(bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname']));			
-			q.withSelect('userExtra',[bookshelf.knex.raw('trim(profile_image) as dp')]);			
+			q.select(['first_name','last_name']);			
+			q.withSelect('userExtra',['profile_image']);			
 		}})		
 		.where({'profile_id':req.params.id,'post_published' : false})
-		.select(bookshelf.knex.raw(['trim(emotion) as emotion','profile_id','id'
-					,'trim(post_content) as content','post_published','trim(post_hashes) as hashes','to_char(created_at,\'DD-MM-YYYY\') as date']))		
-		.orderBy('id','desc')					
-		.limit(10)		
+		.select(['emotion','profile_id','id','post_content','post_published','post_hashes','created_at'])
+		.orderBy('id','desc')
+		.limit(10)
 		.get());		
 			
 	if(err){
@@ -24,22 +23,8 @@ let getAllDiaryPost = async (req, res) => {
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		if(!Validation.objectEmpty(diaryPosts)){
-			let finalData = _.map(diaryPosts.toJSON() , (data) => {
-				return {
-					'emotion' : data.emotion,
-					'uid' : data.profile_id, 
-					'pid' : data.id,
-					'content' : data.content,
-					'published' : data.post_published,
-					'hash' : data.hashes,
-					'date' : data.date,			
-					'name' : data.userProfile.fname,
-					'lname' : data.userProfile.lame,				
-					"dp" : data.userProfile.userExtra.dp				
-				}
-			});
-			res.status(OK_CODE).json({auth : true, msg : 'Success', data : finalData});		
+		if(!Validation.objectEmpty(diaryPosts)){			
+			res.status(OK_CODE).json({auth : true, msg : 'Success', data : diaryPosts});		
 		}else{
 			res.status(OK_CODE).json({auth : true, msg : 'No Data Found' , data : []});		
 		}					
@@ -49,8 +34,7 @@ let getAllDiaryPost = async (req, res) => {
 //profile posts
 let getAllProfilePost = async (req, res) => {
 	let [profilePost,err] = await catchError(Post					
-		.select(bookshelf.knex.raw(['trim(emotion) as emotion','profile_id','id','trim(post_content) as content'
-					,'trim(post_hashes) as hash','to_char(created_at,\'DD-MM-YYYY\') as date','post_published']))			
+		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])			
 		.where({'profile_id':req.params.id,'post_published' : true})		
 		.orderBy('id','desc')
 		.get());				
@@ -70,16 +54,15 @@ let getAllProfilePost = async (req, res) => {
 
 let getSinglePostWithComments = async (req ,res) => {	
 	let [postWithComment,err] = await catchError(Post
-		.select(bookshelf.knex.raw(['trim(emotion) as emotion','profile_id','id','trim(post_content) as content'
-					,'trim(post_hashes) as hash','to_char(created_at,\'DD-MM-YYYY\') as date','post_published']))
+		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])
 		.with({'userProfile' : (q) => {			
-				q.select(bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname']));
-				q.withSelect('userExtra',[bookshelf.knex.raw('trim(profile_image) as dp')]);			
+				q.select(['first_name','last_name']);
+				q.withSelect('userExtra',['profile_image']);			
 			}})
 		.with({'comments' : (q1) => {
-				q1.select([bookshelf.knex.raw(['trim(comment_content) as content','to_char(created_at,\'DD-MM-YYYY\')','profile_id','id'])]);				
-				q1.withSelect('userProfile', [bookshelf.knex.raw(['trim(first_name) as fname','trim(last_name) as lname','id'])] , (q2) => {
-					q2.withSelect('userExtra',[bookshelf.knex.raw('trim(profile_image) as dp')]);			
+				q1.select(['comment_content','created_at','profile_id','id']);
+				q1.withSelect('userProfile', ['first_name','last_name','id'] , (q2) => {
+					q2.withSelect('userExtra',['profile_image']);			
 				})
 		}})								
 		.where('id',req.params.id)

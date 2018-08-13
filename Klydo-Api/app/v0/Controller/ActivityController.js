@@ -1,5 +1,4 @@
 let Activity = require(APP_MODEL_PATH + 'Activity');
-const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
 
 let createActivity = async activityType => {
     let [data,err] = await catchError(Activity.forge({activity_type : activityType}).save());    
@@ -9,23 +8,21 @@ let createActivity = async activityType => {
         return data.id;        
 }
 
-TODO:'aliasing left in getUserActivity'
-
 let getUserActivity = async (req, res) => {
-    let[activityData ,err] = await catchError(Activity     
-        .select(bookshelf.knex.raw(['id','activity_type','to_char(created_at,\'DD-MM-YYYY\') as date']))   
+    let[activityData ,err] = await catchError(Activity
+        .select(['id','activity_type','created_at'])        
         .with({'feelpals' : (q) => {
             q.select('followers');
-            q.withSelect('userProfileFollower',[bookshelf.knex.raw(['concat(trim(first_name), \' \' ,trim(last_name)) as name'])]);
+            q.withSelect('userProfileFollower',['first_name','last_name']);
         },'comments' : (q) => {
             q.select(['post_id','profile_id']);
-            q.withSelect('userProfile',[bookshelf.knex.raw(['concat(trim(first_name), \' \' ,trim(last_name)) as name'])]);
+            q.withSelect('userProfile',['first_name','last_name']);     
         },'reactions' : (q) => {
             q.select(['post_id','profile_id']);
-            q.withSelect('userProfile',[bookshelf.knex.raw(['concat(trim(first_name), \' \' ,trim(last_name)) as name'])]);
+            q.withSelect('userProfile',['first_name','last_name']);            
         },'slamReply' : (q) => {
             q.select(['slam_id','replier_id']);
-            q.withSelect('userProfile',[bookshelf.knex.raw(['concat(trim(first_name), \' \' ,trim(last_name)) as name'])]);
+            q.withSelect('userProfile',['first_name','last_name']);            
         }})
         .where((q) => {            
             q.whereHas('comments',(q) => {
@@ -41,7 +38,7 @@ let getUserActivity = async (req, res) => {
             q.orWhereHas('slamReply',(q) => {
                 q.whereNot('replier_id' , req.params.id);
             })   
-        })                                                         
+        })        
         .get());
                 
     if(err){
