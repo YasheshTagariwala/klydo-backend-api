@@ -56,7 +56,7 @@ let forgetPassword = async (req, res) => {
 	}	
 
 	let [users,err] = await catchError(UserProfile.where({'username': uname})
-										.orWhere({'user_email' : uname}).first());
+						.orWhere({'user_email' : uname}).first());
 	if(err) {
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg:INTERNAL_SERVER_ERROR_MESSAGE});
@@ -65,11 +65,10 @@ let forgetPassword = async (req, res) => {
 		if(validations.objectEmpty(users)) {
 			res.status(NOT_FOUND_CODE).json({auth: false, msg: NOT_FOUND_MESSAGE});
 			return;
-		} else {
-
+		} else {			
 			let newUserData = {
 				user_password : password
-			}
+			}			
 
 			let [data ,err] = await catchError(UserProfile.where({'username': uname})
 				.orWhere({'user_email' : uname})
@@ -136,5 +135,6 @@ let signupUser = async (req, res) => {
 
 module.exports = {
 	'loginCheck': loginCheck,
-	'signupUser' : signupUser
+	'signupUser' : signupUser,
+	'forgetPassword' : forgetPassword
 }

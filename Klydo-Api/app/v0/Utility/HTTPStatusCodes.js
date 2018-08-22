@@ -53,7 +53,7 @@ global.FORBIDDEN_CODE = 403;
 global.FORBIDDEN_MESSAGE = 'The request is forbidden.';
 
 global.NOT_FOUND_CODE = 404;
-global.NOT_FOUND_MESSAGE = 'The request is not found.';
+global.NOT_FOUND_MESSAGE = 'No data found.';
 
 global.NOT_ACCEPTABLE_CODE = 406;
 global.NOT_ACCEPTABLE_MESSAGE = 'The request can only generate response that is not acceptable by client.';

@@ -8,13 +8,10 @@ let empty = data => {
     return false;
 }
 
-let objectEmpty = data => {
-    if(data){
-        if(data.length == 0 || data.length == '') {
-            return true;
-        }
+let objectEmpty = data => {    
+    if(data == null || data.length == 0 || data.length == '') {
+        return true;
     }    
-
     return false;
 }
 
