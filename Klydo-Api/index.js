@@ -16,12 +16,11 @@ TODO:'use concat in user names where neccessary'
 
 app.post('/app/v0/login/authenticate', LoginController.loginCheck);
 app.post('/app/v0/login/signup', LoginController.signupUser);
+app.post('/app/v0/login/forget', LoginController.forgetPassword);
 //validate user before calling any routes
 app.use(async (req, res, next) => {	
-	if(req.originalUrl === '/app/v0/login/authenticate') {
-		next();
-	} else if(req.originalUrl === '/app/v0/login/signup') {
-		next();
+	if(req.originalUrl === '/app/v0/login/authenticate' || req.originalUrl === '/app/v0/login/signup' || req.originalUrl === '/app/v0/login/forget') {
+		next();			
 	}else {
 		// let [verification,err] = await catchError(authenticate.validateToken(req.method == "POST" ? req.body.token : req.headers.token));
 		// if(err) {

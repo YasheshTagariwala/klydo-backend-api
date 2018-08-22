@@ -41,6 +41,52 @@ let loginCheck = async (req, res) => {
 	}
 }
 
+//forget password api
+let forgetPassword = async (req, res) => {
+	let uname = req.body.uname;
+	let password = req.body.password;
+
+	if(validations.empty(uname)) {
+		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});
+		return;
+	}
+	if(validations.empty(password)) {
+		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});
+		return;
+	}	
+
+	let [users,err] = await catchError(UserProfile.where({'username': uname})
+										.orWhere({'user_email' : uname}).first());
+	if(err) {
+		console.log(err);
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg:INTERNAL_SERVER_ERROR_MESSAGE});
+		return;
+	} else {		
+		if(validations.objectEmpty(users)) {
+			res.status(NOT_FOUND_CODE).json({auth: false, msg: NOT_FOUND_MESSAGE});
+			return;
+		} else {
+
+			let newUserData = {
+				user_password : password
+			}
+
+			let [data ,err] = await catchError(UserProfile.where({'username': uname})
+				.orWhere({'user_email' : uname})
+				.save(newUserData ,{patch : true})
+			);
+
+			if(err) {
+				console.log(err);
+				res.status(UNAUTHORIZED_CODE).json({auth: false, msg:UNAUTHORIZED_MESSAGE});
+				return;
+			} else {
+				res.status(OK_CODE).json({auth: true});
+			}
+		}
+	}
+}
+
 //sign up users
 let signupUser = async (req, res) => {
 	let requestData = req.body;
