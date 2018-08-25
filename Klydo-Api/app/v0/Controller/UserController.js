@@ -1,4 +1,4 @@
-let UserProfile = require(APP_MODEL_PATH + 'UserProfile');
+let UserProfile = loadModal('UserProfile');
 
 //Get single User details
 let getUserDetail = async  (req, res) => {

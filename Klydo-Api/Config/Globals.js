@@ -1,0 +1,56 @@
+let v1Paths = APP_ROOT_PATH + '/app/v0/';
+let v1RoutePaths = APP_ROOT_PATH + '/routes/';
+
+//v1 Paths
+let APP_MODEL_PATH = v1Paths + 'Models/';
+let APP_CONTROLLER_PATH = v1Paths + 'Controller/';
+let APP_UTILITY_PATH = v1Paths + 'Utility/';
+
+//security paths
+let APP_SECURITY_PATH = APP_ROOT_PATH + '/security/';
+
+//config paths
+let APP_CONFIG_PATH = APP_ROOT_PATH + '/Config/';
+
+//route paths
+let APP_ROUTES_PATH = v1RoutePaths + 'v0/';
+
+
+global.loadUtility = (fileName) => {
+    return require(APP_UTILITY_PATH + fileName);
+}
+
+global.loadSecurity = (fileName) => {
+    return require(APP_SECURITY_PATH + fileName);
+}
+
+global.loadConfig = (fileName) => {
+    return require(APP_CONFIG_PATH + fileName);
+}
+
+global.loadRoute = (fileName) => {
+    return require(APP_ROUTES_PATH + fileName);
+}
+
+global.loadController = (fileName) => {
+    return require(APP_CONTROLLER_PATH + fileName);
+}
+
+global.loadModal = (fileName) => {
+    return require(APP_MODEL_PATH + fileName);
+}
+
+global.getMailTrasporter = () => {
+    let nodemailer = require('nodemailer');
+    return nodemailer.createTransport({
+        service: 'gmail',
+        tls: { 
+            rejectUnauthorized: false 
+        },
+        auth: {
+            user: 'klydo.space@gmail.com',
+            pass: 'Wm4p?@Ds.qXKTR=A'
+        }
+    });
+}
+

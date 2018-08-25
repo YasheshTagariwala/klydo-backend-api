@@ -1,9 +1,8 @@
-let Post = require(APP_MODEL_PATH + 'Posts');
-let Comment = require(APP_MODEL_PATH + 'PostComment');
-let Activity = require(APP_CONTROLLER_PATH + 'ActivityController');
+let Post = loadModal('Posts');
+let Comment = loadModal('PostComment');
+let Activity = loadController('ActivityController');
 let _ = require('underscore');
-let Validation = require(APP_UTILITY_PATH + 'Validations');
-const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
+let Validation = loadUtility('Validations');
 
 //diary posts
 let getAllDiaryPost = async (req, res) => {

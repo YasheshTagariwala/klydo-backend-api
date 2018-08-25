@@ -1,4 +1,4 @@
-const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
+const bookshelf = loadConfig('Bookshelf.js');
 
 var CommentTag = bookshelf.Model.extend({
 	tableName:'comment_tag',

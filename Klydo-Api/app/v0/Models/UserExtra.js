@@ -1,4 +1,4 @@
-const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
+const bookshelf = loadConfig('Bookshelf.js');
 
 var UserExtra = bookshelf.Model.extend({
 	tableName:'user_extra',
@@ -6,7 +6,7 @@ var UserExtra = bookshelf.Model.extend({
 	softDelete: true,
 
 	userProfile : function(){
-		return this.hasOne(require(APP_MODEL_PATH + 'UserExtra'),'user_profile_id','id');
+		return this.hasOne(loadModal('UserExtra'),'user_profile_id','id');
 	}
 });
 

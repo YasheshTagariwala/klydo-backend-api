@@ -1,4 +1,4 @@
-const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
+const bookshelf = loadConfig('Bookshelf.js');
 
 var Feelpals = bookshelf.Model.extend({
 	tableName:'feelpals',
@@ -6,11 +6,11 @@ var Feelpals = bookshelf.Model.extend({
 	softDelete: true,
 
 	userProfileFollowing : function() {
-		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'followings','id');
+		return this.hasOne(loadModal('UserProfile'),'followings','id');
 	},
 
 	userProfileFollower : function() {
-		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'followers','id');
+		return this.hasOne(loadModal('UserProfile'),'followers','id');
 	}
 });
 

@@ -1,4 +1,4 @@
-const bookshelf = require(APP_CONFIG_PATH + 'Bookshelf.js');
+const bookshelf = loadConfig('Bookshelf.js');
 
 var Posts = bookshelf.Model.extend({
 	tableName:'new_posts',
@@ -6,11 +6,11 @@ var Posts = bookshelf.Model.extend({
 	softDelete: true,
 
 	comments : function() {
-		return this.hasMany(require(APP_MODEL_PATH + 'PostComment'),'post_id','id');
+		return this.hasMany(loadModal('PostComment'),'post_id','id');
 	},
 
 	userProfile : function() {
-		return this.hasOne(require(APP_MODEL_PATH + 'UserProfile'),'profile_id','id');
+		return this.hasOne(loadModal('UserProfile'),'profile_id','id');
 	}
 });
 

@@ -1,6 +1,6 @@
-let FeelPals = require(APP_MODEL_PATH + 'Feelpals');
-let Activity = require(APP_CONTROLLER_PATH + 'ActivityController');
-let Validation = require(APP_UTILITY_PATH + 'Validations');
+let FeelPals = loadModal('Feelpals');
+let Activity = loadController('ActivityController');
+let Validation = loadUtility('Validations');
 
 let addFriend = async (req , res) => {
     let [activityId,err] = await catchError(Activity.createActivity(2));	

@@ -1,6 +1,6 @@
-let Activity = require(APP_MODEL_PATH + 'Activity');
+let Activity = loadModal('Activity');
 
-let createActivity = async activityType => {
+let createActivity = async activityType => {    
     let [data,err] = await catchError(Activity.forge({activity_type : activityType}).save());    
     if(err)
         return null;

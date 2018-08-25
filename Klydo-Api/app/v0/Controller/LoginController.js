@@ -1,10 +1,8 @@
-let UserProfile = require(APP_MODEL_PATH + 'UserProfile');
-let UserExtra = require(APP_MODEL_PATH + 'UserExtra');
-let authenticate = require(APP_SECURITY_PATH + 'authenticate');
-let validations = require(APP_UTILITY_PATH + 'Validations');
-
 //login users
-let loginCheck = async (req, res) => {
+let loginCheck = async (req, res) => {	
+	let UserProfile = loadModal('UserProfile');
+	let authenticate = loadSecurity('authenticate');
+	let validations = loadUtility('Validations');
 	let uname = req.body.uname;
 	let password = req.body.password;
 
@@ -42,7 +40,9 @@ let loginCheck = async (req, res) => {
 }
 
 //forget password api
-let forgetPassword = async (req, res) => {
+let forgetPassword = async (req, res) => {	
+	let validations = loadUtility('Validations');
+	let UserProfile = loadModal('UserProfile');
 	let uname = req.body.uname;
 	let password = req.body.password;
 
@@ -75,6 +75,22 @@ let forgetPassword = async (req, res) => {
 				.save(newUserData ,{patch : true})
 			);
 
+			var mailOptions = {
+				from: 'klydo.space@gmail.com',
+				to: 'fakelaptop1234@gmail.com',
+				subject: 'Sending Email using Node.js',
+				text: 'That was easy!'
+			  };
+
+			getMailTrasporter().sendMail(mailOptions,(error,info) => {
+				if (error) {
+					console.log(error);
+				  } else {
+					console.log('Email sent: ' + info.response);
+				  }
+				getMailTrasporter().close();
+			})
+
 			if(err) {
 				console.log(err);
 				res.status(UNAUTHORIZED_CODE).json({auth: false, msg:UNAUTHORIZED_MESSAGE});
@@ -88,6 +104,9 @@ let forgetPassword = async (req, res) => {
 
 //sign up users
 let signupUser = async (req, res) => {
+	let UserExtra = loadModal('UserExtra');
+	let validations = loadUtility('Validations');
+	let UserProfile = loadModal('UserProfile');
 	let requestData = req.body;
 	if(validations.objectEmpty(requestData)) {
 		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});

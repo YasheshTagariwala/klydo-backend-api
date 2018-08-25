@@ -1,32 +1,27 @@
-var UserController = require(APP_CONTROLLER_PATH + 'UserController');
-var PostController = require(APP_CONTROLLER_PATH + 'PostController');
-var FriendController = require(APP_CONTROLLER_PATH + 'FriendsController');
-var ActivityController = require(APP_CONTROLLER_PATH + 'ActivityController');
-
 module.exports = (app,express) => {
 
 	let router = express.Router();	
 	
 	//all user controller routes
-	router.get('/user/:id', UserController.getUserDetail);
+	router.get('/user/:id', loadController('UserController').getUserDetail);
 
 	//all post controller routes
-	router.get('/user/post/:id',PostController.getAllProfilePost);
-	router.get('/user/post/diary/:id',PostController.getAllDiaryPost);	
-	router.get('/post/:id',PostController.getSinglePostWithComments);
-	router.post('/post/add',PostController.createPost);
-	router.post('/post/update',PostController.updatePost);
-	router.delete('/post/delete/:post',PostController.deletePost);
+	router.get('/user/post/:id',loadController('PostController').getAllProfilePost);
+	router.get('/user/post/diary/:id',loadController('PostController').getAllDiaryPost);	
+	router.get('/post/:id',loadController('PostController').getSinglePostWithComments);
+	router.post('/post/add',loadController('PostController').createPost);
+	router.post('/post/update',loadController('PostController').updatePost);
+	router.delete('/post/delete/:post',loadController('PostController').deletePost);
 
 	//all friend controller routes
-	router.post('/friend/add',FriendController.addFriend);
-	router.put('/friend/accept/:id',FriendController.acceptFriend);
-	router.delete('/friend/reject/:id',FriendController.rejectFriend);
-	router.get('/friend/followers/:id',FriendController.getFollowers);
-	router.get('/friend/followings/:id',FriendController.getFollowings);
+	router.post('/friend/add',loadController('FriendsController').addFriend);
+	router.put('/friend/accept/:id',loadController('FriendsController').acceptFriend);
+	router.delete('/friend/reject/:id',loadController('FriendsController').rejectFriend);
+	router.get('/friend/follower/:id',loadController('FriendsController').getFollowers);
+	router.get('/friend/following/:id',loadController('FriendsController').getFollowings);
 
 	//all activity controlller routes
-	router.get('/activity/all/:id',ActivityController.getUserActivity);
+	router.get('/activity/all/:id',loadController('ActivityController').getUserActivity);
 
 	// Define the home page route
 	router.get('/', (req, res) => {
