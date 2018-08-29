@@ -4,7 +4,7 @@ let validateToken = async token => {
 	let valid = '';
 	if(token){
 		if(token.length > 0) {
-			await jwt.verify(token, 'testsecretkey', (err, decoded) => {
+			await jwt.verify(loadCrypt().decode(token), 'testsecretkey', (err, decoded) => {
 				if (err) {
 					valid = JSON.stringify({'auth': false, 'msg': 'Failed to authenticate token.' });
 				} else {
@@ -23,7 +23,8 @@ let validateToken = async token => {
 
 
 let createToken = async value => {
-	return await jwt.sign({'uname':value}, 'testsecretkey', {expiresIn:120})
+	let token = await jwt.sign({'uname':value}, 'testsecretkey', {expiresIn:'365d'});
+	return loadCrypt().encode(token);
 }
 
 

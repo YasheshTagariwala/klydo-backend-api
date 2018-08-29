@@ -40,6 +40,10 @@ global.loadModal = (fileName) => {
     return require(APP_MODEL_PATH + fileName);
 }
 
+global.loadCrypt = () => {
+    return require('lcrypt')('J92xtBr1tuLJV3mOFzMytJg4SDW0nirSAqMr7ZPGA4s=');
+}
+
 global.getMailTrasporter = () => {
     let nodemailer = require('nodemailer');
     return nodemailer.createTransport({

@@ -6,6 +6,7 @@ module.exports = (app,express) => {
 	router.get('/user/:id', loadController('UserController').getUserDetail);
 
 	//all post controller routes
+	router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
 	router.get('/user/post/:id',loadController('PostController').getAllProfilePost);
 	router.get('/user/post/diary/:id',loadController('PostController').getAllDiaryPost);	
 	router.get('/post/:id',loadController('PostController').getSinglePostWithComments);

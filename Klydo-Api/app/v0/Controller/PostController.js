@@ -30,6 +30,36 @@ let getAllDiaryPost = async (req, res) => {
 	}	
 };
 
+let getAllHomePost = async(req, res) => {
+	let [posts,err] = await catchError(Post.select(['id','profile_id','post_content','post_media','post_hashes','post_type','emotion','created_at'])
+		.withSelect('userProfile' ,['id','first_name','middle_name'], (q) => {
+			q.withSelect('userExtra', ['profile_image']);
+			q.withSelect('userFollowings' ,['followings'], (q) => {			
+				q.where({'followers' : req.params.id , 'accepted' : true , 'blocked' : false});
+			});		
+		})	
+		.withSelect('reaction' ,['reaction_id'], (q) =>{
+			q.where('profile_id',req.params.id);
+		})
+		.where('post_published' , true)
+		.whereNot('profile_id',req.params.id)
+		.orderBy('id','desc')
+		.limit(50)
+		.get());
+
+	if(err){
+		console.log(err);
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
+		return;
+	}else{
+		if(!Validation.objectEmpty(posts)){			
+			res.status(OK_CODE).json({auth : true, msg : 'Success', data : posts});		
+		}else{
+			res.status(OK_CODE).json({auth : true, msg : 'No Data Found' , data : []});		
+		}					
+	}
+}
+
 //profile posts
 let getAllProfilePost = async (req, res) => {
 	let [profilePost,err] = await catchError(Post					
@@ -155,5 +185,6 @@ module.exports = {
 	'getSinglePostWithComments' : getSinglePostWithComments,
 	'createPost' : createPost,
 	'updatePost' : updatePost,
-	'deletePost' : deletePost
+	'deletePost' : deletePost,
+	'getAllHomePost' : getAllHomePost
 }

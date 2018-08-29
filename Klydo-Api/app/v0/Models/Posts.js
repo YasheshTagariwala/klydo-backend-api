@@ -11,6 +11,10 @@ var Posts = bookshelf.Model.extend({
 
 	userProfile : function() {
 		return this.hasOne(loadModal('UserProfile'),'profile_id','id');
+	},
+
+	reaction : function() {
+		return this.hasMany(loadModal('PostReaction'),'post_id','id');
 	}
 });
 
