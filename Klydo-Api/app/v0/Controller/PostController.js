@@ -6,6 +6,7 @@ let Validation = loadUtility('Validations');
 
 //diary posts
 let getAllDiaryPost = async (req, res) => {
+	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
 	let [diaryPosts,err] = await catchError(Post				
 		.with({'userProfile' : (q) => {
 			q.select(['first_name','last_name']);			
@@ -14,7 +15,8 @@ let getAllDiaryPost = async (req, res) => {
 		.where({'profile_id':req.params.id,'post_published' : false})
 		.select(['emotion','profile_id','id','post_content','post_published','post_hashes','created_at'])
 		.orderBy('id','desc')
-		.limit(10)
+		.offset(offset)
+		.limit(RECORED_PER_PAGE)
 		.get());		
 			
 	if(err){
@@ -30,9 +32,10 @@ let getAllDiaryPost = async (req, res) => {
 	}	
 };
 
-let getAllHomePost = async(req, res) => {
+let getAllHomePost = async(req, res) => {	
+	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
 	let [posts,err] = await catchError(Post.select(['id','profile_id','post_content','post_media','post_hashes','post_type','emotion','created_at'])
-		.withSelect('userProfile' ,['id','first_name','middle_name'], (q) => {
+		.withSelect('userProfile' ,['id','first_name','last_name'], (q) => {
 			q.withSelect('userExtra', ['profile_image']);
 			q.withSelect('userFollowings' ,['followings'], (q) => {			
 				q.where({'followers' : req.params.id , 'accepted' : true , 'blocked' : false});
@@ -44,7 +47,8 @@ let getAllHomePost = async(req, res) => {
 		.where('post_published' , true)
 		.whereNot('profile_id',req.params.id)
 		.orderBy('id','desc')
-		.limit(50)
+		.offset(offset)
+		.limit(RECORED_PER_PAGE)
 		.get());
 
 	if(err){
@@ -62,10 +66,13 @@ let getAllHomePost = async(req, res) => {
 
 //profile posts
 let getAllProfilePost = async (req, res) => {
+	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
 	let [profilePost,err] = await catchError(Post					
 		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])			
 		.where({'profile_id':req.params.id,'post_published' : true})		
 		.orderBy('id','desc')
+		.offset(offset)
+		.limit(RECORED_PER_PAGE)
 		.get());				
 	
 	if(err){
@@ -82,6 +89,7 @@ let getAllProfilePost = async (req, res) => {
 };
 
 let getSinglePostWithComments = async (req ,res) => {	
+	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
 	let [postWithComment,err] = await catchError(Post
 		.select(['emotion','profile_id','id','post_content','post_hashes','created_at','post_published'])
 		.with({'userProfile' : (q) => {			
@@ -93,6 +101,8 @@ let getSinglePostWithComments = async (req ,res) => {
 				q1.withSelect('userProfile', ['first_name','last_name','id'] , (q2) => {
 					q2.withSelect('userExtra',['profile_image']);			
 				})
+				q1.offset(offset)
+				q1.limit(RECORED_PER_PAGE)
 		}})								
 		.where('id',req.params.id)
 		.get());				

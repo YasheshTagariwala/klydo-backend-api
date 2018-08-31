@@ -15,6 +15,9 @@ let APP_CONFIG_PATH = APP_ROOT_PATH + '/Config/';
 //route paths
 let APP_ROUTES_PATH = v1RoutePaths + 'v0/';
 
+//data limit per page
+global.RECORED_PER_PAGE = 100;
+
 
 global.loadUtility = (fileName) => {
     return require(APP_UTILITY_PATH + fileName);

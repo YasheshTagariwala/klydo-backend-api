@@ -1,4 +1,5 @@
 let Activity = loadModal('Activity');
+let Validation = loadUtility('Validations');
 
 let createActivity = async activityType => {    
     let [data,err] = await catchError(Activity.forge({activity_type : activityType}).save());    
@@ -9,6 +10,7 @@ let createActivity = async activityType => {
 }
 
 let getUserActivity = async (req, res) => {
+    let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
     let[activityData ,err] = await catchError(Activity
         .select(['id','activity_type','created_at'])        
         .with({'feelpals' : (q) => {
@@ -38,7 +40,10 @@ let getUserActivity = async (req, res) => {
             q.orWhereHas('slamReply',(q) => {
                 q.whereNot('replier_id' , req.params.id);
             })   
-        })        
+        })
+        .orderBy('id','desc')
+        .offset(offset)
+		.limit(RECORED_PER_PAGE)        
         .get());
                 
     if(err){
@@ -46,7 +51,11 @@ let getUserActivity = async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
     }else{
-        res.status(OK_CODE).json({auth : true, msg : "Success" ,data : activityData});
+        if(!Validation.objectEmpty(activityData)){			
+			res.status(OK_CODE).json({auth : true, msg : "Success" ,data : activityData});
+		}else{
+			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		
+		}        
     }
 }
 
