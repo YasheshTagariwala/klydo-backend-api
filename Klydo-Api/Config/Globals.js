@@ -56,7 +56,7 @@ global.getMailTrasporter = () => {
         },
         auth: {
             user: 'klydo.space@gmail.com',
-            pass: 'Wm4p?@Ds.qXKTR=A'
+            pass: 'gjmtlqstawahloch'
         }
     });
 }

@@ -33,7 +33,7 @@ let loginCheck = async (req, res) => {
 				res.status(UNAUTHORIZED_CODE).json({auth: false, msg:UNAUTHORIZED_MESSAGE});
 				return;
 			} else {
-				res.status(OK_CODE).json({auth: true, msg: 'Save your token.', token: jwt_token ,data : users});				
+				res.status(OK_CODE).json({auth: true, msg: 'Login Successfull.', token: jwt_token ,data : users});				
 			}
 		}
 	}
@@ -44,7 +44,7 @@ let forgetPassword = async (req, res) => {
 	let validations = loadUtility('Validations');
 	let UserProfile = loadModal('UserProfile');
 	let uname = req.body.uname;
-	let password = req.body.password;
+	let password = req.body.password;	
 
 	if(validations.empty(uname)) {
 		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});
@@ -61,7 +61,7 @@ let forgetPassword = async (req, res) => {
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg:INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
-	} else {		
+	} else {			
 		if(validations.objectEmpty(users)) {
 			res.status(NOT_FOUND_CODE).json({auth: false, msg: NOT_FOUND_MESSAGE});
 			return;
@@ -73,33 +73,46 @@ let forgetPassword = async (req, res) => {
 			let [data ,err] = await catchError(UserProfile.where({'username': uname})
 				.orWhere({'user_email' : uname})
 				.save(newUserData ,{patch : true})
-			);
-
-			var mailOptions = {
-				from: 'klydo.space@gmail.com',
-				to: 'fakelaptop1234@gmail.com',
-				subject: 'Sending Email using Node.js',
-				text: 'That was easy!'
-			  };
-
-			getMailTrasporter().sendMail(mailOptions,(error,info) => {
-				if (error) {
-					console.log(error);
-				  } else {
-					console.log('Email sent: ' + info.response);
-				  }
-				getMailTrasporter().close();
-			})
+			);			
 
 			if(err) {
 				console.log(err);
 				res.status(UNAUTHORIZED_CODE).json({auth: false, msg:UNAUTHORIZED_MESSAGE});
 				return;
 			} else {
-				res.status(OK_CODE).json({auth: true});
+				res.status(OK_CODE).json({auth: true, msg : "Password Changed Successfully" , data : 1});
 			}
 		}
 	}
+}
+
+let forgetPasswordVerificationCode = async(req, res) => {		
+	let validations = loadUtility('Validations');
+	let uname = req.body.uname;
+
+	if(validations.empty(uname)) {
+		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});
+		return;
+	}
+
+	var mailOptions = {
+		from: 'klydo.space@gmail.com',
+		to: uname,
+		subject: 'Forgot Password OTP',
+		text: 'Your Email Is Your OTP HAHAHAHAHAHAHAHA.... LOL......'
+	  };
+
+	getMailTrasporter().sendMail(mailOptions,(error,info) => {
+		if (error) {
+			console.log(error);
+			res.status(UNAUTHORIZED_CODE).json({auth: false, msg:UNAUTHORIZED_MESSAGE});
+		  } else {			  
+			console.log('Email sent: ' + info.response);
+			res.status(OK_CODE).json({auth: true , msg : "Verification Code Sent Successfully"});		
+		  }
+		getMailTrasporter().close();
+	})	
+
 }
 
 //sign up users
@@ -155,5 +168,6 @@ let signupUser = async (req, res) => {
 module.exports = {
 	'loginCheck': loginCheck,
 	'signupUser' : signupUser,
-	'forgetPassword' : forgetPassword
+	'forgetPassword' : forgetPassword,
+	'forgetPasswordVerificationCode' : forgetPasswordVerificationCode
 }
