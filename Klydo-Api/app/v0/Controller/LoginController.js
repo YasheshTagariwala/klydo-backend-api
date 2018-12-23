@@ -55,6 +55,8 @@ let forgetPassword = async (req, res) => {
 		return;
 	}	
 
+	uname = verifyVerificationCode(uname);
+
 	let [users,err] = await catchError(UserProfile.where({'username': uname})
 						.orWhere({'user_email' : uname}).first());
 	if(err) {
@@ -87,7 +89,7 @@ let forgetPassword = async (req, res) => {
 }
 
 let forgetPasswordVerificationCode = async(req, res) => {		
-	let validations = loadUtility('Validations');
+	let validations = loadUtility('Validations');	
 	let uname = req.body.uname;
 
 	if(validations.empty(uname)) {
@@ -95,11 +97,13 @@ let forgetPasswordVerificationCode = async(req, res) => {
 		return;
 	}
 
+	var data = generateVerificationCode(uname);	
+
 	var mailOptions = {
 		from: 'klydo.space@gmail.com',
 		to: uname,
 		subject: 'Forgot Password OTP',
-		text: 'Your Email Is Your OTP HAHAHAHAHAHAHAHA.... LOL......'
+		text: data
 	  };
 
 	getMailTrasporter().sendMail(mailOptions,(error,info) => {
