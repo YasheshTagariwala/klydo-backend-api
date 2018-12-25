@@ -124,24 +124,25 @@ let signupUser = async (req, res) => {
 	let UserExtra = loadModal('UserExtra');
 	let validations = loadUtility('Validations');
 	let UserProfile = loadModal('UserProfile');
+	let UserChips = loadModal('UserChips');
 	let requestData = req.body;
 	if(validations.objectEmpty(requestData)) {
 		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});
 		return;
-	}
+	}			
 
 	let userData = {
 		first_name : requestData.fname,
 		middle_name : requestData.mname,
 		last_name : requestData.lname,
 		dob : requestData.birth_date,
-		city : requestData.city,
+		city : requestData.city in requestData ? requestData.city : 4564,
 		gender : requestData.sex,
 		user_email : requestData.mail,
-		username : (requestData.uname == '') ? requestData.mail : requestData.uname,
+		username : requestData.mail,
 		user_password : requestData.pass,		
-		mobile_number : requestData.number,
-		about_me : requestData.about	
+		mobile_number : requestData.number in requestData ? requestData.number : 1234567891,
+		about_me : requestData.about in requestData ? requestData.about : ''
 	}
 
 	let [data , err] = await catchError(UserProfile.forge(userData).save());
@@ -162,8 +163,25 @@ let signupUser = async (req, res) => {
 			console.log(err1);
 			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
 			return;
-		}else{
-			res.status(OK_CODE).json({auth : true,msg : "Sign Up Success"});
+		}else{			
+			let chip_data = [];
+			for(let i = 0;i < requestData.chips.length; i++){
+				let chip_set = {};
+				chip_set.chip_id = requestData.chips[i];
+				chip_set.user_id = data.id;				
+				chip_data.push(chip_set);
+			}
+			let user_chip_data = UserChips.collection();
+			user_chip_data.add(chip_data);			
+			let[data2,err2] = await catchError(user_chip_data.insert());
+
+			if(err2){
+				console.log(err2);
+				res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE});
+				return;
+			}else{
+				res.status(OK_CODE).json({auth : true,msg : "Sign Up Success"});
+			}			
 		}
 	}	
 }
