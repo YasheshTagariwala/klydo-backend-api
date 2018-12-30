@@ -15,7 +15,7 @@ let loginCheck = async (req, res) => {
 		return;
 	}
 
-	let [users,err] = await catchError(UserProfile.withSelect('userExtra',['profile_image']).select(['id']).
+	let [users,err] = await catchError(UserProfile.withSelect('userExtra',['profile_image','profile_privacy']).select(['id']).
 										where({'username': uname, 'user_password': password})
 										.orWhere({'user_email' : uname ,'user_password' : password}).first());
 	if(err) {

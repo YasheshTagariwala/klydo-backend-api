@@ -4,6 +4,8 @@ module.exports = (app,express) => {
 	
 	//all user controller routes
 	router.get('/user/:id', loadController('UserController').getUserDetail);
+	router.post('/user/change-profile-privacy',loadController('UserController').changeProfilePrivacy);
+	router.post('/user/change-password',loadController('UserController').changePassword);
 
 	//all post controller routes
 	router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
