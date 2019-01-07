@@ -23,19 +23,19 @@ app.use(async (req, res, next) => {
 	|| req.originalUrl === '/app/v0/login/forget' || req.originalUrl === '/app/v0/login/forget-password-code') {
 		next();			
 	}else {
-		let [verification,err] = await catchError(authenticate.validateToken(req.headers.token));
-		if(err) {
-			console.log(err);
-			res.json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
-		} else {
-			if(verification.auth) {
-				//All Application routes
+		// let [verification,err] = await catchError(authenticate.validateToken(req.headers.token));
+		// if(err) {
+		// 	console.log(err);
+		// 	res.json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
+		// } else {
+		// 	if(verification.auth) {
+		// 		//All Application routes
 				loadRoute('route')(app,express);
 				next();
-			} else {
-				res.json(verification);
-			}
-		}
+			// } else {
+			// 	res.json(verification);
+			// }
+		// }
 
 	}
 });

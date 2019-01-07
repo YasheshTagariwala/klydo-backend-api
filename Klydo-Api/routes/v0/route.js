@@ -26,6 +26,9 @@ module.exports = (app,express) => {
 	//all activity controlller routes
 	router.get('/activity/all/:id',loadController('ActivityController').getUserActivity);
 
+	//all graph controller routes
+	router.get('/graph/search/:query',loadController('GraphController').getResult);
+
 	// Define the home page route
 	router.get('/', (req, res) => {
 		res.send('Write the whole URL you lazy ass.');
