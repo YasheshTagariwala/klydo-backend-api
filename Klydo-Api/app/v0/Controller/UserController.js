@@ -49,8 +49,31 @@ let changePassword = async (req, res) => {
 	}
 }
 
+let updateProfile = async (req, res) => {
+	let profile = {
+		first_name : req.body.first_name,
+		last_name : req.body.last_name,
+		dob : req.body.date_of_birth,
+		gender : req.body.gender,
+		about_me : req.body.status
+	}
+
+	let [data,err] = await catchError(UserProfile.where({'id' : req.body.user_profile_id})
+		.save(profile,{patch : true})
+	);
+
+	if(err){
+		console.log(err);
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
+		return;
+	}else {
+		res.status(OK_CODE).json({auth: true, msg : "Profile Updated Successfully"});
+	}
+}
+
 module.exports = {
 	'getUserDetail': getUserDetail,	
 	'changeProfilePrivacy' : changeProfilePrivacy,
-	'changePassword' : changePassword
+	'changePassword' : changePassword,
+	'updateProfile' : updateProfile
 }
