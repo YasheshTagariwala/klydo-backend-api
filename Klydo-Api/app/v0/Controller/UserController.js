@@ -37,7 +37,7 @@ let changePassword = async (req, res) => {
 	}			
 
 	let [data ,err] = await catchError(UserProfile.where({'id': req.body.user_profile_id})
-		.where({'password' : req.body.old_password})		
+		.where({'user_password' : req.body.old_password})		
 		.save(newUserData ,{patch : true})
 	);			
 
