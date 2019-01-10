@@ -36,19 +36,21 @@ let changePassword = async (req, res) => {
 		user_password : req.body.password
 	}			
 
-	let [data ,err] = await catchError(UserProfile.where({'id': req.body.user_profile_id})		
+	let [data ,err] = await catchError(UserProfile.where({'id': req.body.user_profile_id})
+		.where({'password' : req.body.old_password})		
 		.save(newUserData ,{patch : true})
 	);			
 
 	if(err) {
 		console.log(err);
-		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
+		res.status(OK_CODE).json({auth: true, msg:'No User Found'});
 		return;
 	} else {
 		res.status(OK_CODE).json({auth: true, msg : "Password Changed Successfully"});
 	}
 }
 
+//Update User Profile
 let updateProfile = async (req, res) => {
 	let profile = {
 		first_name : req.body.first_name,
