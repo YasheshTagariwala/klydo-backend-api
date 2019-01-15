@@ -28,7 +28,9 @@ module.exports = (app,express) => {
 	router.get('/activity/all/:id',loadController('ActivityController').getUserActivity);
 
 	//all graph controller routes
-	router.get('/graph/search/:query',loadController('GraphController').getResult);
+	router.get('/graph/search/:query',loadController('GraphController').getSearch);
+	router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
+	router.get('/graph/trends',loadController('GraphController').getTrends);
 
 	// Define the home page route
 	router.get('/', (req, res) => {
