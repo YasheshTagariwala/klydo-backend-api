@@ -6,8 +6,10 @@ global.catchError = loadConfig('ErrorHandling');
 
 const express = require('express');
 var app = express();
+var fileUpload = require('express-fileupload');
 var authenticate = loadSecurity('authenticate');
 
+app.use(fileUpload());
 app.use(express.urlencoded({extended: true})); // support encoded bodies
 app.use(express.json());
 

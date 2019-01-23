@@ -120,7 +120,20 @@ let getSinglePostWithComments = async (req ,res) => {
 	}			
 }
 
-let createPost = async (req, res) => {	
+let createPost = async (req, res) => {
+	let post_media = req.files.post_media;
+	let filename = '';
+	if(post_media){
+		var moment = require('moment');
+		filename = req.body.user_id + '-' + moment(new Date()).format('YYYY-MM-DD') + post_media.name.substring(post_media.name.lastIndexOf('.'));	
+		let [data,err] = await catchError(post_media.mv(MediaPath + '/' + filename));
+		if(err){
+			console.log(err1);
+			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
+			return;
+		}
+	}	
+
 	let [activityId,err] = await catchError(Activity.createActivity(1));	
 	if(activityId == null || err){
 		console.log(err);
@@ -131,10 +144,10 @@ let createPost = async (req, res) => {
 	let newPostData = {
 		profile_id : req.body.user_id,
 		post_content : req.body.content,
-		post_media : (req.body.post_media) ? req.body.post_media : null,
+		post_media : (post_media) ? filename : null,
 		post_hashes : req.body.post_hashes,
 		post_published : req.body.post_published,
-		post_type : (req.body.post_media) ? 2 : 1,
+		post_type : (post_media) ? 2 : 1,
 		emotion : req.body.emotion,
 		activity_id : activityId
 	}			
@@ -151,28 +164,28 @@ let createPost = async (req, res) => {
 
 let updatePost = async (req, res) => {
 
-	let postId = req.params.post;
+	// let postId = req.params.post;
 
-	let updatePostData = {
-		post_content : req.body.content,
-		post_media : (req.body.post_media) ? req.body.post_media : null,
-		post_hashes : req.body.post_hashes,
-		post_published : req.body.post_published,
-		post_type : (req.body.post_media) ? 2 : 1,
-		emotion : req.body.emotion
-	}
+	// let updatePostData = {
+	// 	post_content : req.body.content,
+	// 	post_media : (req.body.post_media) ? req.body.post_media : null,
+	// 	post_hashes : req.body.post_hashes,
+	// 	post_published : req.body.post_published,
+	// 	post_type : (req.body.post_media) ? 2 : 1,
+	// 	emotion : req.body.emotion
+	// }
 	
-	let [data,err1] = await catchError(Post
-		.where({id : postId})
-		.save(updatePostData,{patch: true})
-	);
-	if(err1) {
-		console.log(err1);
-		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
-		return;
-	} else {
-		res.status(OK_CODE).json({auth : true,msg : "Post Updated"})
-	}
+	// let [data,err1] = await catchError(Post
+	// 	.where({id : postId})
+	// 	.save(updatePostData,{patch: true})
+	// );
+	// if(err1) {
+	// 	console.log(err1);
+	// 	res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
+	// 	return;
+	// } else {
+	// 	res.status(OK_CODE).json({auth : true,msg : "Post Updated"})
+	// }
 }
 
 let deletePost = async (req, res) => {

@@ -17,9 +17,7 @@ let APP_ROUTES_PATH = v1RoutePaths + 'v0/';
 
 let APP_MEDIA_PATH = APP_ROOT_PATH + '/app/media';
 
-let APP_IMAGE_PATH = APP_MEDIA_PATH + '/images';
-
-global.ImagePath = APP_IMAGE_PATH;
+global.MediaPath = APP_MEDIA_PATH;
 
 //data limit per page
 global.RECORED_PER_PAGE = 100;

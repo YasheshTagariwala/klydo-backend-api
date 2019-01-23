@@ -13,9 +13,11 @@
     "bookshelf-eloquent": "^0.1.15",
     "bookshelf-paranoia": "^0.11.0",
     "express": "^4.16.3",
+    "express-fileupload": "^1.1.1-alpha.1",
     "jsonwebtoken": "^8.2.1",
     "knex": "^0.14.6",
     "lcrypt": "^1.0.2",
+    "moment": "^2.24.0",
     "nodemailer": "^4.6.8",
     "pg": "^7.4.1",
     "underscore": "^1.8.3"

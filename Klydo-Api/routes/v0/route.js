@@ -27,6 +27,11 @@ module.exports = (app,express) => {
 	//all activity controlller routes
 	router.get('/activity/all/:id',loadController('ActivityController').getUserActivity);
 
+	//send media file
+	router.get('/media/:filename',(req, res) => {		
+		res.sendFile(MediaPath + '/' + req.params.filename);
+	});
+
 	//all graph controller routes
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
 	router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
