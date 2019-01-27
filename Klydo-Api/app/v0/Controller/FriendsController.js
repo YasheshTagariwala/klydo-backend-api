@@ -1,6 +1,7 @@
 let FeelPals = loadModal('Feelpals');
 let Activity = loadController('ActivityController');
 let Validation = loadUtility('Validations');
+let UserProfile = loadModal('UserProfile');
 
 let addFriend = async (req , res) => {
     let [activityId,err] = await catchError(Activity.createActivity(2));	
@@ -86,7 +87,34 @@ let getFollowers = async (req , res) => {
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		if(!Validation.objectEmpty(friendData)){				
+		if(!Validation.objectEmpty(friendData)){
+			let [profileData ,err] = await catchError(FeelPals.select(['followers'])
+				.withSelect('userProfileFollower',['first_name','last_name'],(q) => {
+					q.withSelect('userExtra',['profile_image','emotion'])
+				})		
+				.where({'followings' : req.params.friend_id , 'accepted' : true , 'blocked' : false})
+				.orderBy('id','desc')
+				.get());
+				
+			if(err){
+				friendData = friendData.toJSON();
+				for(let i = 0; i < friendData.length ; i++){
+					friendData[i].is_mutual = false;
+				}
+			}else{				
+				friendData = friendData.toJSON();
+				profileData = profileData.toJSON();
+				for(let i = 0; i < friendData.length ; i++){
+					for(let j = 0; j < profileData.length ; j++){
+						if(friendData[i].followers == profileData[j].followers){							
+							friendData[i].is_mutual = true;
+							break;
+						}else{							
+							friendData[i].is_mutual = false;
+						}
+					}
+				}
+			}
 			res.status(OK_CODE).json({auth : true, msg : 'Success', data : friendData});		
 		}else{
 			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		
@@ -108,7 +136,34 @@ let getFollowings = async (req , res) => {
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
 		return;
 	}else{
-		if(!Validation.objectEmpty(friendData)){				
+		if(!Validation.objectEmpty(friendData)){	
+			let [profileData ,err] = await catchError(FeelPals.select(['followings'])
+				.withSelect('userProfileFollowing',['first_name','last_name'],(q) => {
+					q.withSelect('userExtra',['profile_image','emotion'])
+				})
+				.where({'followers' : req.params.friend_id , 'accepted' : true , 'blocked' : false})
+				.orderBy('id','desc')
+				.get());	
+
+			if(err){
+				friendData = friendData.toJSON();
+				for(let i = 0; i < friendData.length ; i++){
+					friendData[i].is_mutual = false;
+				}
+			}else{				
+				friendData = friendData.toJSON();
+				profileData = profileData.toJSON();
+				for(let i = 0; i < friendData.length ; i++){
+					for(let j = 0; j < profileData.length ; j++){
+						if(friendData[i].followings == profileData[j].followings){							
+							friendData[i].is_mutual = true;
+							break;
+						}else{							
+							friendData[i].is_mutual = false;
+						}
+					}
+				}
+			}
 			res.status(OK_CODE).json({auth : true, msg : 'Success', data : friendData});		
 		}else{
 			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		
@@ -116,10 +171,26 @@ let getFollowings = async (req , res) => {
 	}	
 }
 
+//Get single Friend details
+let getFriendDetail = async  (req, res) => {
+	let [users,err] = await catchError(UserProfile.with('userExtra')
+		.with('userFollowers', (q) => {
+			q.where({ 'followings' : req.params.user_id});
+		}).where({'id': req.params.id}).first());
+	if(err){
+		console.log(err);
+		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
+		return;
+	}else{
+		res.status(OK_CODE).json({auth: true, msg:'Success', data: users});
+	}
+};
+
 module.exports = {
 	'addFriend' : addFriend,
 	'acceptFriend' : acceptFriend,
 	'rejectFriend' : rejectFriend,
 	'getFollowers' : getFollowers,
-	'getFollowings' : getFollowings
+	'getFollowings' : getFollowings,
+	'getFriendDetail' : getFriendDetail
 }

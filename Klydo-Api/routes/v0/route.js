@@ -18,11 +18,12 @@ module.exports = (app,express) => {
 	router.delete('/post/delete/:post',loadController('PostController').deletePost);
 
 	//all friend controller routes
+	router.get('/friend/:id/:user_id',loadController('FriendsController').getFriendDetail);
 	router.post('/friend/add',loadController('FriendsController').addFriend);
 	router.put('/friend/accept/:id',loadController('FriendsController').acceptFriend);
 	router.delete('/friend/reject/:id',loadController('FriendsController').rejectFriend);
-	router.get('/friend/follower/:id',loadController('FriendsController').getFollowers);
-	router.get('/friend/following/:id',loadController('FriendsController').getFollowings);
+	router.get('/friend/follower/:id/:friend_id',loadController('FriendsController').getFollowers);
+	router.get('/friend/following/:id/:friend_id',loadController('FriendsController').getFollowings);
 
 	//all activity controlller routes
 	router.get('/activity/all/:id',loadController('ActivityController').getUserActivity);

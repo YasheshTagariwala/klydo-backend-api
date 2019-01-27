@@ -3,7 +3,7 @@ let UserExtra = loadModal('UserExtra');
 
 //Get single User details
 let getUserDetail = async  (req, res) => {
-	let [users,err] = await catchError(UserProfile.with('userExtra').where({'id': req.params.id}).get());
+	let [users,err] = await catchError(UserProfile.with('userExtra').where({'id': req.params.id}).first());
 	if(err){
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});

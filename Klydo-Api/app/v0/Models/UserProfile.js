@@ -11,6 +11,10 @@ var UserProfile = bookshelf.Model.extend({
 
 	userFollowings: function() {
 		return this.belongsTo(loadModal('Feelpals'), 'id', 'followings');
+	},
+
+	userFollowers: function() {
+		return this.belongsTo(loadModal('Feelpals'), 'id', 'followers');
 	}
 });
 

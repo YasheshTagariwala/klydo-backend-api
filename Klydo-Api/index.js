@@ -45,3 +45,8 @@ app.use(async (req, res, next) => {
 app.listen(3000, () => {
     console.log('Listening on 3000');
 });
+
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    // application specific logging, throwing an error, or other logic here
+});

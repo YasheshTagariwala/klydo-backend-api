@@ -121,18 +121,33 @@ let getSinglePostWithComments = async (req ,res) => {
 }
 
 let createPost = async (req, res) => {
-	let post_media = req.files.post_media;
+	let post_media = req.files.post_media;	
 	let filename = '';
 	if(post_media){
 		var moment = require('moment');
-		filename = req.body.user_id + '-' + moment(new Date()).format('YYYY-MM-DD') + post_media.name.substring(post_media.name.lastIndexOf('.'));	
-		let [data,err] = await catchError(post_media.mv(MediaPath + '/' + filename));
-		if(err){
-			console.log(err1);
-			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
-			return;
-		}
-	}	
+		if(post_media.length){
+			filename = [];
+			for(let i = 0; i < post_media.length; i++){
+				let fname = req.body.user_id + '-' + moment(new Date()).format('YYYY-MM-DD-HH-mm-ss') + post_media[i].name.substring(post_media[i].name.lastIndexOf('.'));
+				filename.push(fname);
+				let [data,err] = await catchError(post_media[i].mv(MediaPath + '/' + fname));
+				if(err){
+					console.log(err);
+					res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
+					return;
+				}
+			}
+			filename = filename.join();
+		}else{
+			filename = req.body.user_id + '-' + moment(new Date()).format('YYYY-MM-DD-HH-mm-ss') + post_media.name.substring(post_media.name.lastIndexOf('.'));	
+			let [data,err] = await catchError(post_media.mv(MediaPath + '/' + filename));
+			if(err){
+				console.log(err);
+				res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
+				return;
+			}
+		}		
+	}
 
 	let [activityId,err] = await catchError(Activity.createActivity(1));	
 	if(activityId == null || err){
