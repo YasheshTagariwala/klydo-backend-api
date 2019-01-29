@@ -73,9 +73,33 @@ let updateProfile = async (req, res) => {
 	}
 }
 
+//Change User Status
+let changeStatus = async (req, res) => {
+	if(req.body.status.length > 140){
+		res.status(OK_CODE).json({auth: true, msg : "Status Too Long Only 140 Chars Allowed"});
+	}else{
+		let profile = {
+			about_me : req.body.status
+		}
+	
+		let [data,err] = await catchError(UserProfile.where({'id' : req.body.user_id})
+			.save(profile,{patch : true})
+		);
+	
+		if(err){
+			console.log(err);
+			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
+			return;
+		}else {
+			res.status(OK_CODE).json({auth: true, msg : "Status Updated Successfully"});
+		}
+	}	
+}
+
 module.exports = {
 	'getUserDetail': getUserDetail,	
 	'changeProfilePrivacy' : changeProfilePrivacy,
 	'changePassword' : changePassword,
-	'updateProfile' : updateProfile
+	'updateProfile' : updateProfile,
+	'changeStatus' : changeStatus 
 }

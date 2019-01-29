@@ -74,13 +74,13 @@ let rejectFriend = async (req , res) => {
 }
 
 let getFollowers = async (req , res) => {
-	let [friendData ,err] = await catchError(FeelPals.select(['followers'])
+	let [friendData ,err] = await catchError(FeelPals.select(['id','followers'])
 		.withSelect('userProfileFollower',['first_name','last_name'],(q) => {
 			q.withSelect('userExtra',['profile_image','emotion'])
 		})		
 		.where({'followings' : req.params.id , 'accepted' : true , 'blocked' : false})
 		.orderBy('id','desc')
-		.get());
+		.get());		
 		
 	if(err){
 		console.log(err);
@@ -88,7 +88,8 @@ let getFollowers = async (req , res) => {
 		return;
 	}else{
 		if(!Validation.objectEmpty(friendData)){
-			let [profileData ,err] = await catchError(FeelPals.select(['followers'])
+			if(req.params.friend_id){
+				let [profileData ,err] = await catchError(FeelPals.select(['followers'])
 				.withSelect('userProfileFollower',['first_name','last_name'],(q) => {
 					q.withSelect('userExtra',['profile_image','emotion'])
 				})		
@@ -96,21 +97,22 @@ let getFollowers = async (req , res) => {
 				.orderBy('id','desc')
 				.get());
 				
-			if(err){
-				friendData = friendData.toJSON();
-				for(let i = 0; i < friendData.length ; i++){
-					friendData[i].is_mutual = false;
-				}
-			}else{				
-				friendData = friendData.toJSON();
-				profileData = profileData.toJSON();
-				for(let i = 0; i < friendData.length ; i++){
-					for(let j = 0; j < profileData.length ; j++){
-						if(friendData[i].followers == profileData[j].followers){							
-							friendData[i].is_mutual = true;
-							break;
-						}else{							
-							friendData[i].is_mutual = false;
+				if(err){
+					friendData = friendData.toJSON();
+					for(let i = 0; i < friendData.length ; i++){
+						friendData[i].is_mutual = false;
+					}
+				}else{				
+					friendData = friendData.toJSON();
+					profileData = profileData.toJSON();
+					for(let i = 0; i < friendData.length ; i++){
+						for(let j = 0; j < profileData.length ; j++){
+							if(friendData[i].followers == profileData[j].followers){							
+								friendData[i].is_mutual = true;
+								break;
+							}else{							
+								friendData[i].is_mutual = false;
+							}
 						}
 					}
 				}
@@ -123,13 +125,13 @@ let getFollowers = async (req , res) => {
 }
 
 let getFollowings = async (req , res) => {
-	let [friendData ,err] = await catchError(FeelPals.select(['followings'])
+	let [friendData ,err] = await catchError(FeelPals.select(['id','followings'])
 		.withSelect('userProfileFollowing',['first_name','last_name'],(q) => {
 			q.withSelect('userExtra',['profile_image','emotion'])
 		})
 		.where({'followers' : req.params.id , 'accepted' : true , 'blocked' : false})
 		.orderBy('id','desc')
-		.get());
+		.get());		
 		
 	if(err){
 		console.log(err);
@@ -137,7 +139,8 @@ let getFollowings = async (req , res) => {
 		return;
 	}else{
 		if(!Validation.objectEmpty(friendData)){	
-			let [profileData ,err] = await catchError(FeelPals.select(['followings'])
+			if(req.params.friend_id){
+				let [profileData ,err] = await catchError(FeelPals.select(['followings'])
 				.withSelect('userProfileFollowing',['first_name','last_name'],(q) => {
 					q.withSelect('userExtra',['profile_image','emotion'])
 				})
@@ -145,25 +148,26 @@ let getFollowings = async (req , res) => {
 				.orderBy('id','desc')
 				.get());	
 
-			if(err){
-				friendData = friendData.toJSON();
-				for(let i = 0; i < friendData.length ; i++){
-					friendData[i].is_mutual = false;
-				}
-			}else{				
-				friendData = friendData.toJSON();
-				profileData = profileData.toJSON();
-				for(let i = 0; i < friendData.length ; i++){
-					for(let j = 0; j < profileData.length ; j++){
-						if(friendData[i].followings == profileData[j].followings){							
-							friendData[i].is_mutual = true;
-							break;
-						}else{							
-							friendData[i].is_mutual = false;
+				if(err){
+					friendData = friendData.toJSON();
+					for(let i = 0; i < friendData.length ; i++){
+						friendData[i].is_mutual = false;
+					}
+				}else{				
+					friendData = friendData.toJSON();
+					profileData = profileData.toJSON();
+					for(let i = 0; i < friendData.length ; i++){
+						for(let j = 0; j < profileData.length ; j++){
+							if(friendData[i].followings == profileData[j].followings){							
+								friendData[i].is_mutual = true;
+								break;
+							}else{							
+								friendData[i].is_mutual = false;
+							}
 						}
 					}
 				}
-			}
+			}			
 			res.status(OK_CODE).json({auth : true, msg : 'Success', data : friendData});		
 		}else{
 			res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});		

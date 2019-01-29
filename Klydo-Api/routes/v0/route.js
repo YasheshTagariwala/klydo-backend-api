@@ -7,6 +7,7 @@ module.exports = (app,express) => {
 	router.post('/user/update-profile',loadController('UserController').updateProfile);
 	router.post('/user/change-profile-privacy',loadController('UserController').changeProfilePrivacy);
 	router.post('/user/change-password',loadController('UserController').changePassword);
+	router.post('/user/change-status',loadController('UserController').changeStatus);
 
 	//all post controller routes
 	router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
@@ -17,13 +18,13 @@ module.exports = (app,express) => {
 	router.post('/post/update',loadController('PostController').updatePost);
 	router.delete('/post/delete/:post',loadController('PostController').deletePost);
 
-	//all friend controller routes
-	router.get('/friend/:id/:user_id',loadController('FriendsController').getFriendDetail);
+	//all friend controller routes	
 	router.post('/friend/add',loadController('FriendsController').addFriend);
 	router.put('/friend/accept/:id',loadController('FriendsController').acceptFriend);
 	router.delete('/friend/reject/:id',loadController('FriendsController').rejectFriend);
-	router.get('/friend/follower/:id/:friend_id',loadController('FriendsController').getFollowers);
-	router.get('/friend/following/:id/:friend_id',loadController('FriendsController').getFollowings);
+	router.get('/friend/follower/:id/:friend_id?/',loadController('FriendsController').getFollowers);
+	router.get('/friend/following/:id/:friend_id?/',loadController('FriendsController').getFollowings);
+	router.get('/friend/:id/:user_id',loadController('FriendsController').getFriendDetail);
 
 	//all activity controlller routes
 	router.get('/activity/all/:id',loadController('ActivityController').getUserActivity);
