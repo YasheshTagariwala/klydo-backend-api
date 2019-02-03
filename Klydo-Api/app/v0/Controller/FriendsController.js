@@ -12,10 +12,10 @@ let addFriend = async (req , res) => {
     }
     
     let newFriend = {
-        followings : req.body.friend_id,
-        followers : req.body.user_id,        
+        followings : req.body.user_id,
+        followers : req.body.friend_id,
 		activity_id : activityId
-	}			
+	};
 	
 	let [data,err1] = await catchError(FeelPals.forge(newFriend).save());	
 	if(err1){
