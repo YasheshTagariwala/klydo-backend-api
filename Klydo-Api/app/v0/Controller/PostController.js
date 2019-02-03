@@ -34,7 +34,7 @@ let getAllDiaryPost = async (req, res) => {
 
 let getAllHomePost = async(req, res) => {	
 	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
-	let [posts,err] = await catchError(Post.select(['id','profile_id','post_content','post_media','post_hashes','post_type','emotion','created_at'])
+	let [posts,err] = await catchError(Post.select(['id','profile_id','post_content','post_media','post_hashes','emotion','created_at'])
 		.withSelect('userProfile' ,['id','first_name','last_name'], (q) => {
 			q.withSelect('userExtra', ['profile_image']);
 			q.withSelect('userFollowings' ,['followings'], (q) => {			
@@ -166,7 +166,6 @@ let createPost = async (req, res) => {
         post_media : (post_media) ? filename : null,
         post_hashes : req.body.post_hashes,
         post_published : req.body.post_published,
-        post_type : (post_media) ? 2 : 1,
         emotion : req.body.emotion,
         activity_id : activityId
     }
@@ -190,7 +189,6 @@ let updatePost = async (req, res) => {
 	// 	post_media : (req.body.post_media) ? req.body.post_media : null,
 	// 	post_hashes : req.body.post_hashes,
 	// 	post_published : req.body.post_published,
-	// 	post_type : (req.body.post_media) ? 2 : 1,
 	// 	emotion : req.body.emotion
 	// }
 	
