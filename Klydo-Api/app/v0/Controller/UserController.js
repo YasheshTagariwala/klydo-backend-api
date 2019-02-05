@@ -3,14 +3,19 @@ let UserExtra = loadModal('UserExtra');
 
 //Get single User details
 let getUserDetail = async  (req, res) => {
-	let [users,err] = await catchError(UserProfile.with('userExtra').where({'id': req.params.id}).first());
-	if(err){
-		console.log(err);
-		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
-		return;
-	}else{
-		res.status(OK_CODE).json({auth: true, msg:'Success', data: users});
-	}
+    let [users,err] = await catchError(UserProfile.with('userExtra')
+		.withSelect('klyspaceData', ['id','klyspace_id','doer_profile_id','doee_profile_id','data'] ,(q) => {
+    	if(req.params.friend_id){
+            q.where('doer_profile_id',req.params.friend_id);
+		}
+	}).where({'id': req.params.id}).first());
+    if(err){
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
+        return;
+    }else{
+        res.status(OK_CODE).json({auth: true, msg:'Success', data: users});
+    }
 };
 
 //Change Profile Privacy

@@ -3,7 +3,7 @@ module.exports = (app,express) => {
 	let router = express.Router();	
 	
 	//all user controller routes
-	router.get('/user/:id', loadController('UserController').getUserDetail);
+	router.get('/user/:id/:friend_id?', loadController('UserController').getUserDetail);
 	router.post('/user/update-profile',loadController('UserController').updateProfile);
 	router.post('/user/change-profile-privacy',loadController('UserController').changeProfilePrivacy);
 	router.post('/user/change-password',loadController('UserController').changePassword);
@@ -38,6 +38,12 @@ module.exports = (app,express) => {
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
 	router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
 	router.get('/graph/trends',loadController('GraphController').getTrends);
+
+	//all klyspace controller routes
+	router.post('/klyspace/add/variable',loadController('KlyspaceController').addNewKlyspaceName);
+	router.post('/klyspace/update/variable/status',loadController('KlyspaceController').updateKlyspaceStatus);
+	router.post('/klyspace/update/variable/name',loadController('KlyspaceController').updateKlyspaceName);
+	router.post('/klyspace-data/add',loadController('KlyspaceController').addKlyspaceData);
 
 	// Define the home page route
 	router.get('/', (req, res) => {

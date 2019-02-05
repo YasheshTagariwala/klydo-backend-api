@@ -15,6 +15,10 @@ var UserProfile = bookshelf.Model.extend({
 
 	userFollowers: function() {
 		return this.belongsTo(loadModal('Feelpals'), 'id', 'followers');
+	},
+
+	klyspaceData: function() {
+		return this.hasMany(loadModal('KlyspaceData'), 'doee_profile_id', 'id');
 	}
 });
 
