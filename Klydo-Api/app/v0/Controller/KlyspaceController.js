@@ -115,9 +115,22 @@ let addKlyspaceData = async (req, res) => {
     }
 };
 
+let getAllKlyspaceVariables = async (req, res) => {
+    let [data,err] = await catchError(Klyspace.where('status',true).get());
+
+    if (err) {
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+        return;
+    } else {
+        res.status(OK_CODE).json({auth: true, data : data});
+    }
+};
+
 module.exports = {
     'addNewKlyspaceName': addNewKlyspaceName,
     'updateKlyspaceStatus': updateKlyspaceStatus,
     'updateKlyspaceName': updateKlyspaceName,
-    'addKlyspaceData': addKlyspaceData
+    'addKlyspaceData': addKlyspaceData,
+    'getAllKlyspaceVariables' : getAllKlyspaceVariables
 };

@@ -40,6 +40,7 @@ module.exports = (app,express) => {
 	router.get('/graph/trends',loadController('GraphController').getTrends);
 
 	//all klyspace controller routes
+	router.get('/klyspace/variable',loadController('KlyspaceController').getAllKlyspaceVariables);
 	router.post('/klyspace/add/variable',loadController('KlyspaceController').addNewKlyspaceName);
 	router.post('/klyspace/update/variable/status',loadController('KlyspaceController').updateKlyspaceStatus);
 	router.post('/klyspace/update/variable/name',loadController('KlyspaceController').updateKlyspaceName);
