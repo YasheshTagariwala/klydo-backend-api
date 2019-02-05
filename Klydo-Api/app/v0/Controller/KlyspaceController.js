@@ -116,7 +116,7 @@ let addKlyspaceData = async (req, res) => {
 };
 
 let getAllKlyspaceVariables = async (req, res) => {
-    let [data,err] = await catchError(Klyspace.where('status',true).get());
+    let [data,err] = await catchError(Klyspace.select(['id','name']).where('status',true).get());
 
     if (err) {
         console.log(err);
