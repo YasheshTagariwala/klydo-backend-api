@@ -2,6 +2,7 @@ let FeelPals = loadModal('Feelpals');
 let Activity = loadController('ActivityController');
 let Validation = loadUtility('Validations');
 let UserProfile = loadModal('UserProfile');
+let Post = loadModal('Posts');
 
 let addFriend = async (req , res) => {
     let [activityId,err] = await catchError(Activity.createActivity(2));	
@@ -26,6 +27,29 @@ let addFriend = async (req , res) => {
 		res.status(OK_CODE).json({auth : true, msg : "Friend Added"})
 	}
 }
+
+let getAllProfilePost = async (req, res) => {
+    let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
+    let [profilePost,err] = await catchError(Post
+        .select(['emotion','profile_id','id','post_content','post_hashes','post_media','created_at','post_published'])
+        .where({'profile_id':req.params.id,'post_published' : true})
+        .orderBy('id','desc')
+        .offset(offset)
+        .limit(RECORED_PER_PAGE)
+        .get());
+
+    if(err){
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
+        return;
+    }else{
+        if(!Validation.objectEmpty(profilePost)){
+            res.status(OK_CODE).json({auth : true, msg : 'Success', data : profilePost});
+        }else{
+            res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});
+        }
+    }
+};
 
 let acceptFriend = async (req, res) => {
 	let fid = req.params.id;	
@@ -196,5 +220,6 @@ module.exports = {
 	'rejectFriend' : rejectFriend,
 	'getFollowers' : getFollowers,
 	'getFollowings' : getFollowings,
-	'getFriendDetail' : getFriendDetail
+	'getFriendDetail' : getFriendDetail,
+    'getAllProfilePost' : getAllProfilePost
 }

@@ -3,7 +3,6 @@ module.exports = (app,express) => {
 	let router = express.Router();	
 	
 	//all user controller routes
-	router.get('/user/:id/:friend_id?', loadController('UserController').getUserDetail);
 	router.post('/user/update-profile',loadController('UserController').updateProfile);
 	router.post('/user/change-profile-privacy',loadController('UserController').changeProfilePrivacy);
 	router.post('/user/change-password',loadController('UserController').changePassword);
@@ -12,6 +11,10 @@ module.exports = (app,express) => {
 	//all post controller routes
 	router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
 	router.get('/user/post/:id',loadController('PostController').getAllProfilePost);
+
+	//get user profile
+    router.get('/user/:id/:friend_id?', loadController('UserController').getUserDetail);
+    //
 	router.get('/user/post/diary/:id',loadController('PostController').getAllDiaryPost);	
 	router.get('/post/:id',loadController('PostController').getSinglePostWithComments);
 	router.post('/post/add',loadController('PostController').createPost);
@@ -20,6 +23,7 @@ module.exports = (app,express) => {
 
 	//all friend controller routes	
 	router.post('/friend/add',loadController('FriendsController').addFriend);
+	router.post('/friend/post/:id',loadController('FriendsController').getAllProfilePost);
 	router.put('/friend/accept/:id',loadController('FriendsController').acceptFriend);
 	router.delete('/friend/reject/:id',loadController('FriendsController').rejectFriend);
 	router.get('/friend/follower/:id/:friend_id?/',loadController('FriendsController').getFollowers);

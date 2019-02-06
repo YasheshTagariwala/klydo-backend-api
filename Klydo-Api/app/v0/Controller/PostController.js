@@ -69,7 +69,7 @@ let getAllProfilePost = async (req, res) => {
 	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
 	let [profilePost,err] = await catchError(Post					
 		.select(['emotion','profile_id','id','post_content','post_hashes','post_media','created_at','post_published'])
-		.where({'profile_id':req.params.id,'post_published' : true})		
+		.where({'profile_id':req.params.id})
 		.orderBy('id','desc')
 		.offset(offset)
 		.limit(RECORED_PER_PAGE)
