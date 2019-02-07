@@ -165,7 +165,7 @@ let createPost = async (req, res) => {
         post_content : req.body.content,
         post_media : (post_media) ? filename : null,
         post_hashes : req.body.post_hashes,
-        post_published : req.body.post_published,
+        post_published : true,
         emotion : req.body.emotion,
         activity_id : activityId
     }
