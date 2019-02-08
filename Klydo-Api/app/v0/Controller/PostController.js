@@ -44,7 +44,7 @@ let getAllHomePost = async(req, res) => {
 		.withSelect('reaction' ,['reaction_id'], (q) =>{
 			q.where('profile_id',req.params.id);
 		})
-		.where('post_published' , true)
+		// .where('post_published' , true)
 		.whereNot('profile_id',req.params.id)
 		.orderBy('id','desc')
 		.offset(offset)
