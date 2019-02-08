@@ -13,7 +13,7 @@ let getAllDiaryPost = async (req, res) => {
 			q.withSelect('userExtra',['profile_image']);			
 		}})		
 		.where({'profile_id':req.params.id,'post_published' : false})
-		.select(['emotion','profile_id','id','post_content','post_published','post_hashes','created_at'])
+		.select(['emotion','profile_id','id','post_content','post_published','post_title','post_hashes','created_at'])
 		.orderBy('id','desc')
 		.offset(offset)
 		.limit(RECORED_PER_PAGE)
@@ -34,7 +34,7 @@ let getAllDiaryPost = async (req, res) => {
 
 let getAllHomePost = async(req, res) => {	
 	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
-	let [posts,err] = await catchError(Post.select(['id','profile_id','post_content','post_media','post_hashes','emotion','created_at'])
+	let [posts,err] = await catchError(Post.select(['id','profile_id','post_content','post_title','post_media','post_hashes','emotion','created_at'])
 		.withSelect('userProfile' ,['id','first_name','last_name'], (q) => {
 			q.withSelect('userExtra', ['profile_image']);
 			q.withSelect('userFollowings' ,['followings'], (q) => {			
@@ -68,7 +68,7 @@ let getAllHomePost = async(req, res) => {
 let getAllProfilePost = async (req, res) => {
 	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
 	let [profilePost,err] = await catchError(Post					
-		.select(['emotion','profile_id','id','post_content','post_hashes','post_media','created_at','post_published'])
+		.select(['emotion','profile_id','id','post_content','post_hashes','post_title','post_media','created_at','post_published'])
 		.where({'profile_id':req.params.id})
 		.orderBy('id','desc')
 		.offset(offset)
@@ -91,7 +91,7 @@ let getAllProfilePost = async (req, res) => {
 let getSinglePostWithComments = async (req ,res) => {	
 	let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
 	let [postWithComment,err] = await catchError(Post
-		.select(['emotion','profile_id','id','post_content','post_hashes','post_media','created_at','post_published'])
+		.select(['emotion','profile_id','id','post_content','post_hashes','post_title','post_media','created_at','post_published'])
 		.with({'userProfile' : (q) => {			
 				q.select(['first_name','last_name']);
 				q.withSelect('userExtra',['profile_image']);			
@@ -163,12 +163,13 @@ let createPost = async (req, res) => {
     let newPostData = {
         profile_id : req.body.user_id,
         post_content : req.body.content,
+        post_title : req.body.title,
         post_media : (post_media) ? filename : null,
         post_hashes : req.body.post_hashes,
         post_published : true,
         emotion : req.body.emotion,
         activity_id : activityId
-    }
+    };
 
     let [data,err1] = await catchError(Post.forge(newPostData).save());
     if(err1){

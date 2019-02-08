@@ -20,7 +20,7 @@ let APP_MEDIA_PATH = APP_ROOT_PATH + '/app/media';
 global.MediaPath = APP_MEDIA_PATH;
 
 //data limit per page
-global.RECORED_PER_PAGE = 100;
+global.RECORED_PER_PAGE = 50;
 
 
 global.loadUtility = (fileName) => {
