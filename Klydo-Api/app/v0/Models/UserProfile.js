@@ -19,6 +19,10 @@ var UserProfile = bookshelf.Model.extend({
 
 	klyspaceData: function() {
 		return this.hasMany(loadModal('KlyspaceData'), 'doee_profile_id', 'id');
+	},
+
+	posts: function() {
+		return this.hasMany(loadModal('Posts'), 'profile_id', 'id');
 	}
 });
 

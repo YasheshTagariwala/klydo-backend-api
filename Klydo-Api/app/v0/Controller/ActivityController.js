@@ -1,6 +1,14 @@
 let Activity = loadModal('Activity');
 let Validation = loadUtility('Validations');
 
+let ActivityTypes = {
+    '1' : 'Add Post',
+    '2' : 'Add Friend',
+    '3' : 'Add Comment',
+    '4' : 'Add Reaction',
+    '5' : 'Add Slam Reply'
+};
+
 let createActivity = async activityType => {    
     let [data,err] = await catchError(Activity.forge({activity_type : activityType}).save());    
     if(err)

@@ -8,6 +8,9 @@ module.exports = (app,express) => {
 	router.post('/user/change-password',loadController('UserController').changePassword);
 	router.post('/user/change-status',loadController('UserController').changeStatus);
 
+	//Post Comment Routes
+    router.post('/post/add-comment',loadController('PostController').addComment);
+
 	//all post controller routes
 	router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
 	router.get('/user/post/:id',loadController('PostController').getAllProfilePost);

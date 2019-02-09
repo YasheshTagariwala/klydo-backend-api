@@ -8,6 +8,11 @@ let getUserDetail = async  (req, res) => {
     	if(req.params.friend_id){
             q.where('doer_profile_id',req.params.friend_id);
 		}
+	}).withSelect('posts',['emotion','profile_id','id','post_content','post_hashes','post_title','post_media','created_at','post_published'], (q) => {
+		q.where({'profile_id':req.params.id});
+		q.orderBy('id','desc');
+        q.offset(0);
+        q.limit(RECORED_PER_PAGE);
 	}).where({'id': req.params.id}).first());
     if(err){
         console.log(err);

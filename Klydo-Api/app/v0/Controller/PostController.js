@@ -1,6 +1,7 @@
 let Post = loadModal('Posts');
 let Comment = loadModal('PostComment');
 let Activity = loadController('ActivityController');
+let ActivityModel = loadModal('Activity');
 let _ = require('underscore');
 let Validation = loadUtility('Validations');
 
@@ -100,8 +101,9 @@ let getSinglePostWithComments = async (req ,res) => {
 				q1.select(['comment_content','created_at','profile_id','id']);
 				q1.withSelect('userProfile', ['first_name','last_name','id'] , (q2) => {
 					q2.withSelect('userExtra',['profile_image']);			
-				})
-				q1.offset(offset)
+				});
+				q1.offset(offset);
+				q1.orderBy('id','desc');
 				q1.limit(RECORED_PER_PAGE)
 		}})								
 		.where('id',req.params.id)
@@ -220,6 +222,35 @@ let deletePost = async (req, res) => {
 	}
 }
 
+let addComment = async (req, res) => {
+    let [activityId,err] = await catchError(Activity.createActivity(3));
+    if(activityId == null || err){
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
+        return;
+    }
+
+    let commentData = {
+        post_id : req.body.post_id,
+        profile_id : req.body.user_id,
+        comment_content : req.body.content,
+        comment_type : 1,
+        comment_media : "",
+        comment_hashes : "",
+        activity_id : activityId
+    };
+
+    let [data,err1] = await catchError(Comment.forge(commentData).save());
+    if(err1){
+        console.log(err1);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
+        return;
+    }else{
+        res.status(OK_CODE).json({auth : true,msg : "Commented"})
+    }
+
+};
+
 module.exports = {
 	'getAllDiaryPost': getAllDiaryPost,
 	'getAllProfilePost' : getAllProfilePost,
@@ -227,5 +258,6 @@ module.exports = {
 	'createPost' : createPost,
 	'updatePost' : updatePost,
 	'deletePost' : deletePost,
-	'getAllHomePost' : getAllHomePost
+	'getAllHomePost' : getAllHomePost,
+	'addComment' : addComment
 }

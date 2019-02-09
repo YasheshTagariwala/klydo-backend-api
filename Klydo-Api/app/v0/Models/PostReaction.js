@@ -7,7 +7,11 @@ var PostReaction = bookshelf.Model.extend({
 
 	userProfile : function(){
 		return this.hasOne(loadModal('UserProfile'),'profile_id','id');
-	}
+	},
+
+    posts : function(){
+        return this.hasOne(loadModal('Posts'),'post_id','id');
+    },
 })
 
 module.exports = PostReaction;
