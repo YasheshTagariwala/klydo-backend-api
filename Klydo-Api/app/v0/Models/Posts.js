@@ -13,9 +13,13 @@ var Posts = bookshelf.Model.extend({
 		return this.hasOne(loadModal('UserProfile'),'profile_id','id');
 	},
 
-	reaction : function() {
+	reactions : function() {
 		return this.hasMany(loadModal('PostReaction'),'post_id','id');
-	}
+	},
+
+    reaction : function() {
+        return this.belongsTo(loadModal('PostReaction'),'id','post_id');
+    }
 });
 
 module.exports = Posts;

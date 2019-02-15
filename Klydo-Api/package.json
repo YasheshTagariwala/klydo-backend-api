@@ -19,6 +19,7 @@
     "lcrypt": "^1.0.2",
     "moment": "^2.24.0",
     "nodemailer": "^4.6.8",
+    "nodemon": "^1.18.10",
     "pg": "^7.4.1",
     "underscore": "^1.8.3"
   }

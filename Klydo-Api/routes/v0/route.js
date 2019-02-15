@@ -7,12 +7,17 @@ module.exports = (app,express) => {
 	router.post('/user/change-profile-privacy',loadController('UserController').changeProfilePrivacy);
 	router.post('/user/change-password',loadController('UserController').changePassword);
 	router.post('/user/change-status',loadController('UserController').changeStatus);
+	router.post('/user/change-profile-image',loadController('UserController').updateProfileImage);
 
 	//Post Comment Routes
     router.post('/post/add-comment',loadController('PostController').addComment);
+    router.post('/post/add-reaction',loadController('PostController').addReaction);
+    router.get('/post/reaction/:id',loadController('PostController').getPostReactions);
 
 	//all post controller routes
 	router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
+	router.get('/post/comment/:id',loadController('PostController').getPostComments);
+	router.get('/post/filter/:id/:reaction_id',loadController('PostController').filterProfilePost);
 	router.get('/user/post/:id',loadController('PostController').getAllProfilePost);
 
 	//get user profile

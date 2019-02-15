@@ -12,6 +12,6 @@ var PostReaction = bookshelf.Model.extend({
     posts : function(){
         return this.hasOne(loadModal('Posts'),'post_id','id');
     },
-})
+});
 
 module.exports = PostReaction;
