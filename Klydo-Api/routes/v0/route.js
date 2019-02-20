@@ -48,7 +48,7 @@ module.exports = (app,express) => {
 
 	//all graph controller routes
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
-	router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
+	// router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
 	router.get('/graph/trends',loadController('GraphController').getTrends);
 
 	//all klyspace controller routes

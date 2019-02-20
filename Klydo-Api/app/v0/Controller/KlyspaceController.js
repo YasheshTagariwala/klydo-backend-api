@@ -1,5 +1,6 @@
 let Klyspace = loadModal('Klyspace');
 let KlyspaceData = loadModal('KlyspaceData');
+let Graph = loadController('GraphController');
 
 let addNewKlyspaceName = async (req, res) => {
     let klyspace = {
@@ -56,11 +57,13 @@ let addKlyspaceData = async (req, res) => {
     let klyspaceData = req.body.klyspace_data;
     let klyspaceDataArray = [];
     let errors = [];
+    let oldklyspaceDataArray = [];
+    let newklyspaceDataArray = [];
 
     for (let i = 0; i < klyspaceData.length; i++) {
         let tempData = {
-            'doer_profile_id': klyspaceData[i].friend_id,
-            'doee_profile_id': klyspaceData[i].profile_id,
+            'doer_profile_id': req.body.friend_id,
+            'doee_profile_id': req.body.profile_id,
             'klyspace_id': klyspaceData[i].klyspace_id,
             'data': klyspaceData[i].data
         };
@@ -86,6 +89,10 @@ let addKlyspaceData = async (req, res) => {
                     'data': klyspaceDataArray[i].data
                 };
 
+                data = data.toJSON();
+                oldklyspaceDataArray.push(data.data);
+                newklyspaceDataArray.push(klyspaceDataArray[i].data);
+
                 let [data1, err1] = await catchError(KlyspaceData.where('id', data.id).save(tempdata, {patch: true}));
                 if(err1){
                     console.log(err);
@@ -100,6 +107,9 @@ let addKlyspaceData = async (req, res) => {
                     'data': klyspaceDataArray[i].data
                 };
 
+                oldklyspaceDataArray.push(klyspaceDataArray[i].data);
+                newklyspaceDataArray.push(klyspaceDataArray[i].data);
+
                 let [data1, err1] = await catchError(KlyspaceData.forge(tempdata).save());
                 if(err1){
                     console.log(err);
@@ -109,6 +119,11 @@ let addKlyspaceData = async (req, res) => {
             }
         }
     }
+
+    // let oldWyuID = (oldklyspaceDataArray.reduce((a,b) => a + b,0)) / oldklyspaceDataArray.length;
+    // let newWyuID = (newklyspaceDataArray.reduce((a,b) => a + b,0)) / newklyspaceDataArray.length;
+
+    // await Graph.updateUserWyu(req.body.profile_id,oldWyuID,newWyuID);
 
     if (errors.length === 0) {
         res.status(OK_CODE).json({auth: true, msg: "KlyspaceData Added Successfully"});
