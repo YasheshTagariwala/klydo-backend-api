@@ -19,7 +19,7 @@ let getSearch = async (req , res) => {
 
 let getTrends = async (req, res) => {
     let data = '';
-    http.get('http://klydo.space/graph/get_trending_today/',(resp) => {
+    http.get('http://klydo.space/graph/get_trending_today',(resp) => {
         resp.on('data' , (chunk) => {
             data += chunk;
         });
@@ -142,7 +142,8 @@ let parseData = async (data,res) => {
             for(let i = 0;i < people.length; i++){
                 people[i] = people[i].replace("u",'');
             }
-            let [users,err] = await catchError(UserProfile.with('userExtra').whereIn('id' , people).get());
+            let [users,err] = await catchError(UserProfile.with('userExtra').whereIn('id' , people)
+                .orderBy('id','desc').get());
             if(err){
                 console.log(err);
                 return;
@@ -157,7 +158,12 @@ let parseData = async (data,res) => {
             for(let i = 0;i < posts.length; i++){
                 posts[i] = posts[i].replace("p",'');
             }
-            let [post,err] = await catchError(Post.with('userProfile').whereIn('id' , posts).get());
+            let [post,err] = await catchError(Post.with({
+                'userProfile': (q) => {
+                    q.select(['first_name', 'last_name']);
+                    q.withSelect('userExtra', ['profile_image']);
+                }
+            }).whereIn('id' , posts).orderBy('id','desc').get());
             if(err){
                 console.log(err);
                 return;

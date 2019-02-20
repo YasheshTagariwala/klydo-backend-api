@@ -50,6 +50,8 @@ module.exports = (app,express) => {
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
 	// router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
 	router.get('/graph/trends',loadController('GraphController').getTrends);
+	router.get('/graph/similar/:query',loadController('GraphController').getSimilarBeliefs);
+	router.get('/graph/beyond/:query',loadController('GraphController').getNetworkInteractionBased);
 
 	//all klyspace controller routes
 	router.get('/klyspace/variable',loadController('KlyspaceController').getAllKlyspaceVariables);
