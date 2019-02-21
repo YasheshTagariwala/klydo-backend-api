@@ -1,3 +1,4 @@
+let Graph = loadController('GraphController');
 //login users
 let loginCheck = async (req, res) => {	
 	let UserProfile = loadModal('UserProfile');
@@ -146,6 +147,8 @@ let signupUser = async (req, res) => {
 	}
 
 	let [data , err] = await catchError(UserProfile.forge(userData).save());
+    let year = requestData.birth_date.split('-');
+    await Graph.manipulateUser(data.id,requestData.fname,requestData.lname,year[0]);
 
 	if(err) {
 		console.log(err);

@@ -93,7 +93,7 @@ let getSimilarBeliefs = async (req, res) => {
 };
 
 let filterAndAddBeliefsFrom = async (user_id,content) => {
-    http.get('http://klydo.space/graph/filter_and_add_beliefs_from/' + user_id + '_|||_' + content ,(resp) => {
+    http.get('http://klydo.space/graph/filter_and_add_beliefs_from/' + user_id + '_|||_' + encodeURIComponent(content) ,(resp) => {
     }).on("error", (err) => {console.log("Error: " + err.message);})
 };
 
@@ -103,7 +103,7 @@ let addAffinity = async (doer,doee) => {
 };
 
 let manipulateUser = async (userID,firstName,lastName,birthYear) => {
-    http.get('http://klydo.space/graph/mainpulate_user/' + userID + ',' + firstName + ',' + lastName + ',' + birthYear ,(resp) => {
+    http.get('http://klydo.space/graph/mainpulate_user/' + userID + ',' + encodeURIComponent(firstName) + ',' + encodeURIComponent(lastName) + ',' + birthYear ,(resp) => {
     }).on("error", (err) => {console.log("Error: " + err.message);})
 };
 
@@ -118,7 +118,7 @@ let updateUserWyu = async (userID,oldWyuID,newWyuID) => {
 };
 
 let addPost = async (post_id,post_title,post_content) => {
-    http.get('http://klydo.space/graph/add_post/' + post_id + '_|||_' + post_title + '_|||_' + post_content ,(resp) => {
+    http.get('http://klydo.space/graph/add_post/' + post_id + '_|||_' + encodeURIComponent(post_title) + '_|||_' + encodeURIComponent(post_content) ,(resp) => {
     }).on("error", (err) => {console.log("Error: " + err.message);})
 };
 
