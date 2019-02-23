@@ -27,19 +27,20 @@ module.exports = (app,express) => {
 	router.get('/post/:id',loadController('PostController').getSinglePostWithComments);
 	router.post('/post/add',loadController('PostController').createPost);
 	router.post('/post/update',loadController('PostController').updatePost);
-	router.delete('/post/delete/:post',loadController('PostController').deletePost);
+	router.get('/post/delete/:post',loadController('PostController').deletePost);
 
 	//all friend controller routes	
 	router.post('/friend/add',loadController('FriendsController').addFriend);
-	router.post('/friend/post/:id',loadController('FriendsController').getAllProfilePost);
+	router.get('/friend/pending/:id',loadController('FriendsController').getPendingFriendRequests);
 	router.put('/friend/accept/:id',loadController('FriendsController').acceptFriend);
-	router.delete('/friend/reject/:id',loadController('FriendsController').rejectFriend);
+	router.get('/friend/reject/:id',loadController('FriendsController').rejectFriend);
 	router.get('/friend/follower/:id/:friend_id?/',loadController('FriendsController').getFollowers);
 	router.get('/friend/following/:id/:friend_id?/',loadController('FriendsController').getFollowings);
 	router.get('/friend/:id/:user_id',loadController('FriendsController').getFriendDetail);
 
 	//all activity controlller routes
 	router.get('/activity/all/:id',loadController('ActivityController').getUserActivity);
+	router.get('/activity/around/:id',loadController('ActivityController').getAroundYouActivity);
 
 	//send media file
 	router.get('/media/:filename',(req, res) => {		

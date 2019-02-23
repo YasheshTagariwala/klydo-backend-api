@@ -36,7 +36,14 @@ let getUserDetail = async  (req, res) => {
                     q1.orderBy('id','desc');
                     q1.limit(5)
                 }})
-        }).where({'id': req.params.id}).first());
+        })
+        .with('userFollowings' , (q) => {
+            if(req.params.friend_id){
+                q.select(['id','followers']);
+                q.where('followers',req.params.friend_id);
+            }
+        })
+        .where({'id': req.params.id}).first());
     if(err){
         console.log(err);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});

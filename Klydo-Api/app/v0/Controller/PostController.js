@@ -2,6 +2,7 @@ let Post = loadModal('Posts');
 let Comment = loadModal('PostComment');
 let Activity = loadController('ActivityController');
 let ActivityModel = loadModal('Activity');
+let bookshelf = loadConfig('Bookshelf.js');
 let Reaction = loadModal('PostReaction');
 let _ = require('underscore');
 let Validation = loadUtility('Validations');
@@ -46,6 +47,11 @@ let getAllHomePost = async (req, res) => {
             q.withSelect('userFollowings', ['followings'], (q) => {
                 q.where({'followers': req.params.id, 'accepted': true, 'blocked': false});
             });
+        })
+        .whereHas('userProfile',(q) => {
+            q.whereHas('userFollowings', (q) => {
+                q.where({'followers': req.params.id, 'accepted': true, 'blocked': false})
+            })
         })
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.id);
@@ -447,9 +453,9 @@ let filterProfilePost = async (req, res) => {
     let [profilePost, err] = await catchError(Post
         .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_title', 'post_media', 'created_at', 'post_published'])
         .with({'userProfile' : (q) => {
-            q.select(['first_name','last_name']);
-            q.withSelect('userExtra',['profile_image']);
-        }})
+                q.select(['first_name','last_name']);
+                q.withSelect('userExtra',['profile_image']);
+            }})
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.id);
         })
