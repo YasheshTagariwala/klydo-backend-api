@@ -106,6 +106,14 @@ let getAllProfilePost = async (req, res) => {
         .with({'userProfile' : (q) => {
                 q.select(['first_name','last_name']);
                 q.withSelect('userExtra',['profile_image']);
+            },'comments' : (q1) => {
+                q1.select(['comment_content','created_at','profile_id','id']);
+                q1.withSelect('userProfile', ['first_name','last_name','id'] , (q2) => {
+                    q2.withSelect('userExtra',['profile_image']);
+                });
+                q1.offset(0);
+                q1.orderBy('id','desc');
+                q1.limit(5)
             }})
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.friend_id);
