@@ -9,6 +9,10 @@ var Feelpals = bookshelf.Model.extend({
 		return this.hasOne(loadModal('UserProfile'),'followings','id');
 	},
 
+	userProfileFollowings : function() {
+		return this.hasMany(loadModal('UserProfile'),'followings','id');
+	},
+
 	userProfileFollower : function() {
 		return this.hasOne(loadModal('UserProfile'),'followers','id');
 	}

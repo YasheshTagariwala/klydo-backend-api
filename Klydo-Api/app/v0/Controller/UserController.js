@@ -39,7 +39,7 @@ let getUserDetail = async  (req, res) => {
         })
         .with('userFollowings' , (q) => {
             if(req.params.friend_id){
-                q.select(['id','followers']);
+                q.select(['id','followers','accepted']);
                 q.where('followers',req.params.friend_id);
             }
         })

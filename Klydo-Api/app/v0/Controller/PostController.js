@@ -107,6 +107,9 @@ let getAllProfilePost = async (req, res) => {
                 q.select(['first_name','last_name']);
                 q.withSelect('userExtra',['profile_image']);
             }})
+        .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
+            q.where('profile_id', req.params.friend_id);
+        })
         .where({'profile_id':req.params.id})
         .orderBy('id','desc')
         .offset(offset)

@@ -14,11 +14,11 @@ module.exports = (app,express) => {
     router.post('/post/add-reaction',loadController('PostController').addReaction);
     router.get('/post/reaction/:id',loadController('PostController').getPostReactions);
 
-	//all post controller routes
-	router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
-	router.get('/post/comment/:id',loadController('PostController').getPostComments);
-	router.get('/post/filter/:id/:reaction_id',loadController('PostController').filterProfilePost);
-	router.get('/user/post/:id',loadController('PostController').getAllProfilePost);
+    //all post controller routes
+    router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
+    router.get('/user/post/:id/:friend_id',loadController('PostController').getAllProfilePost);
+    router.get('/post/comment/:id',loadController('PostController').getPostComments);
+    router.get('/post/filter/:id/:reaction_id',loadController('PostController').filterProfilePost);
 
 	//get user profile
     router.get('/user/:id/:friend_id?', loadController('UserController').getUserDetail);
@@ -43,8 +43,11 @@ module.exports = (app,express) => {
 	router.get('/activity/around/:id',loadController('ActivityController').getAroundYouActivity);
 
 	//send media file
-	router.get('/media/:filename',(req, res) => {		
-		res.sendFile(MediaPath + '/' + req.params.filename);
+	router.get('/media/:filename',(req, res) => {
+	    let fs = require('fs');
+        if(fs.existsSync(MediaPath + '/' + req.params.filename)){
+            res.sendFile(MediaPath + '/' + req.params.filename);
+        }
 	});
 
 	//all graph controller routes
