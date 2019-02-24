@@ -33,7 +33,7 @@ let getUserDetail = async  (req, res) => {
                         q2.withSelect('userExtra',['profile_image']);
                     });
                     q1.offset(0);
-                    q1.orderBy('id','desc');
+                    q1.orderBy('id','asc');
                     q1.limit(5)
                 }})
         })

@@ -33,7 +33,7 @@ module.exports = (app,express) => {
 	//all friend controller routes	
 	router.post('/friend/add',loadController('FriendsController').addFriend);
 	router.get('/friend/pending/:id',loadController('FriendsController').getPendingFriendRequests);
-	router.put('/friend/accept/:id',loadController('FriendsController').acceptFriend);
+	router.get('/friend/accept/:id',loadController('FriendsController').acceptFriend);
 	router.get('/friend/reject/:id',loadController('FriendsController').rejectFriend);
 	router.get('/friend/follower/:id/:friend_id?/',loadController('FriendsController').getFollowers);
 	router.get('/friend/following/:id/:friend_id?/',loadController('FriendsController').getFollowings);

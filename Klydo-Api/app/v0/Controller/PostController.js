@@ -61,7 +61,7 @@ let getAllHomePost = async (req, res) => {
                 q2.withSelect('userExtra', ['profile_image']);
             });
             q1.take(5);
-            q1.orderBy('id', 'desc');
+            q1.orderBy('id', 'asc');
         })
         // .where('post_published' , true)
         .whereNot('profile_id', req.params.id)
@@ -112,7 +112,7 @@ let getAllProfilePost = async (req, res) => {
                     q2.withSelect('userExtra',['profile_image']);
                 });
                 q1.offset(0);
-                q1.orderBy('id','desc');
+                q1.orderBy('id','asc');
                 q1.limit(5)
             }})
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
@@ -155,7 +155,7 @@ let getSinglePostWithComments = async (req, res) => {
                     q2.withSelect('userExtra', ['profile_image']);
                 });
                 q1.take(RECORED_PER_PAGE);
-                q1.orderBy('id', 'desc');
+                q1.orderBy('id', 'asc');
             }
         })
         .where('id', req.params.id)
@@ -487,7 +487,7 @@ let filterProfilePost = async (req, res) => {
                 q2.withSelect('userExtra',['profile_image']);
             });
             q1.take(5);
-            q1.orderBy('id','desc');
+            q1.orderBy('id','asc');
         })
         .where((q) => {
             if (isNaN(req.params.reaction_id)) {

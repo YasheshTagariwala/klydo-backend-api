@@ -143,7 +143,8 @@ let parseData = async (data,res) => {
                 people[i] = people[i].replace("u",'');
             }
             let [users,err] = await catchError(UserProfile.with('userExtra').whereIn('id' , people)
-                .orderBy('id','desc').get());
+                .orderByRaw('array_position(ARRAY['+people.join(',')+']::bigint[],id)')
+                .get());
             if(err){
                 console.log(err);
                 return;
@@ -163,7 +164,9 @@ let parseData = async (data,res) => {
                     q.select(['first_name', 'last_name']);
                     q.withSelect('userExtra', ['profile_image']);
                 }
-            }).whereIn('id' , posts).orderBy('id','desc').get());
+            }).whereIn('id' , posts)
+                .orderByRaw('array_position(ARRAY['+posts.join(',')+']::bigint[],id)')
+                .get());
             if(err){
                 console.log(err);
                 return;
