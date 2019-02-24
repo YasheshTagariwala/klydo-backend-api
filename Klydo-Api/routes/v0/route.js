@@ -18,6 +18,7 @@ module.exports = (app,express) => {
     router.get('/user/post/home/:id',loadController('PostController').getAllHomePost);
     router.get('/user/post/:id/:friend_id',loadController('PostController').getAllProfilePost);
     router.get('/post/comment/:id',loadController('PostController').getPostComments);
+    router.get('/post/comment/delete/:id',loadController('PostController').deleteComment);
     router.get('/post/filter/:id/:reaction_id',loadController('PostController').filterProfilePost);
 
 	//get user profile

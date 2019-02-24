@@ -349,6 +349,18 @@ let addComment = async (req, res) => {
     }
 };
 
+//Delete Comment
+let deleteComment = async (req, res) => {
+    let [data, err] = await catchError(Comment.forge({id : req.params.id}).destroy());
+    if(err) {
+        console.log(err1);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+        return;
+    }else {
+        res.status(OK_CODE).json({auth: true, msg: "Post Deleted"});
+    }
+};
+
 //add reaction to single post Or Delete
 let addReaction = async (req, res) => {
     let [data, err1] = await catchError(Reaction.where({
@@ -519,5 +531,6 @@ module.exports = {
     'addReaction': addReaction,
     'getPostReactions': getPostReactions,
     'getPostComments': getPostComments,
-    'filterProfilePost': filterProfilePost
+    'filterProfilePost': filterProfilePost,
+    'deleteComment' : deleteComment
 };
