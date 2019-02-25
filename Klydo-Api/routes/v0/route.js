@@ -25,7 +25,7 @@ module.exports = (app,express) => {
     router.get('/user/:id/:friend_id?', loadController('UserController').getUserDetail);
     //
 	router.get('/user/post/diary/:id',loadController('PostController').getAllDiaryPost);	
-	router.get('/post/:id',loadController('PostController').getSinglePostWithComments);
+	router.get('/post/:id/:user_id?',loadController('PostController').getSinglePostWithComments);
 	router.post('/post/add',loadController('PostController').createPost);
 	router.post('/post/update',loadController('PostController').updatePost);
 	router.get('/post/delete/:post',loadController('PostController').deletePost);
@@ -54,7 +54,6 @@ module.exports = (app,express) => {
 	//all graph controller routes
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
 	// router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
-	router.get('/graph/trends',loadController('GraphController').getTrends);
 	router.get('/graph/similar/:query',loadController('GraphController').getSimilarBeliefs);
 	router.get('/graph/beyond/:query',loadController('GraphController').getNetworkInteractionBased);
 
@@ -64,6 +63,9 @@ module.exports = (app,express) => {
 	router.post('/klyspace/update/variable/status',loadController('KlyspaceController').updateKlyspaceStatus);
 	router.post('/klyspace/update/variable/name',loadController('KlyspaceController').updateKlyspaceName);
 	router.post('/klyspace-data/add',loadController('KlyspaceController').addKlyspaceData);
+
+	//track API
+	router.get('/graph/track',loadController('GraphController').trackUser);
 
 	// Define the home page route
 	router.get('/', (req, res) => {

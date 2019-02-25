@@ -148,6 +148,13 @@ let getSinglePostWithComments = async (req, res) => {
                 q.withSelect('userExtra', ['profile_image']);
             }
         })
+        .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
+            if(req.params.user_id){
+                q.where('profile_id', req.params.user_id);
+            }else {
+                q.where('profile_id', null);
+            }
+        })
         .with({
             'comments': (q1) => {
                 q1.select(['comment_content', 'created_at', 'profile_id', 'id']);

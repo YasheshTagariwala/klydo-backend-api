@@ -10,7 +10,7 @@ let getSearch = async (req , res) => {
         });
 
         resp.on('end', () => {
-            parseData(data,res);
+            parseData(data,res,req);
         });
     }).on("error", (err) => {
         console.log("Error: " + err.message);
@@ -25,7 +25,7 @@ let getTrends = async (req, res) => {
         });
 
         resp.on('end' ,() => {
-            parseData(data,res);
+            parseData(data,res,req);
         })
     }).on("error" ,(err) => {
         console.log("Error: " + err.message);
@@ -40,7 +40,7 @@ let getReactionBased = async (req, res) => {
         });
 
         resp.on('end' ,() => {
-            parseData(data,res);
+            parseData(data,res,req);
         });
     }).on("error", (err) => {
         console.log("Error: " + err.message);
@@ -55,7 +55,7 @@ let getNetworkInteractionBased = async (req, res) => {
         });
 
         resp.on('end' ,() => {
-            parseData(data,res);
+            parseData(data,res,req);
         });
     }).on("error", (err) => {
         console.log("Error: " + err.message);
@@ -70,7 +70,7 @@ let getWyuRecommended = async (req, res) => {
         });
 
         resp.on('end' ,() => {
-            parseData(data,res);
+            parseData(data,res,req);
         });
     }).on("error", (err) => {
         console.log("Error: " + err.message);
@@ -85,7 +85,7 @@ let getSimilarBeliefs = async (req, res) => {
         });
 
         resp.on('end' ,() => {
-            parseData(data,res);
+            parseData(data,res,req);
         });
     }).on("error", (err) => {
         console.log("Error: " + err.message);
@@ -132,7 +132,22 @@ let updateReactWeights = async (post_id,reactionId) => {
     }).on("error", (err) => {console.log("Error: " + err.message);})
 };
 
-let parseData = async (data,res) => {
+let trackUser = async (req, res) => {
+    let data = '';
+    http.get('http://klydo.space/graph/tracksee/' + req.params.query ,(resp) => {
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        resp.on('end' ,() => {
+            res.status(OK_CODE).json({auth : true, msg : 'Tracked'});
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    })
+};
+
+let parseData = async (data,res,req) => {
     let finalData = JSON.parse(data);
     let peopleData = [];
     let postData = [];
@@ -142,8 +157,16 @@ let parseData = async (data,res) => {
             for(let i = 0;i < people.length; i++){
                 people[i] = people[i].replace("u",'');
             }
-            let [users,err] = await catchError(UserProfile.with('userExtra').whereIn('id' , people)
+            let [users,err] = await catchError(UserProfile.with('userExtra')
+                .whereIn('id',people)
+                .where((q) => {
+                    if (!isNaN(req.params.query)) {
+                        q.whereRaw('id not in (select followings from feelpals where followers = '+req.params.query+' and accepted = true)')
+                    }
+                })
                 .orderByRaw('array_position(ARRAY['+people.join(',')+']::bigint[],id)')
+                .offset(0)
+                .limit(RECORED_PER_PAGE)
                 .get());
             if(err){
                 console.log(err);
@@ -166,6 +189,8 @@ let parseData = async (data,res) => {
                 }
             }).whereIn('id' , posts)
                 .orderByRaw('array_position(ARRAY['+posts.join(',')+']::bigint[],id)')
+                .offset(0)
+                .limit(RECORED_PER_PAGE)
                 .get());
             if(err){
                 console.log(err);
@@ -215,4 +240,5 @@ module.exports = {
     'addPost' : addPost,
     'deletePost' : deletePost,
     'updateReactWeights' : updateReactWeights,
+    'trackUser' : trackUser
 };

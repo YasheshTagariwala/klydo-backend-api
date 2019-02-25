@@ -144,21 +144,38 @@ let signupUser = async (req, res) => {
 		user_password : requestData.pass,		
 		mobile_number : requestData.number in requestData ? requestData.number : 1234567891,
 		about_me : requestData.about in requestData ? requestData.about : ''
-	}
+	};
 
 	let [data , err] = await catchError(UserProfile.forge(userData).save());
     let year = requestData.birth_date.split('-');
     await Graph.manipulateUser(data.id,requestData.fname,requestData.lname,year[0]);
+    var userId = data.id;
 
 	if(err) {
 		console.log(err);
 		res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
 		return;
 	}else{
+        var profile_image = null;
+        let filename = '';
+        if (req.files) {
+            profile_image = req.files.profile_image;
+            filename = '';
+            if (profile_image) {
+                var moment = require('moment');
+                filename = userId + '-' + moment(new Date()).format('YYYY-MM-DD-HH-mm-ss') + profile_image.name.substring(profile_image.name.lastIndexOf('.'));
+                let [data, err] = await catchError(profile_image.mv(MediaPath + '/' + filename));
+                if (err) {
+                    console.log(err);
+                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                    return;
+                }
+            }
+        }
 		let userExtra = {
-			user_profile_id : data.id,
-			profile_image : requestData.dp in requestData ? requestData.dp : null
-		}
+			user_profile_id : userId,
+			profile_image : filename === "" ? null : filename
+		};
 
 		let [data1 , err1] = await catchError(UserExtra.forge(userExtra).save());
 
@@ -187,7 +204,7 @@ let signupUser = async (req, res) => {
 			}			
 		}
 	}	
-}
+};
 
 
 module.exports = {
