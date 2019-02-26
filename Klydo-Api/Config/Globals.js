@@ -17,7 +17,11 @@ let APP_ROUTES_PATH = v1RoutePaths + 'v0/';
 
 let APP_MEDIA_PATH = APP_ROOT_PATH + '/app/media';
 
+let APP_LOGIN_MEDIA_PATH = APP_ROOT_PATH + '/app/LoginMedia';
+
 global.MediaPath = APP_MEDIA_PATH;
+
+global.LoginMediaPath = APP_LOGIN_MEDIA_PATH;
 
 //data limit per page
 global.RECORED_PER_PAGE = 50;

@@ -15,17 +15,26 @@ app.use(express.json());
 
 //TODO:'use concat in user names where neccessary'
 
+//TODO:'use concat in user names where neccessary'
+let urls = [
+    '/app/v0/login/authenticate',
+    '/app/v0/login/signup',
+    '/app/v0/login/forget',
+    '/app/v0/login/forget-password-code',
+    '/app/v0/graph/trendsLogin',
+    '/app/v0/login/loginMedia'
+];
+
 app.post('/app/v0/login/authenticate', loadController('LoginController').loginCheck);
 app.post('/app/v0/login/signup', loadController('LoginController').signupUser);
 app.post('/app/v0/login/forget', loadController('LoginController').forgetPassword);
-// app.get('/app/v0/graph/trends',loadController('GraphController').getTrends);
+app.get('/app/v0/login/trendsLogin', loadController('LoginController').getTrendsLogin);
+app.get('/app/v0/login/loginMedia/:filename', loadController('LoginController').LoginMedia);
 app.post('/app/v0/login/forgot-password-code', loadController('LoginController').forgetPasswordVerificationCode);
+
 //validate user before calling any routes
 app.use(async (req, res, next) => {
-    if (req.originalUrl === '/app/v0/login/authenticate' || req.originalUrl === '/app/v0/login/signup'
-        || req.originalUrl === '/app/v0/login/forget' || req.originalUrl === '/app/v0/login/forget-password-code'
-        // || req.originalUrl === '/app/v0/graph/trends'
-    ) {
+    if (urls.includes(req.originalUrl)) {
         next();
     } else {
         // let [verification,err] = await catchError(authenticate.validateToken(req.headers.token));

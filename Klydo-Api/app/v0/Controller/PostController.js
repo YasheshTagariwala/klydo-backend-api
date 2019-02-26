@@ -61,7 +61,7 @@ let getAllHomePost = async (req, res) => {
                 q2.withSelect('userExtra', ['profile_image']);
             });
             q1.take(5);
-            q1.orderBy('id', 'asc');
+            q1.orderBy('id', 'desc');
         })
         // .where('post_published' , true)
         .whereNot('profile_id', req.params.id)
@@ -112,7 +112,7 @@ let getAllProfilePost = async (req, res) => {
                     q2.withSelect('userExtra',['profile_image']);
                 });
                 q1.offset(0);
-                q1.orderBy('id','asc');
+                q1.orderBy('id','desc');
                 q1.limit(5)
             }})
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
@@ -162,7 +162,6 @@ let getSinglePostWithComments = async (req, res) => {
                     q2.withSelect('userExtra', ['profile_image']);
                 });
                 q1.take(RECORED_PER_PAGE);
-                q1.orderBy('id', 'asc');
             }
         })
         .where('id', req.params.id)
@@ -380,6 +379,7 @@ let addReaction = async (req, res) => {
         return;
     } else {
         if (data) {
+            data = data.toJSON();
             if (data.reaction_id === req.body.reaction_id) {
                 let [del, err1] = await catchError(Reaction.forge({id: data.id}).destroy());
                 if (err1) {
@@ -498,9 +498,9 @@ let filterProfilePost = async (req, res) => {
         })
         .where((q) => {
             if (isNaN(req.params.reaction_id)) {
-                q.whereRaw("lower(post_title) like '%" + req.params.reaction_id.toLowerCase() + "%'" +
-                    " or lower(post_content) like '%" + req.params.reaction_id.toLowerCase() + "%'");
-                q.where('profile_id',req.params.id)
+                q.whereRaw("(lower(post_title) like '%" + req.params.reaction_id.toLowerCase() + "%'" +
+                    " or lower(post_content) like '%" + req.params.reaction_id.toLowerCase() + "%') " +
+                    "and profile_id = "+req.params.id+"");
             } else {
                 q.whereHas('reactions', (q) => {
                     q.where('reaction_id', req.params.reaction_id);

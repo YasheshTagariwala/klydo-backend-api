@@ -206,10 +206,36 @@ let signupUser = async (req, res) => {
 	}	
 };
 
+let getTrendsLogin = async (req, res) => {
+    let fs = require('fs');
+    let imageArray = [];
+    await fs.readdir(LoginMediaPath, function (err,files) {
+        if(err){
+            console.log(err);
+        }
+
+        files.forEach(function (file) {
+            imageArray.push(file);
+        });
+
+        let data = {images : imageArray};
+
+        res.status(OK_CODE).json({auth : true, msg : 'Data Found' , data : data});
+    });
+};
+
+let LoginMedia = async (req, res) => {
+    let fs = require('fs');
+    if(fs.existsSync(LoginMediaPath + '/' + req.params.filename)){
+        res.sendFile(LoginMediaPath + '/' + req.params.filename);
+    }
+};
 
 module.exports = {
 	'loginCheck': loginCheck,
 	'signupUser' : signupUser,
 	'forgetPassword' : forgetPassword,
-	'forgetPasswordVerificationCode' : forgetPasswordVerificationCode
-}
+	'forgetPasswordVerificationCode' : forgetPasswordVerificationCode,
+	'getTrendsLogin' : getTrendsLogin,
+	'LoginMedia' : LoginMedia
+};
