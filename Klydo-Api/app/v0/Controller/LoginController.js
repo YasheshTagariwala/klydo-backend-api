@@ -126,6 +126,7 @@ let signupUser = async (req, res) => {
 	let validations = loadUtility('Validations');
 	let UserProfile = loadModal('UserProfile');
 	let UserChips = loadModal('UserChips');
+    let authenticate = loadSecurity('authenticate');
 	let requestData = req.body;
 	if(validations.objectEmpty(requestData)) {
 		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});
@@ -200,7 +201,10 @@ let signupUser = async (req, res) => {
 				res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE});
 				return;
 			}else{
-				res.status(OK_CODE).json({auth : true,msg : "Sign Up Success"});
+                let [jwt_token,err] = await catchError(authenticate.createToken(requestData.mail));
+                let [users,err3] = await catchError(UserProfile.withSelect('userExtra',['profile_image','profile_privacy']).select(['id'])
+									.where({'id' : userId}).first());
+				res.status(OK_CODE).json({auth : true,msg : "Sign Up Success", token : jwt_token ,data : users});
 			}			
 		}
 	}	
@@ -218,10 +222,20 @@ let getTrendsLogin = async (req, res) => {
             imageArray.push(file);
         });
 
+        imageArray = shuffle(imageArray).slice(0,30);
+
         let data = {images : imageArray};
 
         res.status(OK_CODE).json({auth : true, msg : 'Data Found' , data : data});
     });
+};
+
+let shuffle = (a) => {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 };
 
 let LoginMedia = async (req, res) => {

@@ -24,11 +24,11 @@ module.exports = (app,express) => {
 	//get user profile
     router.get('/user/:id/:friend_id?', loadController('UserController').getUserDetail);
     //
-	router.get('/user/post/diary/:id',loadController('PostController').getAllDiaryPost);	
-	router.get('/post/:id/:user_id?',loadController('PostController').getSinglePostWithComments);
-	router.post('/post/add',loadController('PostController').createPost);
-	router.post('/post/update',loadController('PostController').updatePost);
-	router.get('/post/delete/:post',loadController('PostController').deletePost);
+	router.get('/user/post/diary/:id',loadController('PostController').getAllDiaryPost);
+    router.get('/post/delete/:post',loadController('PostController').deletePost);
+    router.get('/post/:id/:user_id?',loadController('PostController').getSinglePostWithComments);
+    router.post('/post/add',loadController('PostController').createPost);
+    router.post('/post/update',loadController('PostController').updatePost);
 
 	//all friend controller routes	
 	router.post('/friend/add',loadController('FriendsController').addFriend);
@@ -54,7 +54,7 @@ module.exports = (app,express) => {
 	//all graph controller routes
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
 	// router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
-    app.get('/app/v0/graph/trends',loadController('GraphController').getTrends);
+    router.get('/graph/trends',loadController('GraphController').getTrends);
 	router.get('/graph/similar/:query',loadController('GraphController').getSimilarBeliefs);
 	router.get('/graph/beyond/:query',loadController('GraphController').getNetworkInteractionBased);
 
@@ -66,7 +66,7 @@ module.exports = (app,express) => {
 	router.post('/klyspace-data/add',loadController('KlyspaceController').addKlyspaceData);
 
 	//track API
-	router.get('/graph/track',loadController('GraphController').trackUser);
+	router.get('/graph/track/:query',loadController('GraphController').trackUser);
 
 	// Define the home page route
 	router.get('/', (req, res) => {

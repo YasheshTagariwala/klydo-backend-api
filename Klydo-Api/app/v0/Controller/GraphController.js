@@ -134,7 +134,7 @@ let updateReactWeights = async (post_id,reactionId) => {
 
 let trackUser = async (req, res) => {
     let data = '';
-    http.get('http://klydo.space/graph/tracksee/' + req.params.query ,(resp) => {
+    http.get('http://klydo.space/graph/track_add/' + req.params.query ,(resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
