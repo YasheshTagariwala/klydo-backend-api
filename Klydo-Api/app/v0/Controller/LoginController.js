@@ -131,7 +131,19 @@ let signupUser = async (req, res) => {
 	if(validations.objectEmpty(requestData)) {
 		res.status(NO_CONTENT_CODE).json({auth: false, msg:NO_CONTENT_MESSAGE});
 		return;
-	}			
+	}
+
+	let [check,er] = await catchError(UserProfile.where({'user_email' : requestData.mail}).first());
+	if(er){
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
+        return;
+	}
+
+	if(check){
+        res.status(OK_CODE).json({auth : true,msg : "Email Already Taken"});
+        return;
+	}
 
 	let userData = {
 		first_name : requestData.fname,
