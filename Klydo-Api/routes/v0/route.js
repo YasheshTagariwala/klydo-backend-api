@@ -54,6 +54,7 @@ module.exports = (app,express) => {
 	//all graph controller routes
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
 	// router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
+    app.get('/app/v0/graph/trends',loadController('GraphController').getTrends);
 	router.get('/graph/similar/:query',loadController('GraphController').getSimilarBeliefs);
 	router.get('/graph/beyond/:query',loadController('GraphController').getNetworkInteractionBased);
 
