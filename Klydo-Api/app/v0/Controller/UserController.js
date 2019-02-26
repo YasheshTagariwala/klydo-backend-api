@@ -107,12 +107,12 @@ let changeProfilePrivacy = async (req, res) => {
 let changePassword = async (req, res) => {
 	let newUserData = {
 		user_password : req.body.password
-	}			
+	}
 
 	let [data ,err] = await catchError(UserProfile.where({'id': req.body.user_profile_id})
-		.where({'user_password' : req.body.old_password})		
+		.where({'user_password' : req.body.old_password})
 		.save(newUserData ,{patch : true})
-	);			
+	);
 
 	if(err) {
 		console.log(err);
@@ -156,11 +156,11 @@ let changeStatus = async (req, res) => {
 		let profile = {
 			about_me : req.body.status
 		}
-	
+
 		let [data,err] = await catchError(UserProfile.where({'id' : req.body.user_id})
 			.save(profile,{patch : true})
 		);
-	
+
 		if(err){
 			console.log(err);
 			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
@@ -168,7 +168,7 @@ let changeStatus = async (req, res) => {
 		}else {
 			res.status(OK_CODE).json({auth: true, msg : "Status Updated Successfully"});
 		}
-	}	
+	}
 }
 
 let updateProfileImage = async (req, res) => {
@@ -210,11 +210,26 @@ let updateProfileImage = async (req, res) => {
     res.status(OK_CODE).json({auth: true, msg : "Profile Picture Updated Successfully", data : filename});
 };
 
+let chosenOne = async (req, res)=> {
+   let [users,err] = await catchError(UserProfile.select(['id','first_name','middle_name','last_name','dob','city','gender','user_email','username','mobile_number','about_me'])
+                    .withSelect('userExtra',['id','report_count','is_reported','profile_privacy','profile_image','is_verified','is_paid','interest','emotion','avg_emotions','avg_interests','hobbies'])
+                   .get());
+
+   if(err) {
+       console.log(err2);
+       res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE});
+       return;
+   }else {
+       res.status(OK_CODE).json({auth: true, msg : "Users Found", data : users});
+   }
+};
+
 module.exports = {
-	'getUserDetail': getUserDetail,	
+	'getUserDetail': getUserDetail,
 	'changeProfilePrivacy' : changeProfilePrivacy,
 	'changePassword' : changePassword,
 	'updateProfile' : updateProfile,
 	'changeStatus' : changeStatus,
-	'updateProfileImage' : updateProfileImage
+	'updateProfileImage' : updateProfileImage,
+    'chosenOne' : chosenOne
 };

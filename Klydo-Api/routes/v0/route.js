@@ -22,6 +22,7 @@ module.exports = (app,express) => {
     router.get('/post/filter/:id/:reaction_id',loadController('PostController').filterProfilePost);
 
 	//get user profile
+    router.get('/users/chosen-one',loadController('UserController').chosenOne);
     router.get('/user/:id/:friend_id?', loadController('UserController').getUserDetail);
     //
 	router.get('/user/post/diary/:id',loadController('PostController').getAllDiaryPost);
