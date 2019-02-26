@@ -197,27 +197,27 @@ let signupUser = async (req, res) => {
 			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE})
 			return;
 		}else{			
-			let chip_data = [];
-			for(let i = 0;i < requestData.chips.length; i++){
-				let chip_set = {};
-				chip_set.chip_id = requestData.chips[i];
-				chip_set.user_id = data.id;				
-				chip_data.push(chip_set);
-			}
-			let user_chip_data = UserChips.collection();
-			user_chip_data.add(chip_data);			
-			let[data2,err2] = await catchError(user_chip_data.insert());
+			// let chip_data = [];
+			// for(let i = 0;i < requestData.chips.length; i++){
+			// 	let chip_set = {};
+			// 	chip_set.chip_id = requestData.chips[i];
+			// 	chip_set.user_id = data.id;
+			// 	chip_data.push(chip_set);
+			// }
+			// let user_chip_data = UserChips.collection();
+			// user_chip_data.add(chip_data);
+			// let[data2,err2] = await catchError(user_chip_data.insert());
 
-			if(err2){
-				console.log(err2);
-				res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE});
-				return;
-			}else{
+			// if(err2){
+			// 	console.log(err2);
+			// 	res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE});
+			// 	return;
+			// }else{
                 let [jwt_token,err] = await catchError(authenticate.createToken(requestData.mail));
                 let [users,err3] = await catchError(UserProfile.withSelect('userExtra',['profile_image','profile_privacy']).select(['id'])
 									.where({'id' : userId}).first());
 				res.status(OK_CODE).json({auth : true,msg : "Sign Up Success", token : jwt_token ,data : users});
-			}			
+			// }
 		}
 	}	
 };
