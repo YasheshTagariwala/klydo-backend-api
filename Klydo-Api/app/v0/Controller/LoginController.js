@@ -184,6 +184,10 @@ let signupUser = async (req, res) => {
                     return;
                 }
             }
+        } else {
+            let[data,err] = await catchError(UserExtra.select('profile_image').where('user_profile_id',1).first());
+            data = data.toJSON();
+            filename = data.profile_image;
         }
 		let userExtra = {
 			user_profile_id : userId,
