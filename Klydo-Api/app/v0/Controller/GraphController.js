@@ -4,7 +4,7 @@ let Post = loadModal('Posts');
 
 let getSearch = async (req , res) => {    
     let data = '';
-	http.get('http://klydo.space/graph/search_for/' + req.params.query,(resp) => {
+	http.get('http://klydo.space/graph/search_for/' + req.params.query.replace("?","."),(resp) => {
         resp.on('data', (chunk) => {
             data += chunk;            
         });
@@ -34,7 +34,7 @@ let getTrends = async (req, res) => {
 
 let getReactionBased = async (req, res) => {
     let data = '';
-    http.get('http://klydo.space/graph/get_reaction_based/' + req.params.query ,(resp) => {
+    http.get('http://klydo.space/graph/get_reaction_based/' + req.params.query.replace("?",".") ,(resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -49,7 +49,7 @@ let getReactionBased = async (req, res) => {
 
 let getNetworkInteractionBased = async (req, res) => {
     let data = '';
-    http.get('http://klydo.space/graph/get_network_interaction_based/' + req.params.query ,(resp) => {
+    http.get('http://klydo.space/graph/get_network_interaction_based/' + req.params.query.replace("?",".") ,(resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -64,7 +64,7 @@ let getNetworkInteractionBased = async (req, res) => {
 
 let getWyuRecommended = async (req, res) => {
     let data = '';
-    http.get('http://klydo.space/graph/get_wyu_recommended/' + req.params.query ,(resp) => {
+    http.get('http://klydo.space/graph/get_wyu_recommended/' + req.params.query.replace("?",".") ,(resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -79,7 +79,7 @@ let getWyuRecommended = async (req, res) => {
 
 let getSimilarBeliefs = async (req, res) => {
     let data = '';
-    http.get('http://klydo.space/graph/get_similar_beliefs/' + req.params.query ,(resp) => {
+    http.get('http://klydo.space/graph/get_similar_beliefs/' + req.params.query.replace("?",".") ,(resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -93,7 +93,7 @@ let getSimilarBeliefs = async (req, res) => {
 };
 
 let filterAndAddBeliefsFrom = async (user_id,content) => {
-    http.get('http://klydo.space/graph/filter_and_add_beliefs_from/' + user_id + '_|||_' + encodeURIComponent(content) ,(resp) => {
+    http.get('http://klydo.space/graph/filter_and_add_beliefs_from/' + user_id + '_|||_' + encodeURIComponent(content.replace("?",".")) ,(resp) => {
     }).on("error", (err) => {console.log("Error: " + err.message);})
 };
 
@@ -103,7 +103,7 @@ let addAffinity = async (doer,doee) => {
 };
 
 let manipulateUser = async (userID,firstName,lastName,birthYear) => {
-    http.get('http://klydo.space/graph/mainpulate_user/' + userID + ',' + encodeURIComponent(firstName) + ',' + encodeURIComponent(lastName) + ',' + birthYear ,(resp) => {
+    http.get('http://klydo.space/graph/mainpulate_user/' + userID + ',' + encodeURIComponent(firstName.replace("?",".")) + ',' + encodeURIComponent(lastName.replace("?",".")) + ',' + birthYear ,(resp) => {
     }).on("error", (err) => {console.log("Error: " + err.message);})
 };
 
@@ -118,7 +118,7 @@ let updateUserWyu = async (userID,oldWyuID,newWyuID) => {
 };
 
 let addPost = async (post_id,post_title,post_content) => {
-    http.get('http://klydo.space/graph/add_post/' + post_id + '_|||_' + encodeURIComponent(post_title) + '_|||_' + encodeURIComponent(post_content) ,(resp) => {
+    http.get('http://klydo.space/graph/add_post/' + post_id + '_|||_' + encodeURIComponent(post_title.replace("?",".")) + '_|||_' + encodeURIComponent(post_content.replace("?",".")) ,(resp) => {
     }).on("error", (err) => {console.log("Error: " + err.message);})
 };
 
@@ -134,7 +134,7 @@ let updateReactWeights = async (post_id,reactionId) => {
 
 let trackUser = async (req, res) => {
     let data = '';
-    http.get('http://klydo.space/graph/track_add/' + req.params.query ,(resp) => {
+    http.get('http://klydo.space/graph/track_add/' + req.params.query.replace("?",".") ,(resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -159,11 +159,11 @@ let parseData = async (data,res,req) => {
             }
             let [users,err] = await catchError(UserProfile.with('userExtra')
                 .whereIn('id',people)
-                .where((q) => {
-                    if (!isNaN(req.params.query)) {
-                        q.whereRaw('id not in (select followings from feelpals where followers = '+req.params.query+' and accepted = true)')
-                    }
-                })
+                // .where((q) => {
+                //     if (!isNaN(req.params.query)) {
+                //         q.whereRaw('id not in (select followings from feelpals where followers = '+req.params.query+' and accepted = true and deleted_at is null)')
+                //     }
+                // })
                 .orderByRaw('array_position(ARRAY['+people.join(',')+']::bigint[],id)')
                 .offset(0)
                 .limit(RECORED_PER_PAGE)
