@@ -54,8 +54,8 @@ let getUserDetail = async  (req, res) => {
         }).orderBy('count','desc')
             .query((q) => {
                 q.groupBy('reaction_id');
-                q.offset(0);
-                q.limit(2);
+                // q.offset(0);
+                // q.limit(2);
             })
             .get());
         if(err1){
