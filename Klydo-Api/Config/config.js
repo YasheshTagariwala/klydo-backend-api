@@ -4,8 +4,8 @@ module.exports = {
 		connection:{
 			host:'localhost',
 			user:'postgres',
-			password:'admin',
-			database:'klydo_new',
+			password:'',
+			database:'owyulen',
 			charset:'utf-8'
 		}
 	}

@@ -45,6 +45,7 @@ app.use(async (req, res, next) => {
         // 	if(verification.auth) {
         // 		//All Application routes
         loadRoute('route')(app, express);
+        loadV1Route('route')(app, express);
         next();
         // } else {
         // 	res.json(verification);
