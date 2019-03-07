@@ -59,6 +59,7 @@ module.exports = (app,express) => {
 	router.get('/graph/similar/:query',loadController('GraphController').getSimilarBeliefs);
 	router.get('/graph/beyond/:query',loadController('GraphController').getNetworkInteractionBased);
 	router.get('/graph/beliefs-and-views/:userID',loadController('GraphController').getBeliefsAndViews);
+	router.get('/graph/get-react-filtered/:reaction_id',loadController('GraphController').getReactFilteredPosts);
 
 	//all klyspace controller routes
 	router.get('/klyspace/variable',loadController('KlyspaceController').getAllKlyspaceVariables);

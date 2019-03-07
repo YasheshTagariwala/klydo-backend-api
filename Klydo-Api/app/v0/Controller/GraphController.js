@@ -177,6 +177,19 @@ let getBeliefsAndViews = async (req, res) => {
     })
 };
 
+let getReactFilteredPosts = async (req, res) => {
+    let reactFilteredPosts = '';
+    http.get('http://klydo.space/graph/get_reaction_based/' + req.params.reaction_id, (q) => {
+        q.on('data', (fuckyoumarkzuckmydick) => {
+            reactFilteredPosts += fuckyoumarkzuckmydick;
+        });
+
+        q.on('end', () => {
+            parseData(reactFilteredPosts, res, req);
+        })
+    })
+};
+
 let parseBeliefsAndViews = async (data, res, req) => {
     let finalData = JSON.parse(data);
     let beliefs = [];
@@ -302,5 +315,6 @@ module.exports = {
     'deletePost': deletePost,
     'updateReactWeights': updateReactWeights,
     'trackUser': trackUser,
-    'getBeliefsAndViews' : getBeliefsAndViews
+    'getBeliefsAndViews' : getBeliefsAndViews,
+    'getReactFilteredPosts' : getReactFilteredPosts
 };
