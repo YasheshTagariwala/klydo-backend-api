@@ -80,6 +80,14 @@ let getBubbleActivity = async (req, res) => {
     }
 };
 
+let addToBubble = async (req, res) => {
+};
+
+let removeFromBubble = async (req, res) => {
+};
+
 module.exports = {
     'getBubbleActivity': getBubbleActivity,
+    'addToBubble' : addToBubble,
+    'removeFromBubble' : removeFromBubble
 };
