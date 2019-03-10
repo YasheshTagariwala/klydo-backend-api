@@ -1,7 +1,6 @@
 let Activity = loadModal('Activity');
 let Validation = loadUtility('Validations');
 let Feelpals = loadModal('Feelpals');
-let bookshelf = loadConfig('Bookshelf.js');
 
 /*
 * 1. 5(nivid) bubble activity 2(yashesh)
@@ -15,14 +14,8 @@ let getBubbleActivity = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
     let Query = await Feelpals.select('followings').where('followers', req.params.user_id).buildQuery();
     let Query2 = await Feelpals.select('followings').where('followers', req.params.friend_id).buildQuery();
-    // let [feelpals, err] = await catchError(bookshelf.knex.raw(Query.query + ' intersect ' + Query2.query));
-    // if(err){
-    //     console.log(err);
-    //     res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
-    //     return;
-    // }else {
-    //
-    // }
+    let Query3 = await Feelpals.select('followers').where('followings', req.params.user_id).buildQuery();
+    let Query4 = await Feelpals.select('followers').where('followings', req.params.friend_id).buildQuery();
 
     let [activityData, err] = await catchError(Activity
         .select(['id', 'activity_type', 'created_at'])
@@ -45,20 +38,72 @@ let getBubbleActivity = async (req, res) => {
                 });
             }
         }).where((q) => {
-            q.whereHas('comments', (q) => {
-                q.whereHas('userProfile', (q) => {
-                    q.whereRaw('id in ('+Query.query + ' intersect ' + Query2.query+')');
+            q.where((q) => {
+                q.whereHas('comments', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.where('id',req.params.user_id);
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.where('profile_id',req.params.friend_id);
+                    });
                 });
-                q.whereHas('posts', (q) => {
-                    q.where('profile_id', req.params.friend_id);
+                q.orWhereHas('comments', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.where('id',req.params.friend_id);
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.where('profile_id',req.params.user_id);
+                    });
+                });
+                q.orWhereHas('comments', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.where('id',req.params.friend_id);
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.whereRaw('profile_id in ('+Query.query + ' intersect ' + Query2.query+')');
+                    });
+                });
+                q.orWhereHas('comments', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.whereRaw('id in ('+Query3.query + ' intersect ' + Query4.query+')');
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.where('profile_id',req.params.friend_id);
+                    });
                 });
             });
-            q.orWhereHas('reactions', (q) => {
-                q.whereHas('userProfile', (q) => {
-                    q.whereRaw('id in ('+Query.query + ' intersect ' + Query2.query+')');
+            q.orWhere((q) => {
+                q.whereHas('reactions', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.where('id',req.params.user_id);
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.where('profile_id',req.params.friend_id);
+                    });
                 });
-                q.whereHas('posts', (q) => {
-                    q.where('profile_id', req.params.friend_id);
+                q.orWhereHas('reactions', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.where('id',req.params.friend_id);
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.where('profile_id',req.params.user_id);
+                    });
+                });
+                q.orWhereHas('reactions', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.where('id',req.params.friend_id);
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.whereRaw('profile_id in ('+Query.query + ' intersect ' + Query2.query+')');
+                    });
+                });
+                q.orWhereHas('reactions', (q) => {
+                    q.whereHas('userProfile', (q) => {
+                        q.whereRaw('id in ('+Query3.query + ' intersect ' + Query4.query+')');
+                    });
+                    q.whereHas('posts', (q) => {
+                        q.where('profile_id',req.params.friend_id);
+                    });
                 });
             });
         })
