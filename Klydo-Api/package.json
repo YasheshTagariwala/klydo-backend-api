@@ -14,6 +14,7 @@
     "bookshelf-paranoia": "^0.11.0",
     "express": "^4.16.3",
     "express-fileupload": "^1.1.1-alpha.1",
+    "fcm-notification": "^2.0.0",
     "jsonwebtoken": "^8.2.1",
     "knex": "^0.14.6",
     "lcrypt": "^1.0.2",

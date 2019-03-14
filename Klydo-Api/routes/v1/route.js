@@ -29,6 +29,12 @@ module.exports = (app,express) => {
 	//all graph controller routes
 	router.get('/graph/updateKly/:query', loadController('GraphController').getSimilarBeliefs);
 	router.get('/graph/similar/:query', loadController('GraphController').getSimilarBeliefs);
+
+    //
+    // =========================================================================================================================
+    //all token routes
+    router.post('/update-token', loadV1Controller('TokenController').updateUserToken);
+
 	// 
 	// =========================================================================================================================
 	// Define the home page route

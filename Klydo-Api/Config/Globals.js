@@ -10,7 +10,7 @@ let APP_UTILITY_PATH = v0Paths + 'Utility/';
 
 //v1 Paths
 let APP_V1_CONTROLLER_PATH = v1Paths + 'Controller/';
-
+let APP_V1_MODEL_PATH = v1Paths + 'Models/';
 //security paths
 let APP_SECURITY_PATH = APP_ROOT_PATH + '/security/';
 
@@ -69,6 +69,10 @@ global.loadCrypt = () => {
 
 global.loadV1Controller = (fileName) => {
     return require(APP_V1_CONTROLLER_PATH + fileName);
+};
+
+global.loadV1Modal = (fileName) => {
+    return require(APP_V1_MODEL_PATH + fileName);
 };
 
 global.loadV1Route = (fileName) => {
