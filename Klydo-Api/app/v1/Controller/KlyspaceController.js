@@ -25,6 +25,7 @@ let addKlyspaceData = async (req, res) => {
         return;
     } else {
         let to_not_delete = [];
+        let all_insert_data = [];
         data = data.toJSON();
         for (let i = 0; i < dataArray.length; i++) {
             if (i in data) {
@@ -45,25 +46,33 @@ let addKlyspaceData = async (req, res) => {
                     'klyspace_id': dataArray[i].klyspace_id,
                     'data': 0
                 };
-
-                let [insertKly, err] = await catchError(KlyspaceData.forge(insertData).save());
-                if (err) {
-                    console.log(err);
-                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
-                    return;
-                }
+                all_insert_data.push(insertData);
             }
         }
 
+        if (all_insert_data.length > 0) {
+            let klyData = KlyspaceData.collection();
+            klyData.add(all_insert_data);
+            let [insertKly, err] = await catchError(klyData.insert(false));
+            if (err) {
+                console.log(err);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+                return;
+            }
+        }
+
+        let to_delete = [];
         for (let i = 0; i < data.length; i++) {
             if (to_not_delete.indexOf(data[i].id) <= -1) {
-                let [deleteKly, err] = await catchError(KlyspaceData.forge({id: data[i].id}).destroy());
-                if (err) {
-                    console.log(err);
-                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
-                    return;
-                }
+                to_delete.push(data[i].id);
             }
+        }
+
+        let [deleteKly, err] = await catchError(KlyspaceData.whereIn('id', to_delete).delete());
+        if (err) {
+            console.log(err);
+            res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+            return;
         }
 
         res.status(OK_CODE).json({auth: true, msg: "KlySpace Data Updated Successfully"});
