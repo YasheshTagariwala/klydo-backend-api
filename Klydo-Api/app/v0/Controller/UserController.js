@@ -67,7 +67,7 @@ let getUserDetail = async  (req, res) => {
             users.reaction = reaction;
             users.klyspaceData = null;
             if(req.params.friend_id) {
-                let [klyspaceData,err1] = await catchError(KlyspaceData.select(['id','klyspace_id','doer_profile_id','doee_profile_id','data'])
+                let [klyspaceData,err1] = await catchError(KlyspaceData.select(['id','klyspace_id','doer_profile_id','doee_profile_id'])
                     .where('doer_profile_id',req.params.friend_id)
                     .get());
                 users.klyspaceData = klyspaceData;

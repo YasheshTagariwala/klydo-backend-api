@@ -1,8 +1,5 @@
 let FeelPals = loadModal('Feelpals');
-let Activity = loadController('ActivityController');
 let Validation = loadUtility('Validations');
-let UserProfile = loadModal('UserProfile');
-let Post = loadModal('Posts');
 
 let getBubbleFriends = async (req, res) => {
 
@@ -33,9 +30,9 @@ let addToBubble = async (req, res) => {
 
     let bubble = {
         is_favourite: true
-    }
+    };
 
-    let [data, err] = await catchError(FeelPals.where({'followings': req.body.friend_id, 'followers': req.body.user_id})
+    let [data, err] = await catchError(FeelPals.where({'followings': req.params.friend_id, 'followers': req.params.user_id})
         .save(bubble, {patch: true})
     );
 
@@ -52,9 +49,9 @@ let removeFromBubble = async (req, res) => {
 
     let bubble = {
         is_favourite: false
-    }
+    };
 
-    let [data, err] = await catchError(FeelPals.where({'followings': req.body.friend_id, 'followers': req.body.user_id})
+    let [data, err] = await catchError(FeelPals.where({'followings': req.params.friend_id, 'followers': req.params.user_id})
         .save(bubble, {patch: true})
     );
 
@@ -72,4 +69,4 @@ module.exports = {
     'getBubbleFriends': getBubbleFriends,
     'addToBubble': addToBubble,
     'removeFromBubble': removeFromBubble
-}
+};

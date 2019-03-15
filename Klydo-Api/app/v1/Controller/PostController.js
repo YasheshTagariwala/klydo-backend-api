@@ -1,15 +1,4 @@
 let Post = loadModal('Posts');
-let Comment = loadModal('PostComment');
-let Activity = loadController('ActivityController');
-let ActivityModel = loadModal('Activity');
-let bookshelf = loadConfig('Bookshelf.js');
-let Reaction = loadModal('PostReaction');
-let _ = require('underscore');
-let Validation = loadUtility('Validations');
-let Graph = loadController('GraphController');
-
-let fetchEditablePost = async (req, res) => {
-};
 
 let updatePost = async (req, res) => {
 
@@ -38,30 +27,26 @@ let updatePost = async (req, res) => {
                 let [data, err] = await catchError(post_media.mv(MediaPath + '/' + filename));
                 if (err) {
                     console.log(err);
-                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
                     return;
                 }
             }
         }
     }
 
-    // let [activityId, err] = await catchError(Activity.createActivity(1));
-    // if (activityId == null || err) {
-    //     console.log(err);
-    //     res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
-    //     return;
-    // }
-
-    let newPostData = {
-        //profile_id: req.body.user_id,
-        post_content: req.body.content,
-        post_title: req.body.title,
-        post_media: (post_media) ? filename : null,
-        //post_hashes: req.body.post_hashes,
-        //post_published: true,
-        //emotion: req.body.emotion,
-        //activity_id: activityId
-    };
+    let newPostData = null;
+    if (post_media) {
+        newPostData = {
+            post_content: req.body.content,
+            post_title: req.body.title,
+            post_media: filename,
+        };
+    } else {
+        newPostData = {
+            post_content: req.body.content,
+            post_title: req.body.title,
+        };
+    }
 
     let [data, err1] = await catchError(Post.where({'id': req.body.post_id})
         .save(newPostData, {patch: true})
@@ -71,7 +56,7 @@ let updatePost = async (req, res) => {
 
     if (err1) {
         console.log(err1);
-        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
         return;
     } else {
         res.status(OK_CODE).json({auth: true, msg: "Post updated."})
@@ -80,6 +65,5 @@ let updatePost = async (req, res) => {
 
 
 module.exports = {
-    'fetchEditablePost': fetchEditablePost,
     'updatePost': updatePost
 };

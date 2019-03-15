@@ -7,6 +7,8 @@ module.exports = (app,express) => {
 	// 
 	// bubble related
 	router.get('/activity/getBubbleActivity/:user_id/:friend_id', loadV1Controller('ActivityController').getBubbleActivity);
+
+	//friend controller routes
 	router.get('/friend/getBubbleFriends/:user_id', loadV1Controller('FriendsController').getBubbleFriends);
 	router.get('/friend/addToBubble/:user_id/:friend_id', loadV1Controller('FriendsController').addToBubble);
 	router.get('/friend/removeFromBubble/:user_id/:friend_id', loadV1Controller('FriendsController').removeFromBubble);
@@ -14,17 +16,13 @@ module.exports = (app,express) => {
 	// =========================================================================================================================
 	// all post controlller routes
 	// 
-	// post editing 
-	router.get('/post/fetchEditablePost/:post_id', loadV1Controller('PostController').fetchEditablePost);
-	router.get('/post/update/:post_id', loadV1Controller('PostController').updatePost);
+	// post editing
+	router.post('/post/update', loadV1Controller('PostController').updatePost);
 	// 
 	// =========================================================================================================================
 	// all klyspace controlller routes
 	// 
 	// klyspace
-	router.get('/klyspace/voteOnKly/:user_id/:vote_list', loadV1Controller('KlyspaceController').voteOnKly);
-	router.get('/klyspace/rateOnKly/:user_id/:rate_list', loadV1Controller('KlyspaceController').rateOnKly);
-	router.get('/klyspace/fetchKly/:user_id', loadV1Controller('KlyspaceController').fetchKly);
 	router.post('/klyspace-data/add',loadV1Controller('KlyspaceController').addKlyspaceData);
 	// 
 	// =========================================================================================================================
