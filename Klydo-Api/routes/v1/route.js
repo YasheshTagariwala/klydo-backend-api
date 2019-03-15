@@ -16,7 +16,7 @@ module.exports = (app,express) => {
 	// 
 	// post editing 
 	router.get('/post/fetchEditablePost/:post_id', loadV1Controller('PostController').fetchEditablePost);
-	router.get('/post/updatePostEdit/:post_id', loadV1Controller('PostController').updatePostEdit);
+	router.get('/post/update/:post_id', loadV1Controller('PostController').updatePost);
 	// 
 	// =========================================================================================================================
 	// all klyspace controlller routes
@@ -25,6 +25,7 @@ module.exports = (app,express) => {
 	router.get('/klyspace/voteOnKly/:user_id/:vote_list', loadV1Controller('KlyspaceController').voteOnKly);
 	router.get('/klyspace/rateOnKly/:user_id/:rate_list', loadV1Controller('KlyspaceController').rateOnKly);
 	router.get('/klyspace/fetchKly/:user_id', loadV1Controller('KlyspaceController').fetchKly);
+	router.post('/klyspace-data/add',loadV1Controller('KlyspaceController').addKlyspaceData);
 	// 
 	// =========================================================================================================================
 	//all graph controller routes

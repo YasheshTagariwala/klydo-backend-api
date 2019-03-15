@@ -48,7 +48,7 @@ let getAllHomePost = async (req, res) => {
                 q.where({'followers': req.params.id, 'accepted': true, 'blocked': false});
             });
         })
-        .whereHas('userProfile',(q) => {
+        .whereHas('userProfile', (q) => {
             q.whereHas('userFollowings', (q) => {
                 q.where({'followers': req.params.id, 'accepted': true, 'blocked': false})
             })
@@ -101,38 +101,40 @@ let getPostReactions = async (req, res) => {
 //get profile posts
 let getAllProfilePost = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
-    let [profilePost,err] = await catchError(Post
-        .select(['emotion','profile_id','id','post_content','post_hashes','post_title','post_media','created_at','post_published'])
-        .with({'userProfile' : (q) => {
-                q.select(['first_name','last_name']);
-                q.withSelect('userExtra',['profile_image']);
-            },'comments' : (q1) => {
-                q1.select(['comment_content','created_at','profile_id','id']);
-                q1.withSelect('userProfile', ['first_name','last_name','id'] , (q2) => {
-                    q2.withSelect('userExtra',['profile_image']);
+    let [profilePost, err] = await catchError(Post
+        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_title', 'post_media', 'created_at', 'post_published'])
+        .with({
+            'userProfile': (q) => {
+                q.select(['first_name', 'last_name']);
+                q.withSelect('userExtra', ['profile_image']);
+            }, 'comments': (q1) => {
+                q1.select(['comment_content', 'created_at', 'profile_id', 'id']);
+                q1.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
+                    q2.withSelect('userExtra', ['profile_image']);
                 });
                 q1.offset(0);
-                q1.orderBy('id','desc');
+                q1.orderBy('id', 'desc');
                 q1.limit(5)
-            }})
+            }
+        })
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.friend_id);
         })
-        .where({'profile_id':req.params.id})
-        .orderBy('id','desc')
+        .where({'profile_id': req.params.id})
+        .orderBy('id', 'desc')
         .offset(offset)
         .limit(RECORED_PER_PAGE)
         .get());
 
-    if(err){
+    if (err) {
         console.log(err);
-        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true, msg : INTERNAL_SERVER_ERROR_MESSAGE});
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
         return;
-    }else{
-        if(!Validation.objectEmpty(profilePost)){
-            res.status(OK_CODE).json({auth : true, msg : 'Success', data : profilePost});
-        }else{
-            res.status(OK_CODE).json({auth : true, msg : 'No Data Found', data : []});
+    } else {
+        if (!Validation.objectEmpty(profilePost)) {
+            res.status(OK_CODE).json({auth: true, msg: 'Success', data: profilePost});
+        } else {
+            res.status(OK_CODE).json({auth: true, msg: 'No Data Found', data: []});
         }
     }
 };
@@ -149,9 +151,9 @@ let getSinglePostWithComments = async (req, res) => {
             }
         })
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
-            if(req.params.user_id){
+            if (req.params.user_id) {
                 q.where('profile_id', req.params.user_id);
-            }else {
+            } else {
                 q.where('profile_id', null);
             }
         })
@@ -275,7 +277,7 @@ let createPost = async (req, res) => {
 }
 
 //update post
-let updatePost = async (req, res) => {
+/*let updatePost = async (req, res) => {
 
     // let postId = req.params.post;
 
@@ -298,7 +300,7 @@ let updatePost = async (req, res) => {
     // } else {
     // 	res.status(OK_CODE).json({auth : true,msg : "Post Updated"})
     // }
-}
+}*/
 
 //delete single post
 let deletePost = async (req, res) => {
@@ -357,12 +359,12 @@ let addComment = async (req, res) => {
 
 //Delete Comment
 let deleteComment = async (req, res) => {
-    let [data, err] = await catchError(Comment.forge({id : req.params.id}).destroy());
-    if(err) {
+    let [data, err] = await catchError(Comment.forge({id: req.params.id}).destroy());
+    if (err) {
         console.log(err1);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
         return;
-    }else {
+    } else {
         res.status(OK_CODE).json({auth: true, msg: "Post Deleted"});
     }
 };
@@ -482,25 +484,27 @@ let filterProfilePost = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
     let [profilePost, err] = await catchError(Post
         .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_title', 'post_media', 'created_at', 'post_published'])
-        .with({'userProfile' : (q) => {
-                q.select(['first_name','last_name']);
-                q.withSelect('userExtra',['profile_image']);
-            }})
+        .with({
+            'userProfile': (q) => {
+                q.select(['first_name', 'last_name']);
+                q.withSelect('userExtra', ['profile_image']);
+            }
+        })
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.id);
         })
-        .withSelect('comments', ['comment_content','created_at','profile_id','id'] , (q1) => {
-            q1.withSelect('userProfile', ['first_name','last_name','id'] , (q2) => {
-                q2.withSelect('userExtra',['profile_image']);
+        .withSelect('comments', ['comment_content', 'created_at', 'profile_id', 'id'], (q1) => {
+            q1.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
+                q2.withSelect('userExtra', ['profile_image']);
             });
             q1.take(5);
-            q1.orderBy('id','asc');
+            q1.orderBy('id', 'asc');
         })
         .where((q) => {
             if (isNaN(req.params.reaction_id)) {
                 q.whereRaw("(lower(post_title) like '%" + req.params.reaction_id.toLowerCase() + "%'" +
                     " or lower(post_content) like '%" + req.params.reaction_id.toLowerCase() + "%') " +
-                    "and profile_id = "+req.params.id+"");
+                    "and profile_id = " + req.params.id + "");
             } else {
                 q.whereHas('reactions', (q) => {
                     q.where('reaction_id', req.params.reaction_id);
@@ -531,7 +535,7 @@ module.exports = {
     'getAllProfilePost': getAllProfilePost,
     'getSinglePostWithComments': getSinglePostWithComments,
     'createPost': createPost,
-    'updatePost': updatePost,
+    /*'updatePost': updatePost,*/
     'deletePost': deletePost,
     'getAllHomePost': getAllHomePost,
     'addComment': addComment,
@@ -539,5 +543,5 @@ module.exports = {
     'getPostReactions': getPostReactions,
     'getPostComments': getPostComments,
     'filterProfilePost': filterProfilePost,
-    'deleteComment' : deleteComment
+    'deleteComment': deleteComment
 };

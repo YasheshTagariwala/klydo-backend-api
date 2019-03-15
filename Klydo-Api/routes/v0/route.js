@@ -29,7 +29,7 @@ module.exports = (app,express) => {
     router.get('/post/delete/:post',loadController('PostController').deletePost);
     router.get('/post/:id/:user_id?',loadController('PostController').getSinglePostWithComments);
     router.post('/post/add',loadController('PostController').createPost);
-    router.post('/post/update',loadController('PostController').updatePost);
+    //router.post('/post/update',loadController('PostController').updatePost);
 
 	//all friend controller routes	
 	router.post('/friend/add',loadController('FriendsController').addFriend);
@@ -66,7 +66,7 @@ module.exports = (app,express) => {
 	router.post('/klyspace/add/variable',loadController('KlyspaceController').addNewKlyspaceName);
 	router.post('/klyspace/update/variable/status',loadController('KlyspaceController').updateKlyspaceStatus);
 	router.post('/klyspace/update/variable/name',loadController('KlyspaceController').updateKlyspaceName);
-	router.post('/klyspace-data/add',loadController('KlyspaceController').addKlyspaceData);
+	//router.post('/klyspace-data/add',loadController('KlyspaceController').addKlyspaceData);
 
 	//track API
 	router.get('/graph/track/:query',loadController('GraphController').trackUser);

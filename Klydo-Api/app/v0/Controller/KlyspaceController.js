@@ -53,7 +53,7 @@ let updateKlyspaceName = async (req, res) => {
     }
 };
 
-let addKlyspaceData = async (req, res) => {
+/*let addKlyspaceData = async (req, res) => {
     let klyspaceData = req.body.klyspace_data;
     let klyspaceDataArray = [];
     let errors = [];
@@ -128,7 +128,7 @@ let addKlyspaceData = async (req, res) => {
     if (errors.length === 0) {
         res.status(OK_CODE).json({auth: true, msg: "KlyspaceData Added Successfully"});
     }
-};
+};*/
 
 let getAllKlyspaceVariables = async (req, res) => {
     let [data,err] = await catchError(Klyspace.select(['id','name']).where('status',true).get());
@@ -146,6 +146,6 @@ module.exports = {
     'addNewKlyspaceName': addNewKlyspaceName,
     'updateKlyspaceStatus': updateKlyspaceStatus,
     'updateKlyspaceName': updateKlyspaceName,
-    'addKlyspaceData': addKlyspaceData,
+    /*'addKlyspaceData': addKlyspaceData,*/
     'getAllKlyspaceVariables' : getAllKlyspaceVariables
 };
