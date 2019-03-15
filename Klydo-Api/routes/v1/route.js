@@ -7,8 +7,9 @@ module.exports = (app,express) => {
 	// 
 	// bubble related
 	router.get('/activity/getBubbleActivity/:user_id/:friend_id', loadV1Controller('ActivityController').getBubbleActivity);
-	router.get('/activity/addToBubble/:user_id/:friend_id', loadV1Controller('ActivityController').addToBubble);
-	router.get('/activity/removeFromBubble/:user_id/:friend_id', loadV1Controller('ActivityController').removeFromBubble);
+	router.get('/friend/getBubbleFriends/:user_id', loadV1Controller('FriendsController').getBubbleFriends);
+	router.get('/friend/addToBubble/:user_id/:friend_id', loadV1Controller('FriendsController').addToBubble);
+	router.get('/friend/removeFromBubble/:user_id/:friend_id', loadV1Controller('FriendsController').removeFromBubble);
 	// 
 	// =========================================================================================================================
 	// all post controlller routes

@@ -41,68 +41,68 @@ let getBubbleActivity = async (req, res) => {
             q.where((q) => {
                 q.whereHas('comments', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.where('id',req.params.user_id);
+                        q.where('id', req.params.user_id);
                     });
                     q.whereHas('posts', (q) => {
-                        q.where('profile_id',req.params.friend_id);
+                        q.where('profile_id', req.params.friend_id);
                     });
                 });
                 q.orWhereHas('comments', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.where('id',req.params.friend_id);
+                        q.where('id', req.params.friend_id);
                     });
                     q.whereHas('posts', (q) => {
-                        q.where('profile_id',req.params.user_id);
+                        q.where('profile_id', req.params.user_id);
                     });
                 });
                 q.orWhereHas('comments', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.where('id',req.params.friend_id);
+                        q.where('id', req.params.friend_id);
                     });
                     q.whereHas('posts', (q) => {
-                        q.whereRaw('profile_id in ('+Query.query + ' intersect ' + Query2.query+')');
+                        q.whereRaw('profile_id in (' + Query.query + ' intersect ' + Query2.query + ')');
                     });
                 });
                 q.orWhereHas('comments', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.whereRaw('id in ('+Query3.query + ' intersect ' + Query4.query+')');
+                        q.whereRaw('id in (' + Query3.query + ' intersect ' + Query4.query + ')');
                     });
                     q.whereHas('posts', (q) => {
-                        q.where('profile_id',req.params.friend_id);
+                        q.where('profile_id', req.params.friend_id);
                     });
                 });
             });
             q.orWhere((q) => {
                 q.whereHas('reactions', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.where('id',req.params.user_id);
+                        q.where('id', req.params.user_id);
                     });
                     q.whereHas('posts', (q) => {
-                        q.where('profile_id',req.params.friend_id);
+                        q.where('profile_id', req.params.friend_id);
                     });
                 });
                 q.orWhereHas('reactions', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.where('id',req.params.friend_id);
+                        q.where('id', req.params.friend_id);
                     });
                     q.whereHas('posts', (q) => {
-                        q.where('profile_id',req.params.user_id);
+                        q.where('profile_id', req.params.user_id);
                     });
                 });
                 q.orWhereHas('reactions', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.where('id',req.params.friend_id);
+                        q.where('id', req.params.friend_id);
                     });
                     q.whereHas('posts', (q) => {
-                        q.whereRaw('profile_id in ('+Query.query + ' intersect ' + Query2.query+')');
+                        q.whereRaw('profile_id in (' + Query.query + ' intersect ' + Query2.query + ')');
                     });
                 });
                 q.orWhereHas('reactions', (q) => {
                     q.whereHas('userProfile', (q) => {
-                        q.whereRaw('id in ('+Query3.query + ' intersect ' + Query4.query+')');
+                        q.whereRaw('id in (' + Query3.query + ' intersect ' + Query4.query + ')');
                     });
                     q.whereHas('posts', (q) => {
-                        q.where('profile_id',req.params.friend_id);
+                        q.where('profile_id', req.params.friend_id);
                     });
                 });
             });
@@ -125,14 +125,6 @@ let getBubbleActivity = async (req, res) => {
     }
 };
 
-let addToBubble = async (req, res) => {
-};
-
-let removeFromBubble = async (req, res) => {
-};
-
 module.exports = {
     'getBubbleActivity': getBubbleActivity,
-    'addToBubble' : addToBubble,
-    'removeFromBubble' : removeFromBubble
 };
