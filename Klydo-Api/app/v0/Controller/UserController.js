@@ -50,8 +50,8 @@ let getUserDetail = async  (req, res) => {
         return;
     }else{
         let [reaction,err1] = await catchError(Reaction.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]).whereHas('posts', (q) => {
-            q.where('profile_id',req.params.id);
-        }).orderBy('count','desc')
+                q.where('profile_id',req.params.id);
+            }).orderBy('count','desc')
             .query((q) => {
                 q.groupBy('reaction_id');
                 // q.offset(0);
@@ -73,8 +73,9 @@ let getUserDetail = async  (req, res) => {
                 users.klyspaceData = klyspaceData;
             }else {
                 let [klyspaceData,err1] = await catchError(KlyspaceData
-                    .select(['klyspace_id',bookshelf.knex.raw('round(avg(data),0) as data')])
+                    .select(['klyspace_id',bookshelf.knex.raw('count(*) as count')])
                     .where('doee_profile_id',req.params.id)
+                    .orderBy('count','desc')
                     .query((q) => {
                         q.groupBy('klyspace_id');
                     })
