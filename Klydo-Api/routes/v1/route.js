@@ -27,8 +27,8 @@ module.exports = (app,express) => {
 	// 
 	// =========================================================================================================================
 	//all graph controller routes
-	router.get('/graph/updateKly/:query', loadController('GraphController').getSimilarBeliefs);
-	router.get('/graph/similar/:query', loadController('GraphController').getSimilarBeliefs);
+	// router.get('/graph/updateKly/:query', loadV1Controller('GraphController').getSimilarBeliefs);
+	// router.get('/graph/similar/:query', loadV1Controller('GraphController').getSimilarBeliefs);
 
     //
     // =========================================================================================================================
