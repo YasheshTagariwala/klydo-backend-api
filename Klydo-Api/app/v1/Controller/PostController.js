@@ -1,4 +1,5 @@
 let Post = loadModal('Posts');
+let Graph = loadV1Controller('GraphController');
 
 let updatePost = async (req, res) => {
 
@@ -40,19 +41,30 @@ let updatePost = async (req, res) => {
             post_content: req.body.content,
             post_title: req.body.title,
             post_media: filename,
+            post_chips: Graph.extractChips(req.body.title)
         };
     } else {
-        newPostData = {
-            post_content: req.body.content,
-            post_title: req.body.title,
-        };
+        if (req.body.post_media) {
+            newPostData = {
+                post_content: req.body.content,
+                post_title: req.body.title,
+                post_chips: Graph.extractChips(req.body.content),
+                post_media: null
+            };
+        } else {
+            newPostData = {
+                post_content: req.body.content,
+                post_title: req.body.title,
+                post_chips: Graph.extractChips(req.body.content)
+            };
+        }
     }
 
     let [data, err1] = await catchError(Post.where({'id': req.body.post_id})
         .save(newPostData, {patch: true})
     );
 
-    //TODO:Add Graph API for update post here.
+    await Graph.extractChips(req.body.content, req.body.post_id);
 
     if (err1) {
         console.log(err1);

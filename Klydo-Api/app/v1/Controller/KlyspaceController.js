@@ -1,87 +1,74 @@
 let KlyspaceData = loadModal('KlyspaceData');
+let Klyspace = loadModal('Klyspace');
+let Graph = loadV1Controller('GraphController');
 
 let addKlyspaceData = async (req, res) => {
-    let requestData = req.body.klyspace_data;
-    let dataArray = [];
-    let oldklyspaceDataArray = [];
-    let newklyspaceDataArray = [];
 
-    for (let i = 0; i < requestData.length; i++) {
-        let tempData = {
-            'klyspace_id': requestData[i],
-            'data': 0
-        };
-        dataArray.push(tempData);
-    }
-
-    let [data, err] = await catchError(KlyspaceData.where({
+    let [checkData, err] = await catchError(KlyspaceData.where({
         'doer_profile_id': req.body.friend_id,
         'doee_profile_id': req.body.profile_id
-    }).get());
+    }).first());
 
     if (err) {
         console.log(err);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
         return;
     } else {
-        let to_not_delete = [];
-        let all_insert_data = [];
-        data = data.toJSON();
-        for (let i = 0; i < dataArray.length; i++) {
-            if (i in data) {
-                let updateData = {
-                    'klyspace_id': dataArray[i].klyspace_id,
-                };
-                let [updateKly, err] = await catchError(KlyspaceData.where({id: data[i].id}).save(updateData, {patch: true}));
-                if (err) {
-                    console.log(err);
-                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
-                    return;
-                }
-                to_not_delete.push(data[i].id);
-            } else {
-                let insertData = {
-                    'doer_profile_id': req.body.friend_id,
-                    'doee_profile_id': req.body.profile_id,
-                    'klyspace_id': dataArray[i].klyspace_id,
-                    'data': 0
-                };
-                all_insert_data.push(insertData);
-            }
-        }
+        if (checkData) {
+            let updateData = {
+                'klyspace_data': JSON.stringify(req.body.klyspace_data)
+            };
 
-        if (all_insert_data.length > 0) {
-            let klyData = KlyspaceData.collection();
-            klyData.add(all_insert_data);
-            let [insertKly, err] = await catchError(klyData.insert(false));
+            let [update, err] = await catchError(KlyspaceData.where('id', checkData.toJSON().id)
+                .save(updateData, {patch: true}));
+
+            if (err) {
+                console.log(err);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+                return;
+            }
+        } else {
+            let insertData = {
+                'klyspace_data': JSON.stringify(req.body.klyspace_data),
+                'doer_profile_id': req.body.friend_id,
+                'doee_profile_id': req.body.profile_id
+            };
+
+            let [insert, err] = await catchError(KlyspaceData.forge(insertData).save());
+
             if (err) {
                 console.log(err);
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
                 return;
             }
         }
-
-        let to_delete = [];
-        for (let i = 0; i < data.length; i++) {
-            if (to_not_delete.indexOf(data[i].id) <= -1) {
-                to_delete.push(data[i].id);
-            }
-        }
-
-        let [deleteKly, err] = await catchError(KlyspaceData.whereIn('id', to_delete).delete());
-        if (err) {
-            console.log(err);
-            res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
-            return;
-        }
-
-        res.status(OK_CODE).json({auth: true, msg: "KlySpace Data Updated Successfully"});
     }
 
-    // let oldWyuID = (oldklyspaceDataArray.reduce((a,b) => a + b,0)) / oldklyspaceDataArray.length;
-    // let newWyuID = (newklyspaceDataArray.reduce((a,b) => a + b,0)) / newklyspaceDataArray.length;
+    let [data, err1] = await catchError(KlyspaceData.select('klyspace_data')
+        .where('doee_profile_id', req.body.profile_id)
+        .whereNot('doer_profile_id', req.body.profile_id)
+        .get());
+    data = data.toJSON();
 
-    // await Graph.updateUserWyu(req.body.profile_id,oldWyuID,newWyuID);
+    let [variables, err2] = await catchError(Klyspace.select(['id'])
+        .where('status', true)
+        .orderBy('id', 'asc')
+        .get());
+
+    variables = variables.toJSON();
+
+    let vector = [];
+    for (let i = 0; i < variables.length; i++) {
+        let tempData = data.filter((obj) => {
+            return obj.klyspace_data.indexOf((+variables[i].id)) > -1
+        });
+
+        vector.push(tempData.length / data.length);
+    }
+
+    await Graph.updateUserWyu(req.body.profile_id, vector);
+
+    res.status(OK_CODE).json({auth: true, msg: "KlySpace Data Updated Successfully"});
 };
 
 module.exports = {
