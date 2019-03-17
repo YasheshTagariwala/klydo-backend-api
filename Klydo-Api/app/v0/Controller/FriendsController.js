@@ -3,6 +3,8 @@ let Activity = loadController('ActivityController');
 let Validation = loadUtility('Validations');
 let UserProfile = loadModal('UserProfile');
 let Post = loadModal('Posts');
+let PushNotification = loadV1Controller('PushNotification');
+let UserTokenMaster = loadV1Modal('UserTokenMaster');
 
 let addFriend = async (req, res) => {
     let [check, err2] = await catchError(FeelPals
@@ -34,6 +36,17 @@ let addFriend = async (req, res) => {
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
                 return;
             } else {
+                let [token, err5] = await catchError(UserTokenMaster.where('profile_id', req.body.friend_id).first());
+                if (err5) {
+                    console.log(err5);
+                } else {
+                    if (token) {
+                        token = token.toJSON();
+                        let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                        doer = doer.toJSON();
+                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 4, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+                    }
+                }
                 res.status(OK_CODE).json({auth: true, msg: "Friend Added", id: data.id})
             }
         } else {

@@ -21,7 +21,7 @@ let updateUserToken = async (req, res) => {
                 'firebase_token': req.body.token,
             };
 
-            let [data, err1] = await catchError(TokenMaster.where('profile_id',req.body.user_id).save(updateToken, {patch: true}));
+            let [data, err1] = await catchError(TokenMaster.where('profile_id', req.body.user_id).save(updateToken, {patch: true}));
             if (err1) {
                 console.log(err);
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});

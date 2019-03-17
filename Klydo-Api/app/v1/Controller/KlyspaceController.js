@@ -1,6 +1,9 @@
 let KlyspaceData = loadModal('KlyspaceData');
 let Klyspace = loadModal('Klyspace');
 let Graph = loadV1Controller('GraphController');
+let PushNotification = loadV1Controller('PushNotification');
+let UserTokenMaster = loadV1Modal('UserTokenMaster');
+let UserProfile = loadModal('UserProfile');
 
 let addKlyspaceData = async (req, res) => {
 
@@ -41,6 +44,18 @@ let addKlyspaceData = async (req, res) => {
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
                 return;
             }
+        }
+    }
+
+    let [token, err5] = await catchError(UserTokenMaster.where('profile_id', req.body.profile_id).first());
+    if (err5) {
+        console.log(err5);
+    } else {
+        if (token) {
+            token = token.toJSON();
+            let [doer, err] = await catchError(UserProfile.where('id', req.body.friend_id).first());
+            doer = doer.toJSON();
+            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 3, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", req.body.profile_id);
         }
     }
 

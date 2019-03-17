@@ -7,6 +7,9 @@ let Reaction = loadModal('PostReaction');
 let _ = require('underscore');
 let Validation = loadUtility('Validations');
 let Graph = loadController('GraphController');
+let PushNotification = loadV1Controller('PushNotification');
+let UserTokenMaster = loadV1Modal('UserTokenMaster');
+let UserProfile = loadModal('UserProfile');
 
 //diary posts
 let getAllDiaryPost = async (req, res) => {
@@ -345,6 +348,17 @@ let addComment = async (req, res) => {
         return;
     } else {
         post = post.toJSON();
+        let [token, err] = await catchError(UserTokenMaster.where('profile_id', post.profile_id).first());
+        if (err) {
+            console.log(err);
+        } else {
+            if (token) {
+                token = token.toJSON();
+                let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                doer = doer.toJSON();
+                await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 2, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.content, req.body.post_id);
+            }
+        }
         await Graph.addAffinity(req.body.user_id, post.profile_id);
         await Graph.filterAndAddBeliefsFrom(req.body.user_id, req.body.content);
     }
@@ -382,7 +396,7 @@ let addReaction = async (req, res) => {
     } else {
         if (data) {
             data = data.toJSON();
-            if (data.reaction_id === req.body.reaction_id) {
+            if (data.reaction_id == req.body.reaction_id) {
                 let [del, err1] = await catchError(Reaction.forge({id: data.id}).destroy());
                 if (err1) {
                     console.log(err1);
@@ -407,6 +421,17 @@ let addReaction = async (req, res) => {
                     return;
                 } else {
                     post = post.toJSON();
+                    let [token, err] = await catchError(UserTokenMaster.where('profile_id', post.profile_id).first());
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        if (token) {
+                            token = token.toJSON();
+                            let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                            doer = doer.toJSON();
+                            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id);
+                        }
+                    }
                     await Graph.addAffinity(req.body.user_id, post.profile_id);
                     await Graph.updateReactWeights(req.body.post_id, req.body.reaction_id);
                 }
@@ -465,6 +490,17 @@ let addReaction = async (req, res) => {
                 return;
             } else {
                 post = post.toJSON();
+                let [token, err] = await catchError(UserTokenMaster.where('profile_id', post.profile_id).first());
+                if (err) {
+                    console.log(err);
+                } else {
+                    if (token) {
+                        token = token.toJSON();
+                        let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                        doer = doer.toJSON();
+                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id);
+                    }
+                }
                 await Graph.addAffinity(req.body.user_id, post.profile_id);
             }
 
