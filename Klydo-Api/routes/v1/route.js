@@ -9,6 +9,7 @@ module.exports = (app, express) => {
     router.get('/activity/getBubbleActivity/:user_id/:friend_id', loadV1Controller('ActivityController').getBubbleActivity);
 
     //friend controller routes
+    router.get('/friend/following/:id/:friend_id?/',loadV1Controller('FriendsController').getFollowings);
     router.get('/friend/getBubbleFriends/:user_id', loadV1Controller('FriendsController').getBubbleFriends);
     router.get('/friend/addToBubble/:user_id/:friend_id', loadV1Controller('FriendsController').addToBubble);
     router.get('/friend/removeFromBubble/:user_id/:friend_id', loadV1Controller('FriendsController').removeFromBubble);
@@ -23,6 +24,7 @@ module.exports = (app, express) => {
     // all klyspace controlller routes
     //
     // klyspace
+    router.get('/klyspace-data/fetch/:user_id', loadV1Controller('KlyspaceController').getKlyspaceData);
     router.post('/klyspace-data/add', loadV1Controller('KlyspaceController').addKlyspaceData);
     //
     // =========================================================================================================================
