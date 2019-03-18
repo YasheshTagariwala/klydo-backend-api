@@ -76,9 +76,22 @@ let acceptFriend = async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
         return;
     } else {
+        let [data, err] = await catchError(FeelPals.where({id: fid}).first());
+        data = data.toJSON();
+        let [token, err5] = await catchError(UserTokenMaster.where('profile_id', data.followers).first());
+        if (err5) {
+            console.log(err5);
+        } else {
+            if (token) {
+                token = token.toJSON();
+                let [doer, err] = await catchError(UserProfile.where('id', data.followings).first());
+                doer = doer.toJSON();
+                await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 7, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+            }
+        }
         res.status(OK_CODE).json({auth: true, msg: "Friend Request Accepted"})
     }
-}
+};
 
 let rejectFriend = async (req, res) => {
     let fid = req.params.id;

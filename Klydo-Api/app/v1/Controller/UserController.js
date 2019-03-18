@@ -70,7 +70,7 @@ let getUserDetail = async (req, res) => {
             users.klyspaceData = null;
             let [klySpaceData, err1] = await catchError(KlyspaceData.select('klyspace_data')
                 .where('doee_profile_id', req.params.id)
-                .whereNot('doer_profile_id', req.params.id)
+                // .whereNot('doer_profile_id', req.params.id)
                 .get());
             if(klySpaceData){
                 klySpaceData = klySpaceData.toJSON();
@@ -85,7 +85,7 @@ let getUserDetail = async (req, res) => {
                 let vector = [];
                 for (let i = 0; i < variables.length; i++) {
                     let tempData = klySpaceData.filter((obj) => {
-                        return obj.klyspace_data.indexOf((+variables[i].id)) > -1
+                        return obj.klyspace_data.indexOf((+variables[i].id)) > -1 || obj.klyspace_data.indexOf(variables[i].id) > -1
                     });
 
                     let countData = {

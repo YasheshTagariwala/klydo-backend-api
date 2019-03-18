@@ -28,7 +28,7 @@ let updateUserWyu = async (userID, newWyuID) => {
 
 let extractChips = async (content, postId) => {
     let data = '';
-    http.get('http://klydo.space/graph/extract_chips/' + content.replace('?', '.'), (resp) => {
+    http.get('http://klydo.space/graph/extract_chips/' + encodeURIComponent(content.replace('?', '.')), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });

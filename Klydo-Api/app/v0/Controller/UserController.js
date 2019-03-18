@@ -5,6 +5,8 @@ let KlyspaceData = loadModal('KlyspaceData');
 let bookshelf = loadConfig('Bookshelf.js');
 let fs = require('fs');
 let Graph = loadController('GraphController');
+let PushNotification = loadV1Controller('PushNotification');
+let UserTokenMaster = loadV1Modal('UserTokenMaster');
 
 //Get single User details
 let getUserDetail = async  (req, res) => {
@@ -167,6 +169,21 @@ let changeStatus = async (req, res) => {
 			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
 			return;
 		}else {
+            let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = '+req.body.user_id+')').get());
+            if (err5) {
+                console.log(err5);
+            } else {
+                if (token) {
+                    token = token.toJSON();
+                    let tokens = [];
+                    for (let i = 0; i < token.length; i++) {
+                        tokens.push(token[i].firebase_token);
+                    }
+                    let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                    doer = doer.toJSON();
+                    await PushNotification.sendPushNotificationToMultipleDevice(tokens, 8, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+                }
+            }
 			res.status(OK_CODE).json({auth: true, msg : "Status Updated Successfully"});
 		}
 	}
@@ -208,6 +225,21 @@ let updateProfileImage = async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE});
         return;
 	}
+    let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = '+req.body.user_id+')').get());
+    if (err5) {
+        console.log(err5);
+    } else {
+        if (token) {
+            token = token.toJSON();
+            let tokens = [];
+            for (let i = 0; i < token.length; i++) {
+                tokens.push(token[i].firebase_token);
+            }
+            let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+            doer = doer.toJSON();
+            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+        }
+    }
     res.status(OK_CODE).json({auth: true, msg : "Profile Picture Updated Successfully", data : filename});
 };
 

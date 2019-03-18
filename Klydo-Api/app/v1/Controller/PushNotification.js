@@ -17,13 +17,15 @@ let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId)
     }
 
     let pushMessage = {
-        notification: {
-            title: message.title,
-            body: body,
-        },
+        // notification: {
+        //     title: message.title,
+        //     body: body,
+        // },
         token: token,
         // priority: 'high',
         data: {
+            title: message.title,
+            body: body,
             type: type.toString(),
             data: data.toString(),
             dataId: postId.toString()
@@ -39,7 +41,7 @@ let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId)
     });
 };
 
-let sendPushNotificationToMultipleDevice = async (tokens, type) => {
+let sendPushNotificationToMultipleDevice = async (tokens, type, doer, data, postId) => {
     let message = getMessage(type);
     let body = '';
     if (data === '') {
@@ -50,15 +52,17 @@ let sendPushNotificationToMultipleDevice = async (tokens, type) => {
     }
 
     let pushMessage = {
-        notification: {
-            title: message.title,
-            body: body,
-        },
-        token: token,
+        // notification: {
+        //     title: message.title,
+        //     body: body,
+        // },
         // priority: 'high',
         data: {
-            type: type,
-            data: data
+            title: message.title,
+            body: body,
+            type: type.toString(),
+            data: data.toString(),
+            dataId: postId.toString()
         }
     };
 
@@ -66,7 +70,7 @@ let sendPushNotificationToMultipleDevice = async (tokens, type) => {
         if (err) {
             console.log(err);
         } else {
-            console.log(response);
+            // console.log(response);
         }
     });
 };
@@ -172,8 +176,27 @@ let getMessage = (type) => {
             "body": "{doer} Added A Post"
         }
     }
+    if (type === 7) {
+        return {
+            "title": "Friend Request",
+            "body": "{doer} Accepted Your Friend Request"
+        }
+    }
+    if (type === 8) {
+        return {
+            "title": "Bubble",
+            "body": "{doer} Updated Status"
+        }
+    }
+    if (type === 9) {
+        return {
+            "title": "Bubble",
+            "body": "{doer} Updated Profile Picture"
+        }
+    }
 };
 
 module.exports = {
-    'sendPushNotificationToSingleDevice': sendPushNotificationToSingleDevice
+    'sendPushNotificationToSingleDevice': sendPushNotificationToSingleDevice,
+    'sendPushNotificationToMultipleDevice': sendPushNotificationToMultipleDevice
 };
