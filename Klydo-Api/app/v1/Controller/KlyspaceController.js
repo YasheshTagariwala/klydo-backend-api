@@ -5,6 +5,23 @@ let PushNotification = loadV1Controller('PushNotification');
 let UserTokenMaster = loadV1Modal('UserTokenMaster');
 let UserProfile = loadModal('UserProfile');
 
+let getKlyspaceData = async (req, res) => {
+
+    let [data,err] = await catchError(KlyspaceData.select(['id','klyspace_data','doer_profile_id', 'doee_profile_id'])
+        .withSelect('doerUserProfile', ['first_name', 'last_name'], (q) => {
+            q.withSelect('userExtra', ['profile_image'])
+        })
+        .where('doee_profile_id',req.params.user_id).get());
+
+    if (err) {
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+        return;
+    } else {
+        res.status(OK_CODE).json({auth: true, data : data});
+    }
+};
+
 let addKlyspaceData = async (req, res) => {
 
     let [checkData, err] = await catchError(KlyspaceData.where({
@@ -87,5 +104,6 @@ let addKlyspaceData = async (req, res) => {
 };
 
 module.exports = {
+    'getKlyspaceData': getKlyspaceData,
     'addKlyspaceData': addKlyspaceData,
 };
