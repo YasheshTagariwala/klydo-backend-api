@@ -169,7 +169,7 @@ let changeStatus = async (req, res) => {
 			res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
 			return;
 		}else {
-            let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = '+req.body.user_id+')').get());
+            let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = '+req.body.user_id+' and is_favourite = true)').get());
             if (err5) {
                 console.log(err5);
             } else {
@@ -225,7 +225,7 @@ let updateProfileImage = async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : false,msg : INTERNAL_SERVER_ERROR_MESSAGE});
         return;
 	}
-    let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = '+req.body.user_id+')').get());
+    let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = '+req.body.user_id+' and is_favourite = true)').get());
     if (err5) {
         console.log(err5);
     } else {
