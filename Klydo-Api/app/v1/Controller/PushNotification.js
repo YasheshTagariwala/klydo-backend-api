@@ -24,7 +24,7 @@ let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId)
         token: token,
         // priority: 'high',
         data: {
-            title: message.title,
+            title: message.title.replace("{doer}",doer),
             body: body,
             type: type.toString(),
             data: data.toString(),
@@ -58,7 +58,7 @@ let sendPushNotificationToMultipleDevice = async (tokens, type, doer, data, post
         // },
         // priority: 'high',
         data: {
-            title: message.title,
+            title: message.title.replace("{doer}",doer),
             body: body,
             type: type.toString(),
             data: data.toString(),
