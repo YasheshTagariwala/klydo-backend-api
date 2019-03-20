@@ -96,7 +96,7 @@ let getUserDetail = async (req, res) => {
                 }
 
                 vector.sort(SortByID);
-                // vector = vector.splice(0, 8);
+                vector = vector.splice(0, 8);
 
                 users.klyspaceData = vector;
             }
