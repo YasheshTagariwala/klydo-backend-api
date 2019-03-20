@@ -142,56 +142,56 @@ let sendPushNotificationToMultipleTopic = async (topics, type) => {
 let getMessage = (type) => {
     if (type === 1) {
         return {
-            "title": "Reaction",
-            "body": "{doer} Reacted {data} On Your Post"
+            "title": "{doer}",
+            "body": "{doer} reacted {data} on your post."
         }
     }
     if (type === 2) {
         return {
-            "title": "Comment",
-            "body": "{doer} Commented {data} On Your Post"
+            "title": "{doer}",
+            "body": "{doer} commented on your post: \"{data}\""
         }
     }
     if (type === 3) {
         return {
-            "title": "Rating",
-            "body": "{doer} Rated On Your Profile"
+            "title": "{doer}",
+            "body": "{doer} rated your personality!"
         }
     }
     if (type === 4) {
         return {
-            "title": "Friend Request",
-            "body": "{doer} Sent You Friend Request"
+            "title": "{doer}",
+            "body": "{doer} wants to follow you."
         }
     }
     if (type === 5) {
         return {
-            "title": "Message",
-            "body": "{doer} Sent You A Message"
+            "title": "{doer}",
+            "body": "{doer}: ACTUAL_MESSAGE_HERE" // for messaging
         }
     }
     if (type === 6) {
         return {
-            "title": "Bubble",
-            "body": "{doer} Added A Post"
+            "title": "{doer}",
+            "body": "{doer} wrote a new post." //
         }
     }
     if (type === 7) {
         return {
-            "title": "Friend Request",
-            "body": "{doer} Accepted Your Friend Request"
+            "title": "{doer}",
+            "body": "You are now following {doer}."
         }
     }
     if (type === 8) {
         return {
-            "title": "Bubble",
-            "body": "{doer} Updated Status"
+            "title": "{doer}",
+            "body": "{doer} updated their status."
         }
     }
     if (type === 9) {
         return {
-            "title": "Bubble",
-            "body": "{doer} Updated Profile Picture"
+            "title": "{doer}",
+            "body": "{doer} uploaded a new picture."
         }
     }
 };
