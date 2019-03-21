@@ -1,4 +1,4 @@
-let Activity = loadModal('Activity');
+let Activity = loadV1Modal('Activity');
 let Validation = loadUtility('Validations');
 let Feelpals = loadModal('Feelpals');
 
@@ -9,6 +9,32 @@ let Feelpals = loadModal('Feelpals');
 *       +
 *    5 sees all activity done on yasehsh by 6 and all activity done on 5 by 2
 */
+
+let ActivityTypes = {
+    '1': 'Add Post',
+    '2': 'Add Friend',
+    '3': 'Add Comment',
+    '4': 'Add Reaction',
+    '5': 'Add Slam Reply',
+    '6': 'Add/Update Kly-Web Data',
+    '7': 'Add/Update User Profile',
+    '8': 'Add/Update Status'
+};
+
+let updateActivityId = async (activityType, id) => {
+
+    let activityId = {
+        'activity_type': activityType
+    };
+
+    let [update, err] = await catchError(Activity.where('id', id)
+        .save(activityId, {patch: true}));
+
+    if (err)
+        return null;
+    else
+        return id;
+};
 
 let getBubbleActivity = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
@@ -34,6 +60,19 @@ let getBubbleActivity = async (req, res) => {
                     q.withSelect('userProfile', ['first_name', 'last_name']);
                 });
                 q.withSelect('userProfile', ['first_name', 'last_name'], (q) => {
+                    q.withSelect('userExtra', ['profile_image', 'emotion'])
+                });
+            }, 'userProfile': (q) => {
+                q.select(['about_me','first_name','last_name']);
+                q.withSelect('userExtra', ['profile_image']);
+            }, 'userExtra': (q) => {
+                q.select(['profile_image','user_profile_id']);
+                q.withSelect('userProfile', ['first_name', 'last_name']);
+            }, 'klyspaceData': (q) => {
+                q.withSelect('doerUserProfile', ['first_name', 'last_name'], (q) => {
+                    q.withSelect('userExtra', ['profile_image', 'emotion'])
+                });
+                q.withSelect('doeeUserProfile', ['first_name', 'last_name'],(q) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
             }
@@ -106,8 +145,52 @@ let getBubbleActivity = async (req, res) => {
                     });
                 });
             });
+            q.orWhere((q) => {
+                q.orWhereHas('userProfile', (q) => {
+                    q.where('id', req.params.friend_id);
+                });
+            });
+            q.orWhere((q) => {
+                q.orWhereHas('userExtra', (q) => {
+                    q.where('user_profile_id', req.params.friend_id);
+                });
+            });
+            q.orWhere((q) => {
+                q.whereHas('klyspaceData', (q) => {
+                    q.whereHas('doerUserProfile', (q) => {
+                        q.where('id', req.params.user_id);
+                    });
+                    q.whereHas('doeeUserProfile', (q) => {
+                        q.where('id', req.params.friend_id);
+                    });
+                });
+                q.orWhereHas('klyspaceData', (q) => {
+                    q.whereHas('doerUserProfile', (q) => {
+                        q.where('id', req.params.friend_id);
+                    });
+                    q.whereHas('doeeUserProfile', (q) => {
+                        q.where('id', req.params.user_id);
+                    });
+                });
+                q.orWhereHas('klyspaceData', (q) => {
+                    q.whereHas('doerUserProfile', (q) => {
+                        q.where('id', req.params.friend_id);
+                    });
+                    q.whereHas('doeeUserProfile', (q) => {
+                        q.whereRaw('id in (' + Query.query + ' intersect ' + Query2.query + ')');
+                    });
+                });
+                q.orWhereHas('klyspaceData', (q) => {
+                    q.whereHas('doerUserProfile', (q) => {
+                        q.whereRaw('id in (' + Query3.query + ' intersect ' + Query4.query + ')');
+                    });
+                    q.whereHas('doeeUserProfile', (q) => {
+                        q.where('id', req.params.friend_id);
+                    });
+                });
+            });
         })
-        .orderBy('id', 'desc')
+        .orderBy('updated_at', 'desc')
         .offset(offset)
         .limit(RECORED_PER_PAGE)
         .get());
@@ -127,4 +210,5 @@ let getBubbleActivity = async (req, res) => {
 
 module.exports = {
     'getBubbleActivity': getBubbleActivity,
+    'updateActivityId': updateActivityId
 };

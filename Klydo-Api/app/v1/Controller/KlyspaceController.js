@@ -4,6 +4,8 @@ let Graph = loadV1Controller('GraphController');
 let PushNotification = loadV1Controller('PushNotification');
 let UserTokenMaster = loadV1Modal('UserTokenMaster');
 let UserProfile = loadModal('UserProfile');
+let Activity = loadController('ActivityController');
+let ActivityV1 = loadV1Controller('ActivityController');
 
 let getKlyspaceData = async (req, res) => {
 
@@ -32,7 +34,7 @@ let getKlyspaceData = async (req, res) => {
             }
             vector.sort(SortByID);
             vector = vector.splice(0, 8);
-            new_data.push({klyspace_data : vector});
+            new_data.push({klyspace_data: vector});
         }
     }
 
@@ -78,11 +80,28 @@ let addKlyspaceData = async (req, res) => {
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
                 return;
             }
+
+            let [activityId, err1] = await catchError(ActivityV1.updateActivityId(6, checkData.toJSON().activity_id));
+            if (activityId == null || err1) {
+                console.log(err1);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                return;
+            }
+
         } else {
+
+            let [activityId, err1] = await catchError(Activity.createActivity(6));
+            if (activityId == null || err1) {
+                console.log(err1);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                return;
+            }
+
             let insertData = {
                 'klyspace_data': JSON.stringify(req.body.klyspace_data),
                 'doer_profile_id': req.body.friend_id,
-                'doee_profile_id': req.body.profile_id
+                'doee_profile_id': req.body.profile_id,
+                'activity_id': activityId
             };
 
             let [insert, err] = await catchError(KlyspaceData.forge(insertData).save());

@@ -3,6 +3,8 @@ module.exports = (app, express) => {
     let router = express.Router();
 
     // =========================================================================================================================
+    router.post('/user/change-profile-image',loadV1Controller('UserController').updateProfileImage);
+    router.post('/user/change-status',loadV1Controller('UserController').changeStatus);
     // all activity controlller routes
     //
     // bubble related

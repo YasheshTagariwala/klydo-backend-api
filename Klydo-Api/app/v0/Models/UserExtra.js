@@ -6,7 +6,7 @@ var UserExtra = bookshelf.Model.extend({
 	softDelete: true,
 
 	userProfile : function(){
-		return this.hasOne(loadModal('UserExtra'),'user_profile_id','id');
+		return this.hasOne(loadModal('UserProfile'),'user_profile_id','id');
 	}
 });
 

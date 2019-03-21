@@ -1,8 +1,13 @@
 let UserProfile = loadModal('UserProfile');
+let UserExtra = loadModal('UserExtra');
 let Reaction = loadModal('PostReaction');
 let KlyspaceData = loadModal('KlyspaceData');
 let Klyspace = loadModal('Klyspace');
 let bookshelf = loadConfig('Bookshelf.js');
+let UserTokenMaster = loadV1Modal('UserTokenMaster');
+let PushNotification = loadV1Controller('PushNotification');
+let Activity = loadController('ActivityController');
+let ActivityV1 = loadV1Controller('ActivityController');
 
 //Get single User details
 let getUserDetail = async (req, res) => {
@@ -72,7 +77,7 @@ let getUserDetail = async (req, res) => {
                 .where('doee_profile_id', req.params.id)
                 // .whereNot('doer_profile_id', req.params.id)
                 .get());
-            if(klySpaceData){
+            if (klySpaceData) {
                 klySpaceData = klySpaceData.toJSON();
 
                 let [variables, err2] = await catchError(Klyspace.select(['id'])
@@ -109,6 +114,156 @@ function SortByID(x, y) {
     return y.count - x.count;
 }
 
+let updateProfileImage = async (req, res) => {
+    // let [user,err] = await catchError(UserExtra.where('user_profile_id',req.body.user_id).first());
+    // if(err){
+    //     console.log(err);
+    //     res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg:INTERNAL_SERVER_ERROR_MESSAGE});
+    //     return;
+    // }
+    //
+    // user = user.toJSON();
+    // if(user.profile_image != null){
+    // 	fs.unlink(MediaPath + '/' + user.profile_image, (e) => {
+    // 		if(e) throw e;
+    // 	});
+    // }
+    let moment = require('moment');
+    let profile_image = req.files.profile_image;
+    let filename = req.body.user_id + '-' + moment(new Date()).format('YYYY-MM-DD-HH-mm-ss') + profile_image.name.substring(profile_image.name.lastIndexOf('.'));
+    let [data, err1] = await catchError(profile_image.mv(MediaPath + '/' + filename));
+    if (err1) {
+        console.log(err1);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+        return;
+    }
+
+    let [users, err] = await catchError(UserExtra.where('id', req.body.user_id).first());
+    if (err) {
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+        return;
+    } else {
+        let activity_id = null;
+        if (users.toJSON().activity_id == null) {
+            let [activityId, err1] = await catchError(Activity.createActivity(7));
+            if (activityId == null || err1) {
+                console.log(err1);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                return;
+            }
+
+            activity_id = activityId;
+        } else {
+            let [activityId, err1] = await catchError(ActivityV1.updateActivityId(7, users.toJSON().activity_id));
+            if (activityId == null || err1) {
+                console.log(err1);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                return;
+            }
+            activity_id = activityId;
+        }
+
+        let user_data = {
+            profile_image: filename,
+            activity_id: activity_id
+        };
+
+        let [update_data, err2] = await catchError(UserExtra.where('user_profile_id', req.body.user_id).save(user_data, {patch: true}));
+        if (err2) {
+            console.log(err2);
+            res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+            return;
+        }
+    }
+
+    let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = ' + req.body.user_id + ' and is_favourite = true)').get());
+    if (err5) {
+        console.log(err5);
+    } else {
+        if (token) {
+            token = token.toJSON();
+            let tokens = [];
+            for (let i = 0; i < token.length; i++) {
+                tokens.push(token[i].firebase_token);
+            }
+            let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+            doer = doer.toJSON();
+            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+        }
+    }
+    res.status(OK_CODE).json({auth: true, msg: "Profile Picture Updated Successfully", data: filename});
+};
+
+//Change User Status
+let changeStatus = async (req, res) => {
+    if (req.body.status.length > 140) {
+        res.status(OK_CODE).json({auth: true, msg: "Status Too Long Only 140 Chars Allowed"});
+    } else {
+
+        let [user, err1] = await catchError(UserProfile.where('id', req.body.user_id).first());
+        if (err1) {
+            console.log(err1);
+            res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+            return;
+        } else {
+            let activity_id = null;
+            if(user.toJSON().activity_id == null) {
+                let [activityId, err1] = await catchError(Activity.createActivity(8));
+                if (activityId == null || err1) {
+                    console.log(err1);
+                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                    return;
+                }
+
+                activity_id = activityId;
+            } else {
+                let [activityId, err1] = await catchError(ActivityV1.updateActivityId(8, user.toJSON().activity_id));
+                if (activityId == null || err1) {
+                    console.log(err1);
+                    res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+                    return;
+                }
+                activity_id = activityId;
+
+            }
+            let profile = {
+                about_me: req.body.status,
+                activity_id: activity_id
+            }
+
+            let [data, err] = await catchError(UserProfile.where({'id': req.body.user_id})
+                .save(profile, {patch: true})
+            );
+
+            if (err) {
+                console.log(err);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+                return;
+            } else {
+                let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = ' + req.body.user_id + ' and is_favourite = true)').get());
+                if (err5) {
+                    console.log(err5);
+                } else {
+                    if (token) {
+                        token = token.toJSON();
+                        let tokens = [];
+                        for (let i = 0; i < token.length; i++) {
+                            tokens.push(token[i].firebase_token);
+                        }
+                        let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                        doer = doer.toJSON();
+                        await PushNotification.sendPushNotificationToMultipleDevice(tokens, 8, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+                    }
+                }
+                res.status(OK_CODE).json({auth: true, msg: "Status Updated Successfully"});
+            }
+        }
+    }
+};
+
 module.exports = {
     'getUserDetail': getUserDetail,
+    'updateProfileImage': updateProfileImage,
+    'changeStatus': changeStatus
 };
