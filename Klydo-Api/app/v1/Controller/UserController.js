@@ -67,7 +67,7 @@ let getUserDetail = async (req, res) => {
         } else {
             users = users.toJSON();
             users.reaction = reaction;
-            users.klyspaceData = null;
+            users.klyspace_data = null;
             let [klySpaceData, err1] = await catchError(KlyspaceData.select('klyspace_data')
                 .where('doee_profile_id', req.params.id)
                 // .whereNot('doer_profile_id', req.params.id)
@@ -98,7 +98,7 @@ let getUserDetail = async (req, res) => {
                 vector.sort(SortByID);
                 vector = vector.splice(0, 8);
 
-                users.klyspaceData = vector;
+                users.klyspace_data = vector;
             }
         }
         res.status(OK_CODE).json({auth: true, msg: 'Success', data: users});

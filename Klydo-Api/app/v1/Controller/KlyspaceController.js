@@ -7,20 +7,51 @@ let UserProfile = loadModal('UserProfile');
 
 let getKlyspaceData = async (req, res) => {
 
-    let [data,err] = await catchError(KlyspaceData.select(['id','klyspace_data','doer_profile_id', 'doee_profile_id'])
+    let [data, err] = await catchError(KlyspaceData.select(['id', 'klyspace_data', 'doer_profile_id', 'doee_profile_id'])
         .withSelect('doerUserProfile', ['first_name', 'last_name'], (q) => {
             q.withSelect('userExtra', ['profile_image'])
         })
-        .where('doee_profile_id',req.params.user_id).get());
+        .where('doee_profile_id', req.params.user_id).get());
+    let new_data = [];
+    if (data) {
+        data = data.toJSON();
+
+        for (let i = 0; i < data.length; i++) {
+            let vector = [];
+            let klyData = data[i].klyspace_data;
+            for (let j = 0; j < klyData.length; j++) {
+                let tempData = data.filter((obj) => {
+                    return obj.klyspace_data.indexOf((+klyData[j])) > -1 || obj.klyspace_data.indexOf(klyData[j]) > -1
+                });
+
+                let countData = {
+                    'klyspace_id': klyData[j],
+                    'count': tempData.length
+                };
+                vector.push(countData);
+            }
+            vector.sort(SortByID);
+            vector = vector.splice(0, 8);
+            new_data.push({klyspace_data : vector});
+        }
+    }
+
+    for (let i = 0; i < data.length; i++) {
+        data[i].klyspace_data = new_data[i].klyspace_data;
+    }
 
     if (err) {
         console.log(err);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
         return;
     } else {
-        res.status(OK_CODE).json({auth: true, data : data});
+        res.status(OK_CODE).json({auth: true, data: data});
     }
 };
+
+function SortByID(x, y) {
+    return y.count - x.count;
+}
 
 let addKlyspaceData = async (req, res) => {
 
