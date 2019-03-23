@@ -63,7 +63,7 @@ let getBubbleActivity = async (req, res) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
             }, 'userProfile': (q) => {
-                q.select(['about_me','first_name','last_name']);
+                q.select(['id','about_me','first_name','last_name']);
                 q.withSelect('userExtra', ['profile_image']);
             }, 'userExtra': (q) => {
                 q.select(['profile_image','user_profile_id']);
