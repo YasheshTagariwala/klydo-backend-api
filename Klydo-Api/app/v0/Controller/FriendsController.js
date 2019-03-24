@@ -42,9 +42,9 @@ let addFriend = async (req, res) => {
                 } else {
                     if (token) {
                         token = token.toJSON();
-                        let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                        let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                         doer = doer.toJSON();
-                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 4, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 4, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
                     }
                 }
                 res.status(OK_CODE).json({auth: true, msg: "Friend Added", id: data.id})
@@ -84,9 +84,9 @@ let acceptFriend = async (req, res) => {
         } else {
             if (token) {
                 token = token.toJSON();
-                let [doer, err] = await catchError(UserProfile.where('id', data.followings).first());
+                let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', data.followings).first());
                 doer = doer.toJSON();
-                await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 7, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+                await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 7, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
             }
         }
         res.status(OK_CODE).json({auth: true, msg: "Friend Request Accepted"})

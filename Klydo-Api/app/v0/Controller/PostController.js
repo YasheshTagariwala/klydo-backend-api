@@ -287,9 +287,9 @@ let createPost = async (req, res) => {
                 for (let i = 0; i < token.length; i++) {
                     tokens.push(token[i].firebase_token);
                 }
-                let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                 doer = doer.toJSON();
-                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 6, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0");
+                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 6, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
             }
         }
         res.status(OK_CODE).json({auth: true, msg: "Posted"})
@@ -371,9 +371,9 @@ let addComment = async (req, res) => {
         } else {
             if (token) {
                 token = token.toJSON();
-                let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                 doer = doer.toJSON();
-                await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 2, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.content, req.body.post_id);
+                await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 2, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.content, req.body.post_id,doer.userExtra.profile_image);
             }
         }
         await Graph.addAffinity(req.body.user_id, post.profile_id);
@@ -444,9 +444,9 @@ let addReaction = async (req, res) => {
                     } else {
                         if (token) {
                             token = token.toJSON();
-                            let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                            let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                             doer = doer.toJSON();
-                            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id);
+                            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id,doer.userExtra.profile_image);
                         }
                     }
                     await Graph.addAffinity(req.body.user_id, post.profile_id);
@@ -513,9 +513,9 @@ let addReaction = async (req, res) => {
                 } else {
                     if (token) {
                         token = token.toJSON();
-                        let [doer, err] = await catchError(UserProfile.where('id', req.body.user_id).first());
+                        let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                         doer = doer.toJSON();
-                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id);
+                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id,doer.userExtra.profile_image);
                     }
                 }
                 await Graph.addAffinity(req.body.user_id, post.profile_id);
@@ -536,7 +536,7 @@ let addReaction = async (req, res) => {
 let filterProfilePost = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
     let [profilePost, err] = await catchError(Post
-        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_title', 'post_media', 'created_at', 'post_published'])
+        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes','post_chips' , 'post_title', 'post_media', 'created_at', 'post_published'])
         .with({
             'userProfile': (q) => {
                 q.select(['first_name', 'last_name']);

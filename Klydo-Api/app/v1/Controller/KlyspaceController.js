@@ -120,9 +120,9 @@ let addKlyspaceData = async (req, res) => {
     } else {
         if (token) {
             token = token.toJSON();
-            let [doer, err] = await catchError(UserProfile.where('id', req.body.friend_id).first());
+            let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.friend_id).first());
             doer = doer.toJSON();
-            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 3, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", req.body.profile_id);
+            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 3, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", req.body.profile_id,doer.userExtra.profile_image);
         }
     }
 

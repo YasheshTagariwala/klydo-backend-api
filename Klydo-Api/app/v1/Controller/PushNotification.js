@@ -2,7 +2,7 @@ let fcm = require('fcm-notification');
 let FCM = new fcm(APP_ROOT_PATH + '/Config/firebase_admin_config.json');
 let reactionType = ['Lovable', 'Deep', 'Badass', 'Smart', 'Hot', 'Funny', 'Cool'];
 
-let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId) => {
+let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId, image) => {
     let message = getMessage(type);
     let body = '';
     if (data === '') {
@@ -24,11 +24,12 @@ let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId)
         token: token,
         // priority: 'high',
         data: {
-            title: message.title.replace("{doer}",doer),
+            title: message.title.replace("{doer}", doer),
             body: body,
             type: type.toString(),
             data: data.toString(),
-            dataId: postId.toString()
+            dataId: postId.toString(),
+            image : image
         }
     };
 
@@ -41,7 +42,7 @@ let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId)
     });
 };
 
-let sendPushNotificationToMultipleDevice = async (tokens, type, doer, data, postId) => {
+let sendPushNotificationToMultipleDevice = async (tokens, type, doer, data, postId, image) => {
     let message = getMessage(type);
     let body = '';
     if (data === '') {
@@ -58,11 +59,12 @@ let sendPushNotificationToMultipleDevice = async (tokens, type, doer, data, post
         // },
         // priority: 'high',
         data: {
-            title: message.title.replace("{doer}",doer),
+            title: message.title.replace("{doer}", doer),
             body: body,
             type: type.toString(),
             data: data.toString(),
-            dataId: postId.toString()
+            dataId: postId.toString(),
+            image : image
         }
     };
 
