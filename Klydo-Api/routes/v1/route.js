@@ -7,8 +7,9 @@ module.exports = (app, express) => {
     router.post('/user/change-status',loadV1Controller('UserController').changeStatus);
     // all activity controlller routes
     //
-    // bubble related
+    // activity controller routes
     router.get('/activity/getBubbleActivity/:user_id/:friend_id', loadV1Controller('ActivityController').getBubbleActivity);
+    router.get('/activity/around/:id',loadV1Controller('ActivityController').getAroundYouActivity);
 
     //friend controller routes
     router.get('/friend/following/:id/:friend_id?/',loadV1Controller('FriendsController').getFollowings);
