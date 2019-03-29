@@ -10,6 +10,7 @@ module.exports = (app, express) => {
     // activity controller routes
     router.get('/activity/getBubbleActivity/:user_id/:friend_id', loadV1Controller('ActivityController').getBubbleActivity);
     router.get('/activity/around/:id',loadV1Controller('ActivityController').getAroundYouActivity);
+    router.get('/activity/all/:id',loadV1Controller('ActivityController').getUserActivity);
 
     //friend controller routes
     router.get('/friend/following/:id/:friend_id?/',loadV1Controller('FriendsController').getFollowings);
