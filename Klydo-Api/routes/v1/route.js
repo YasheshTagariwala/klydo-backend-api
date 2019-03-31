@@ -43,6 +43,13 @@ module.exports = (app, express) => {
     //profile controller
     router.get('/user/:id/:friend_id?', loadV1Controller('UserController').getUserDetail);
 
+
+    //Messaging Routes
+    router.post('/message/create-user',loadV1Controller('MessageController').createUser);
+    router.get('/message/search-user/:user',loadV1Controller('MessageController').searchUser);
+    router.post('/message/create-roaster-user/:user',loadV1Controller('MessageController').createRoasterUser);
+    router.get('/message/get-user-roaster/:user',loadV1Controller('MessageController').getRoasterUserEntry);
+
     //
     // =========================================================================================================================
     // Define the home page route
