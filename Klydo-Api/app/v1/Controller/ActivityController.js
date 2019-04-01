@@ -354,6 +354,9 @@ let getUserActivity = async (req, res) => {
                 q.withSelect('doerUserProfile', ['first_name', 'last_name'], (q) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
+                q.withSelect('doeeUserProfile', ['first_name', 'last_name'],(q) => {
+                    q.withSelect('userExtra', ['profile_image', 'emotion'])
+                });
             }
         })
         .where((q) => {
