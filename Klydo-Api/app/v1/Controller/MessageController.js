@@ -135,7 +135,7 @@ let searchUser = async (req, res) => {
 let createRoasterUser = async (req, res) => {
     let url = host + protocol + plugin + api_version + '/users/' + req.params.user + '/roster';
     let responseData = '<rosterItem>' +
-        '<jid>' + req.body.jid + '@owyulen.com</jid>' +
+        '<jid>' + req.body.jid + '@meesage.owyulen.com</jid>' +
         '<nickname>' + req.body.name + '</nickname>' +
         '<subscriptionType>3</subscriptionType>' +
         '<groups> ' +
@@ -164,7 +164,7 @@ let createRoasterUser = async (req, res) => {
         } else {
             let url = host + protocol + plugin + api_version + '/users/' + req.body.jid + '/roster';
             let responseData = '<rosterItem>' +
-                '<jid>' + req.params.user + '@owyulen.com</jid>' +
+                '<jid>' + req.params.user + '@message.owyulen.com</jid>' +
                 '<nickname>' + req.body.creator_name + '</nickname>' +
                 '<subscriptionType>3</subscriptionType>' +
                 '<groups> ' +
@@ -225,7 +225,7 @@ let getRoasterUserEntry = async (req, res) => {
             data = data.rosterItem;
             let userIds = [];
             for (let i = 0; i < data.length; i++) {
-                userIds.push(data[i].jid.replace("@owyulen.com",""));
+                userIds.push(data[i].jid.replace("@message.owyulen.com",""));
             }
             let [userData,err] = await catchError(UserProfile
                 .select(['id', 'first_name', 'last_name'])
