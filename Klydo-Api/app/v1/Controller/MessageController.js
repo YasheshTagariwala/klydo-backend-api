@@ -4,7 +4,7 @@ let host = 'http://';
 let protocol = 'localhost:9090';
 let plugin = '/plugins/restapi';
 let api_version = '/v1';
-let shared_secret_key = 'ZNxi5PHUANfNwAoz';
+let shared_secret_key = 'zlMTWTtQtVIIEts8';
 
 // var myJSONObject = { ... };
 // request({
@@ -38,7 +38,7 @@ let createUser = async (req, res) => {
     data = data.toJSON();
     let responseData = {
         username: data.id,
-        password: req.body.email,
+        password: data.id,
         name: data.first_name.trim() + " " + data.last_name.trim(),
         email: req.body.email
     };
