@@ -75,6 +75,11 @@ let getBubbleActivity = async (req, res) => {
                 q.withSelect('doeeUserProfile', ['first_name', 'last_name'],(q) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
+            }, 'posts' : (q) => {
+                q.select(['id', 'profile_id']);
+                q.withSelect('userProfile', ['first_name', 'last_name'], (q) => {
+                    q.withSelect('userExtra', ['profile_image', 'emotion'])
+                });
             }
         }).where((q) => {
             q.where((q) => {
@@ -189,6 +194,11 @@ let getBubbleActivity = async (req, res) => {
                     });
                 });
             });
+            q.orWhere((q) => {
+                q.whereHas('posts', (q) => {
+                    q.where('profile_id', req.params.friend_id);
+                });
+            });
         })
         .orderBy('updated_at', 'desc')
         .offset(offset)
@@ -255,6 +265,12 @@ let getAroundYouActivity = async (req, res) => {
                 q.withSelect('doeeUserProfile', ['first_name', 'last_name'],(q) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
+            },
+            'posts' : (q) => {
+                q.select(['id', 'profile_id']);
+                q.withSelect('userProfile', ['first_name', 'last_name'], (q) => {
+                    q.withSelect('userExtra', ['profile_image', 'emotion'])
+                });
             }
         }).where((q) => {
             q.whereHas('comments', (q) => {
@@ -306,7 +322,15 @@ let getAroundYouActivity = async (req, res) => {
                         q.where('accepted', true);
                     });
                 });
-            })
+            });
+            q.orWhereHas('posts', (q) => {
+                q.whereHas('userProfile', (q) => {
+                    q.whereHas('usersFollowings', (q) => {
+                        q.where('followers', req.params.id);
+                        q.where('accepted', true);
+                    })
+                });
+            });
         })
         .orderBy('updated_at', 'desc')
         .offset(offset)
