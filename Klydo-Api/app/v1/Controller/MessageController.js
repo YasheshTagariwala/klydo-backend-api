@@ -135,7 +135,7 @@ let searchUser = async (req, res) => {
 let createRoasterUser = async (req, res) => {
     let url = host + protocol + plugin + api_version + '/users/' + req.params.user + '/roster';
     let responseData = '<rosterItem>' +
-        '<jid>' + req.body.jid + '@meesage.owyulen.com</jid>' +
+        '<jid>' + req.body.jid + '@message.owyulen.com</jid>' +
         '<nickname>' + req.body.name + '</nickname>' +
         '<subscriptionType>3</subscriptionType>' +
         '<groups> ' +
