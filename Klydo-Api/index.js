@@ -22,7 +22,8 @@ let urls = [
     '/app/v0/login/forget',
     '/app/v0/login/forget-password-code',
     '/app/v0/graph/trendsLogin',
-    '/app/v0/login/loginMedia'
+    '/app/v0/login/loginMedia',
+    '/app/v1/send-push'
 ];
 
 app.post('/app/v0/login/authenticate', loadController('LoginController').loginCheck);
@@ -31,6 +32,7 @@ app.post('/app/v0/login/forget', loadController('LoginController').forgetPasswor
 app.get('/app/v0/login/trendsLogin', loadController('LoginController').getTrendsLogin);
 app.get('/app/v0/login/loginMedia/:filename', loadController('LoginController').LoginMedia);
 app.post('/app/v0/login/forgot-password-code', loadController('LoginController').forgetPasswordVerificationCode);
+app.post('/app/v1/send-push',loadV1Controller('PushNotification').sendMessagePush);
 
 //validate user before calling any routes
 app.use(async (req, res, next) => {

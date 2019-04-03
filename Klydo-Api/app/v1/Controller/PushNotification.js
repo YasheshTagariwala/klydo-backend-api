@@ -1,5 +1,7 @@
 let fcm = require('fcm-notification');
 let FCM = new fcm(APP_ROOT_PATH + '/Config/firebase_admin_config.json');
+let UserTokenMaster = loadV1Modal('UserTokenMaster');
+let UserProfile = loadModal('UserProfile');
 let reactionType = ['Lovable', 'Deep', 'Badass', 'Smart', 'Hot', 'Funny', 'Cool'];
 
 let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId, image) => {
@@ -169,7 +171,7 @@ let getMessage = (type) => {
     if (type === 5) {
         return {
             "title": "{doer}",
-            "body": "{doer}: ACTUAL_MESSAGE_HERE" // for messaging
+            "body": "{doer}: MESSAGE" // for messaging
         }
     }
     if (type === 6) {
@@ -198,7 +200,55 @@ let getMessage = (type) => {
     }
 };
 
+let sendMessagePush = async (req, res) => {
+    let token = 'a249b595-161d-426e-9623-50fd9333933a';
+    if(token == req.body.token){
+        let [pushUser, err] = await catchError(UserTokenMaster.where('profile_id', req.body.to.replace("@message.owyulen.com","")).first());
+        if(err) {
+            console.log(err);
+            res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true,msg : INTERNAL_SERVER_ERROR_MESSAGE});
+        }
+        let [doerUser, err1] = await catchError(UserProfile.with('userExtra').where('id', req.body.from.replace("@message.owyulen.com","")).first());
+        if(err1) {
+            console.log(err1);
+            res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true,msg : INTERNAL_SERVER_ERROR_MESSAGE});
+        }
+        let actualBody = JSON.parse(req.body.body);
+        let message = getMessage(5);
+        doerUser = doerUser.toJSON();
+        pushUser = pushUser.toJSON();
+        let body = message.body.replace('{doer}', doerUser.first_name.trim() + ' ' + doerUser.last_name.trim());
+        body = body.replace("MESSAGE",actualBody.msg);
+        let pushMessage = {
+            token: pushUser.firebase_token,
+            data: {
+                title: message.title.replace("{doer}", doerUser.first_name.trim() + ' ' + doerUser.last_name.trim()),
+                body: body,
+                type: "5",
+                data: req.body.to.replace("@message.owyulen.com",""),
+                dataId: req.body.to.replace("@message.owyulen.com",""),
+                image : doerUser.userExtra.profile_image
+            }
+        };
+
+        FCM.send(pushMessage, (err, response) => {
+            if (err) {
+                console.log(err);
+            } else {
+                // console.log(response);
+            }
+        });
+    }
+    // { token: 'a249b595-161d-426e-9623-50fd9333933a',
+    //     from: '6@message.owyulen.com',
+    //     to: '5@message.owyulen.com',
+    //     body:
+    //     '{"isMine":true,"msg":"Nnnnnnnnnnnnnnnnn","msgIdl":504,"receiver":"5","sender":"6","type":"TEXT"}' }
+    // console.log(req.body);
+};
+
 module.exports = {
     'sendPushNotificationToSingleDevice': sendPushNotificationToSingleDevice,
-    'sendPushNotificationToMultipleDevice': sendPushNotificationToMultipleDevice
+    'sendPushNotificationToMultipleDevice': sendPushNotificationToMultipleDevice,
+    'sendMessagePush' : sendMessagePush
 };
