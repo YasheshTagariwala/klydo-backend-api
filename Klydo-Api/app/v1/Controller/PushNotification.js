@@ -235,9 +235,12 @@ let sendMessagePush = async (req, res) => {
             if (err) {
                 console.log(err);
             } else {
+                res.status(OK_CODE).json({auth : true,msg : OK_MESSAGE});
                 // console.log(response);
             }
         });
+    }else {
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true,msg : INTERNAL_SERVER_ERROR_MESSAGE});
     }
     // { token: 'a249b595-161d-426e-9623-50fd9333933a',
     //     from: '6@message.owyulen.com',
