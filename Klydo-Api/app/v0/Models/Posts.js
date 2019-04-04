@@ -19,7 +19,11 @@ var Posts = bookshelf.Model.extend({
 
     reaction : function() {
         return this.belongsTo(loadModal('PostReaction'),'id','post_id');
-    }
+    },
+
+	watch : function() {
+        return this.belongsTo(loadV1Modal('PostsWatch'),'id','post_id');
+	}
 });
 
 module.exports = Posts;

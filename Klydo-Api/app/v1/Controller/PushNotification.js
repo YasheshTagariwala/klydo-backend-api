@@ -13,6 +13,8 @@ let sendPushNotificationToSingleDevice = async (token, type, doer, data, postId,
         body = message.body.replace('{doer}', doer);
         if (type === 1) {
             body = body.replace('{data}', reactionType[data]);
+        } else if (type === 10) {
+            body = body.replace('{data}', reactionType[data]);
         } else {
             body = body.replace('{data}', data);
         }
@@ -198,6 +200,12 @@ let getMessage = (type) => {
             "body": "{doer} uploaded a new picture."
         }
     }
+    if (type === 10){
+        return {
+            "title": "{doer}",
+            "body": "{doer} reacted {data} on your comment."
+        }
+    }
 };
 
 let sendMessagePush = async (req, res) => {
@@ -231,14 +239,14 @@ let sendMessagePush = async (req, res) => {
             }
         };
 
-        FCM.send(pushMessage, (err, response) => {
-            if (err) {
-                console.log(err);
-            } else {
+        // FCM.send(pushMessage, (err, response) => {
+        //     if (err) {
+        //         console.log(err);
+        //     } else {
                 res.status(OK_CODE).json({auth : true,msg : OK_MESSAGE});
                 // console.log(response);
-            }
-        });
+            // }
+        // });
     }else {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true,msg : INTERNAL_SERVER_ERROR_MESSAGE});
     }

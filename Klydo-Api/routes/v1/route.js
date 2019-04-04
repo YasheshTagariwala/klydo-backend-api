@@ -44,6 +44,10 @@ module.exports = (app, express) => {
     //profile controller
     router.get('/user/:id/:friend_id?', loadV1Controller('UserController').getUserDetail);
 
+    //comment reaction
+    router.post('/comment/add-reaction', loadV1Controller('PostController').addReaction);
+    router.post('/post/add-watch', loadV1Controller('PostController').addToWatch);
+
 
     //Messaging Routes
     router.post('/message/create-user',loadV1Controller('MessageController').createUser);

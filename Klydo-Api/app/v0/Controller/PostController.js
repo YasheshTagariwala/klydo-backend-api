@@ -60,6 +60,9 @@ let getAllHomePost = async (req, res) => {
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.id);
         })
+        .withSelect('watch',['watch'] , (q) => {
+            q.where('profile_id',req.params.id);
+        })
         .withSelect('comments', ['comment_content', 'created_at', 'profile_id', 'id'], (q1) => {
             q1.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
                 q2.withSelect('userExtra', ['profile_image']);
@@ -166,6 +169,13 @@ let getSinglePostWithComments = async (req, res) => {
                 q1.select(['comment_content', 'created_at', 'profile_id', 'id']);
                 q1.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
                     q2.withSelect('userExtra', ['profile_image']);
+                });
+                q1.withSelect('commentReaction', ['reaction_id'], (q) => {
+                    if (req.params.user_id) {
+                        q.where('profile_id', req.params.user_id);
+                    } else {
+                        q.where('profile_id', null);
+                    }
                 });
                 q1.take(RECORED_PER_PAGE);
             }
