@@ -31,6 +31,10 @@ var Activity = bookshelf.Model.extend({
 
 	klyspaceData : function() {
 		return this.belongsTo(loadModal('KlyspaceData'),'id', 'activity_id');
+	},
+
+	commentReactions : function() {
+		return this.belongsTo(loadModal('CommentReaction'),'id', 'activity_id');
 	}
 });
 

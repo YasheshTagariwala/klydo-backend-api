@@ -18,7 +18,8 @@ let ActivityTypes = {
     '5': 'Add Slam Reply',
     '6': 'Add/Update Kly-Web Data',
     '7': 'Add/Update User Profile',
-    '8': 'Add/Update Status'
+    '8': 'Add/Update Status',
+    '9': 'Add/Update Comment Reaction'
 };
 
 let updateActivityId = async (activityType, id) => {

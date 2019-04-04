@@ -1,7 +1,7 @@
 const bookshelf = loadConfig('Bookshelf.js');
 
-var PostComment = bookshelf.Model.extend({
-	tableName:'post_comment',
+var PostWatch = bookshelf.Model.extend({
+	tableName:'post_watch',
 	hasTimestamps: true,
 	softDelete: true,
 
@@ -9,14 +9,10 @@ var PostComment = bookshelf.Model.extend({
 		return this.hasOne(loadModal('UserProfile'),'profile_id','id');
 	},
 
-	posts : function(){
+	posts : function () {
 		return this.hasOne(loadModal('Posts'),'post_id','id');
-	},
-
-	commentReaction : function () {
-		return this.hasMany(loadV1Modal('CommentReaction'), 'comment_id', 'id')
 	}
 
 });
 
-module.exports = PostComment;
+module.exports = PostWatch;

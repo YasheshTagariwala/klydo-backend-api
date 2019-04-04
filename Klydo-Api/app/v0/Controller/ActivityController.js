@@ -7,7 +7,11 @@ let ActivityTypes = {
     '2': 'Add Friend',
     '3': 'Add Comment',
     '4': 'Add Reaction',
-    '5': 'Add Slam Reply'
+    '5': 'Add Slam Reply',
+    '6': 'Add/Update Kly-Web Data',
+    '7': 'Add/Update User Profile',
+    '8': 'Add/Update Status',
+    '9': 'Add/Update Comment Reaction'
 };
 
 let createActivity = async activityType => {
