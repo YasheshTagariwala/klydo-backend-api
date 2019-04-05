@@ -234,16 +234,19 @@ let addToWatch = async (req, res) => {
 
 let getAllWatchPost = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
-    let [posts,err] = await catchError(PostWatch
-        .withSelect('posts',['emotion', 'profile_id', 'id', 'post_content', 'post_published', 'post_title', 'post_hashes', 'created_at'] , (q) => {
-            q.with({'userProfile': (q) => {
-                    q.select(['first_name', 'last_name']);
-                    q.withSelect('userExtra', ['profile_image']);
-                }
-            })
+    let [posts,err] = await catchError(Post
+        .select(['emotion', 'profile_id', 'id',
+            'post_content', 'post_media', 'post_published', 'post_title', 'post_hashes', 'created_at'])
+        .withSelect('watch',['watch'])
+        .with({'userProfile': (q) => {
+                q.select(['first_name', 'last_name']);
+                q.withSelect('userExtra', ['profile_image']);
+            }
         })
-        .where('profile_id',req.params.user_id)
-        .where('watch',true)
+        .whereHas('watch', (q) => {
+            q.where('profile_id',req.params.user_id);
+            q.where('watch',true);
+        })
         .orderBy('id', 'desc')
         .offset(offset)
         .limit(RECORED_PER_PAGE)
