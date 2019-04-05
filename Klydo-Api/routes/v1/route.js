@@ -47,6 +47,7 @@ module.exports = (app, express) => {
     //comment reaction
     router.post('/comment/add-reaction', loadV1Controller('PostController').addReaction);
     router.post('/post/add-watch', loadV1Controller('PostController').addToWatch);
+    router.get('/post/get-watch/:user_id', loadV1Controller('PostController').getAllWatchPost);
 
 
     //Messaging Routes
