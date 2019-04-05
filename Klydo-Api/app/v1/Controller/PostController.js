@@ -197,7 +197,7 @@ let addToWatch = async (req, res) => {
             let watch = {
                 watch: is_watched
             };
-            let [data, err] = await catchError(PostWatch.where({'profile_id': req.params.profile_id, 'post_id': req.params.post_id})
+            let [data, err] = await catchError(PostWatch.where({'profile_id': req.body.profile_id, 'post_id': req.body.post_id})
                 .save(watch, {patch: true})
             );
 

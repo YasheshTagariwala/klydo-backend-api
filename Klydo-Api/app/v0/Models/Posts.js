@@ -23,6 +23,10 @@ var Posts = bookshelf.Model.extend({
 
 	watch : function() {
         return this.belongsTo(loadV1Modal('PostsWatch'),'id','post_id');
+	},
+
+    watches : function() {
+        return this.hasMany(loadV1Modal('PostsWatch'),'post_id','id');
 	}
 });
 

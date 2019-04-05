@@ -158,11 +158,10 @@ let getSinglePostWithComments = async (req, res) => {
             }
         })
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
-            if (req.params.user_id) {
-                q.where('profile_id', req.params.user_id);
-            } else {
-                q.where('profile_id', null);
-            }
+            q.where('profile_id', req.params.user_id ? req.params.user_id : null);
+        })
+        .withSelect('watch',['watch'] , (q) => {
+            q.where('profile_id', req.params.user_id ? req.params.user_id : null);
         })
         .with({
             'comments': (q1) => {
@@ -171,11 +170,7 @@ let getSinglePostWithComments = async (req, res) => {
                     q2.withSelect('userExtra', ['profile_image']);
                 });
                 q1.withSelect('commentReaction', ['reaction_id'], (q) => {
-                    if (req.params.user_id) {
-                        q.where('profile_id', req.params.user_id);
-                    } else {
-                        q.where('profile_id', null);
-                    }
+                    q.where('profile_id', req.params.user_id ? req.params.user_id : null);
                 });
                 q1.take(RECORED_PER_PAGE);
             }
@@ -299,7 +294,7 @@ let createPost = async (req, res) => {
                 }
                 let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                 doer = doer.toJSON();
-                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 6, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
+                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 6, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", data.id,doer.userExtra.profile_image);
             }
         }
         res.status(OK_CODE).json({auth: true, msg: "Posted"})
@@ -368,7 +363,15 @@ let addComment = async (req, res) => {
     };
 
     let [data, err1] = await catchError(Comment.forge(commentData).save());
-    let [post, err2] = await catchError(Post.where('id', req.body.post_id).first());
+    let [post, err2] = await catchError(Post
+        .with('watches', (q) => {
+            q.where('watch',true);
+            q.with('userProfile', (q) => {
+                q.with('token')
+            })
+        })
+        .with('userProfile')
+        .where('id', req.body.post_id).first());
     if (err2) {
         console.log(err2);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
@@ -381,9 +384,16 @@ let addComment = async (req, res) => {
         } else {
             if (token) {
                 token = token.toJSON();
+                let tokens = [];
+                for (let i = 0; i < post.watches.length; i++) {
+                    tokens.push(post.watches[i].userProfile.token.firebase_token);
+                }
                 let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                 doer = doer.toJSON();
-                await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 2, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.content, req.body.post_id,doer.userExtra.profile_image);
+                if(req.body.user_id != post.profile_id){
+                    await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 2, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.content, req.body.post_id,doer.userExtra.profile_image);
+                }
+                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 11, doer.first_name.trim() + ' ' + doer.last_name.trim(), post.userProfile.first_name.trim() + ' ' + post.userProfile.last_name.trim(), req.body.post_id,doer.userExtra.profile_image);
             }
         }
         await Graph.addAffinity(req.body.user_id, post.profile_id);

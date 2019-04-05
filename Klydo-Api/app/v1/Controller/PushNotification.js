@@ -206,6 +206,12 @@ let getMessage = (type) => {
             "body": "{doer} reacted {data} on your comment."
         }
     }
+    if (type === 11){
+        return {
+            "title": "{doer}",
+            "body": "{doer} commented on {data} post."
+        }
+    }
 };
 
 let sendMessagePush = async (req, res) => {

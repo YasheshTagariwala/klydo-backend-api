@@ -374,14 +374,19 @@ let getUserActivity = async (req, res) => {
                 q.withSelect('userProfileFollowing', ['first_name', 'last_name'], (q) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
-            },
-            'klyspaceData': (q) => {
+            }, 'klyspaceData': (q) => {
                 q.withSelect('doerUserProfile', ['first_name', 'last_name'], (q) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
                 q.withSelect('doeeUserProfile', ['first_name', 'last_name'],(q) => {
                     q.withSelect('userExtra', ['profile_image', 'emotion'])
                 });
+            }, 'commentReactions' : (q) => {
+                q.select(['profile_id','reaction_id','comment_id']);
+                q.withSelect('userProfile', ['id', 'first_name', 'last_name'], (q) => {
+                    q.withSelect('userExtra', ['profile_image']);
+                });
+                q.withSelect('postComment', ['post_id', 'profile_id'])
             }
         })
         .where((q) => {
@@ -403,6 +408,12 @@ let getUserActivity = async (req, res) => {
             });
             q.orWhereHas('klyspaceData', (q) => {
                 q.where('doee_profile_id', req.params.id);
+            });
+            q.orWhereHas('commentReactions', (q) => {
+                q.whereNot('profile_id', req.params.id);
+                q.whereHas('postComment', (q) => {
+                    q.where('profile_id', req.params.id)
+                })
             });
         })
         .orderBy('updated_at', 'desc')

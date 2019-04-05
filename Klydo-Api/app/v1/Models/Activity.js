@@ -34,7 +34,7 @@ var Activity = bookshelf.Model.extend({
 	},
 
 	commentReactions : function() {
-		return this.belongsTo(loadModal('CommentReaction'),'id', 'activity_id');
+		return this.belongsTo(loadV1Modal('CommentReaction'),'id', 'activity_id');
 	}
 });
 
