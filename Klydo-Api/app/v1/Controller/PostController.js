@@ -243,6 +243,7 @@ let getAllWatchPost = async (req, res) => {
             })
         })
         .where('profile_id',req.params.user_id)
+        .where('watch',true)
         .orderBy('id', 'desc')
         .offset(offset)
         .limit(RECORED_PER_PAGE)
