@@ -5,6 +5,7 @@ let ActivityModel = loadModal('Activity');
 let bookshelf = loadConfig('Bookshelf.js');
 let Reaction = loadModal('PostReaction');
 let _ = require('underscore');
+let PostWatch = loadV1Modal('PostsWatch');
 let Validation = loadUtility('Validations');
 let Graph = loadController('GraphController');
 let PushNotification = loadV1Controller('PushNotification');
@@ -363,6 +364,21 @@ let addComment = async (req, res) => {
     };
 
     let [data, err1] = await catchError(Comment.forge(commentData).save());
+
+    let [checkData, watchErr] = await catchError(PostWatch.where({
+        'profile_id': req.body.user_id,
+        'post_id': req.body.post_id
+    }).first());
+
+    if (!checkData) {
+        let insertData = {
+            'profile_id': req.body.user_id,
+            'post_id': req.body.post_id,
+            'watch': true
+        };
+        let [insert, err] = await catchError(PostWatch.forge(insertData).save());
+    }
+
     let [post, err2] = await catchError(Post
         .with('watches', (q) => {
             q.where('watch',true);
@@ -386,7 +402,9 @@ let addComment = async (req, res) => {
                 token = token.toJSON();
                 let tokens = [];
                 for (let i = 0; i < post.watches.length; i++) {
-                    tokens.push(post.watches[i].userProfile.token.firebase_token);
+                    if(req.body.user_id != post.watches[i].profile_id) {
+                        tokens.push(post.watches[i].userProfile.token.firebase_token);
+                    }
                 }
                 let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                 doer = doer.toJSON();
