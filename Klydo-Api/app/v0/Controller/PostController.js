@@ -365,20 +365,6 @@ let addComment = async (req, res) => {
 
     let [data, err1] = await catchError(Comment.forge(commentData).save());
 
-    let [checkData, watchErr] = await catchError(PostWatch.where({
-        'profile_id': req.body.user_id,
-        'post_id': req.body.post_id
-    }).first());
-
-    if (!checkData) {
-        let insertData = {
-            'profile_id': req.body.user_id,
-            'post_id': req.body.post_id,
-            'watch': true
-        };
-        let [insert, err] = await catchError(PostWatch.forge(insertData).save());
-    }
-
     let [post, err2] = await catchError(Post
         .with('watches', (q) => {
             q.where('watch',true);
@@ -394,6 +380,23 @@ let addComment = async (req, res) => {
         return;
     } else {
         post = post.toJSON();
+
+        if(req.body.user_id != post.profile_id) {
+            let [checkData, watchErr] = await catchError(PostWatch.where({
+                'profile_id': req.body.user_id,
+                'post_id': req.body.post_id
+            }).first());
+
+            if (!checkData) {
+                let insertData = {
+                    'profile_id': req.body.user_id,
+                    'post_id': req.body.post_id,
+                    'watch': true
+                };
+                let [insert, err] = await catchError(PostWatch.forge(insertData).save());
+            }
+        }
+
         let [token, err] = await catchError(UserTokenMaster.where('profile_id', post.profile_id).first());
         if (err) {
             console.log(err);
