@@ -39,7 +39,7 @@ app.use(async (req, res, next) => {
     if (urls.includes(req.originalUrl)) {
         next();
     } else {
-        // let [verification,err] = await catchError(authenticate.validateToken(req.headers.token));
+        // let [verification, err] = await catchError(authenticate.validateToken(req.headers.token,req.headers.secret));
         // if(err) {
         // 	console.log(err);
         // 	res.json({auth: false, msg:'Oops! Something unexpected happened. Please try again.'});
