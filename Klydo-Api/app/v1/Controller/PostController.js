@@ -45,22 +45,19 @@ let updatePost = async (req, res) => {
         newPostData = {
             post_content: req.body.content,
             post_title: req.body.title,
-            post_media: filename,
-            post_chips: Graph.extractChips(req.body.title)
+            post_media: filename
         };
     } else {
         if (req.body.post_media) {
             newPostData = {
                 post_content: req.body.content,
                 post_title: req.body.title,
-                post_chips: Graph.extractChips(req.body.content),
                 post_media: null
             };
         } else {
             newPostData = {
                 post_content: req.body.content,
                 post_title: req.body.title,
-                post_chips: Graph.extractChips(req.body.content)
             };
         }
     }
@@ -69,7 +66,7 @@ let updatePost = async (req, res) => {
         .save(newPostData, {patch: true})
     );
 
-    await Graph.extractChips(req.body.content, req.body.post_id);
+    await Graph.extractChips(req.body.content + " " + req.body.title, req.body.post_id)
 
     if (err1) {
         console.log(err1);

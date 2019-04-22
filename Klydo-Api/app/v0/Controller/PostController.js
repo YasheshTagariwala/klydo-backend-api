@@ -277,7 +277,7 @@ let createPost = async (req, res) => {
     let [data, err1] = await catchError(Post.forge(newPostData).save());
     await Graph.filterAndAddBeliefsFrom(req.body.user_id, req.body.content + ' ' + req.body.title);
     await Graph.addPost(data.id, req.body.title, req.body.content);
-    await GraphV1.extractChips(req.body.content, data.id);
+    await GraphV1.extractChips(req.body.content + " " + req.body.title, data.id);
     if (err1) {
         console.log(err1);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})

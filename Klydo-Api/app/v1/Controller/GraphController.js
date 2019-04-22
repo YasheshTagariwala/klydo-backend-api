@@ -6,7 +6,7 @@ let getSimilarBeliefs = async (req, res) => {
     let data = '';
     let profile_id = req.body.profile_id;
     let variables = req.body.variables.join(',');
-    http.get('http://klydo.space/graph/get_similar_beliefs/' + profile_id + "_|||_" + variables, (resp) => {
+    http.get('http://owyulen.com/graph/get_similar_beliefs/' + profile_id + "_|||_" + variables, (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -20,7 +20,7 @@ let getSimilarBeliefs = async (req, res) => {
 };
 
 let updateUserWyu = async (userID, newWyuID) => {
-    http.get('http://klydo.space/graph/update_user_wyu/' + userID + '_|||_' + newWyuID.join(','), (resp) => {
+    http.get('http://owyulen.com/graph/update_user_wyu/' + userID + '_|||_' + newWyuID.join(','), (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
@@ -28,7 +28,7 @@ let updateUserWyu = async (userID, newWyuID) => {
 
 let extractChips = async (content, postId) => {
     let data = '';
-    http.get('http://klydo.space/graph/extract_chips/' + encodeURIComponent(content.replace('?', '.')), (resp) => {
+    http.get('http://owyulen.com/graph/extract_chips/' + encodeURIComponent(content.replace('?', '.')), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
