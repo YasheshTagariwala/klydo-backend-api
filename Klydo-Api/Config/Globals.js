@@ -81,17 +81,28 @@ global.loadV1Route = (fileName) => {
 
 global.getMailTrasporter = () => {
     let nodemailer = require('nodemailer');
+    // return nodemailer.createTransport({
+    //     service: 'gmail',
+    //     tls: {
+    //         rejectUnauthorized: false
+    //     },
+    //     auth: {
+    //         user: 'klydo.space@gmail.com',
+    //         pass: 'gjmtlqstawahloch'
+    //     }
+    // });
+
     return nodemailer.createTransport({
         service: 'gmail',
-        tls: { 
-            rejectUnauthorized: false 
+        tls: {
+            rejectUnauthorized: false
         },
         auth: {
-            user: 'klydo.space@gmail.com',
-            pass: 'gjmtlqstawahloch'
+            user: 'kloudforj@gmail.com',
+            pass: 'crtppscmkddfwzaj'
         }
     });
-}
+};
 
 global.generateVerificationCode = (data) => {    
     let crypto = require('crypto');
