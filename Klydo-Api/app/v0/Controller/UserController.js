@@ -7,6 +7,7 @@ let fs = require('fs');
 let Graph = loadController('GraphController');
 let PushNotification = loadV1Controller('PushNotification');
 let UserTokenMaster = loadV1Modal('UserTokenMaster');
+let bcrypt = require('bcrypt');
 
 //Get single User details
 let getUserDetail = async (req, res) => {
@@ -69,24 +70,30 @@ let getUserDetail = async (req, res) => {
             res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
             return;
         } else {
-            users = users.toJSON();
-            users.reaction = reaction;
-            users.klyspaceData = null;
-            if (req.params.friend_id) {
-                let [klyspaceData, err1] = await catchError(KlyspaceData.select(['id', 'klyspace_id', 'doer_profile_id', 'doee_profile_id'])
-                    .where('doer_profile_id', req.params.friend_id)
-                    .get());
-                users.klyspaceData = klyspaceData;
+            if (users) {
+                users = users.toJSON();
+                users.reaction = reaction;
+                users.klyspaceData = null;
+                if (req.params.friend_id) {
+                    let [klyspaceData, err1] = await catchError(KlyspaceData.select(['id', 'klyspace_id', 'doer_profile_id', 'doee_profile_id'])
+                        .where('doer_profile_id', req.params.friend_id)
+                        .get());
+                    users.klyspaceData = klyspaceData;
+                } else {
+                    let [klyspaceData, err1] = await catchError(KlyspaceData
+                        .select(['klyspace_id', bookshelf.knex.raw('count(*) as count')])
+                        .where('doee_profile_id', req.params.id)
+                        .orderBy('count', 'desc')
+                        .query((q) => {
+                            q.groupBy('klyspace_id');
+                        })
+                        .get());
+                    users.klyspaceData = klyspaceData;
+                }
             } else {
-                let [klyspaceData, err1] = await catchError(KlyspaceData
-                    .select(['klyspace_id', bookshelf.knex.raw('count(*) as count')])
-                    .where('doee_profile_id', req.params.id)
-                    .orderBy('count', 'desc')
-                    .query((q) => {
-                        q.groupBy('klyspace_id');
-                    })
-                    .get());
-                users.klyspaceData = klyspaceData;
+                console.log(err);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+                return;
             }
         }
         res.status(OK_CODE).json({auth: true, msg: 'Success', data: users});
@@ -112,22 +119,44 @@ let changeProfilePrivacy = async (req, res) => {
 
 //Change Password
 let changePassword = async (req, res) => {
-    let newUserData = {
-        user_password: req.body.password
-    }
 
-    let [data, err] = await catchError(UserProfile.where({'id': req.body.user_profile_id})
-        .where({'user_password': req.body.old_password})
-        .save(newUserData, {patch: true})
+    let change_password = bcrypt.hashSync(req.body.password, 10);
+
+    let newUserData = {
+        user_password: change_password
+    };
+
+    let [userData, err] = await catchError(UserProfile.where({'id': req.body.user_profile_id})
+        .first()
     );
 
-    if (err) {
+    if (userData) {
+        userData = userData.toJSON();
+
+        let compare = bcrypt.compareSync(req.body.old_password, userData.user_password);
+
+        if (compare) {
+            let [data, err1] = await catchError(UserProfile.where({'id': req.body.user_profile_id})
+                .save(newUserData, {patch: true})
+            );
+
+            if (err1) {
+                console.log(err1);
+                res.status(OK_CODE).json({auth: true, msg: 'No User Found'});
+                return;
+            } else {
+                res.status(OK_CODE).json({auth: true, msg: "Password Changed Successfully"});
+            }
+        } else {
+            res.status(OK_CODE).json({auth: true, msg: "Old Password Is Wrong"});
+        }
+    } else {
         console.log(err);
         res.status(OK_CODE).json({auth: true, msg: 'No User Found'});
         return;
-    } else {
-        res.status(OK_CODE).json({auth: true, msg: "Password Changed Successfully"});
     }
+
+
 }
 
 //Update User Profile
@@ -185,7 +214,7 @@ let changeStatus = async (req, res) => {
                     }
                     let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                     doer = doer.toJSON();
-                    await PushNotification.sendPushNotificationToMultipleDevice(tokens, 8, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
+                    await PushNotification.sendPushNotificationToMultipleDevice(tokens, 8, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0", doer.userExtra.profile_image);
                 }
             }
             res.status(OK_CODE).json({auth: true, msg: "Status Updated Successfully"});
@@ -239,7 +268,7 @@ let updateProfileImage = async (req, res) => {
             }
             let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
             doer = doer.toJSON();
-            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
+            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0", doer.userExtra.profile_image);
         }
     }
     res.status(OK_CODE).json({auth: true, msg: "Profile Picture Updated Successfully", data: filename});

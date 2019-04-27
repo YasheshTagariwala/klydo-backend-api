@@ -1,5 +1,6 @@
 let Graph = loadController('GraphController');
 let KlyspaceData = loadModal('KlyspaceData');
+let bcrypt = require('bcrypt');
 
 //login users
 let loginCheck = async (req, res) => {
@@ -18,11 +19,10 @@ let loginCheck = async (req, res) => {
         return;
     }
 
-    let [users, err] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy']).select(['id','first_name','last_name']).where({
-        'username': uname,
-        'user_password': password
-    })
-        .orWhere({'user_email': uname, 'user_password': password}).first());
+    let [users, err] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy'])
+        .select(['id','first_name','last_name','user_password']).where({'username': uname
+    }).orWhere({'user_email': uname}).first());
+
     if (err) {
         console.log(err);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
@@ -32,13 +32,22 @@ let loginCheck = async (req, res) => {
             res.status(NOT_FOUND_CODE).json({auth: false, msg: NOT_FOUND_MESSAGE});
             return;
         } else {
-            let [jwt_token, err] = await catchError(authenticate.createToken(users.uname));
-            if (err) {
-                console.log(err);
+            users = users.toJSON();
+
+            let compare = bcrypt.compareSync(password, users.user_password);
+            if (compare) {
+                let [jwt_token, err] = await catchError(authenticate.createToken(users.uname));
+                if (err) {
+                    console.log(err);
+                    res.status(UNAUTHORIZED_CODE).json({auth: false, msg: UNAUTHORIZED_MESSAGE});
+                    return;
+                } else {
+                    delete users.user_password;
+                    res.status(OK_CODE).json({auth: true, msg: 'Login Successful.', token: jwt_token, data: users});
+                }
+            } else {
                 res.status(UNAUTHORIZED_CODE).json({auth: false, msg: UNAUTHORIZED_MESSAGE});
                 return;
-            } else {
-                res.status(OK_CODE).json({auth: true, msg: 'Login Successfull.', token: jwt_token, data: users});
             }
         }
     }
@@ -73,9 +82,10 @@ let forgetPassword = async (req, res) => {
             res.status(NOT_FOUND_CODE).json({auth: false, msg: NOT_FOUND_MESSAGE});
             return;
         } else {
+            let passwordEncrpt = bcrypt.hashSync(password, 10);
             let newUserData = {
-                user_password: password
-            }
+                user_password: passwordEncrpt
+            };
 
             let [data, err] = await catchError(UserProfile.where({'username': uname})
                 .orWhere({'user_email': uname})
@@ -105,7 +115,7 @@ let forgetPasswordVerificationCode = async (req, res) => {
     var data = generateVerificationCode(uname);
 
     var mailOptions = {
-        from: 'klydo.space@gmail.com',
+        from: 'kloudforj@gmail.com',
         to: uname,
         subject: 'Forgot Password OTP',
         text: data
@@ -149,6 +159,8 @@ let signupUser = async (req, res) => {
         return;
     }
 
+    let password = bcrypt.hashSync(requestData.pass, 10);
+
     let userData = {
         first_name: requestData.fname,
         middle_name: requestData.mname,
@@ -158,7 +170,7 @@ let signupUser = async (req, res) => {
         gender: requestData.sex,
         user_email: requestData.mail,
         username: requestData.mail,
-        user_password: requestData.pass,
+        user_password: password,
         mobile_number: requestData.number in requestData ? requestData.number : 1234567891,
         about_me: requestData.about in requestData ? requestData.about : ''
     };
