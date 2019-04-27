@@ -151,7 +151,7 @@ let getAllProfilePost = async (req, res) => {
 let getSinglePostWithComments = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
     let [postWithComment, err] = await catchError(Post
-        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_title', 'post_media', 'created_at', 'post_published'])
+        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_chips', 'post_hashes', 'post_title', 'post_media', 'created_at', 'post_published'])
         .with({
             'userProfile': (q) => {
                 q.select(['first_name', 'last_name']);
