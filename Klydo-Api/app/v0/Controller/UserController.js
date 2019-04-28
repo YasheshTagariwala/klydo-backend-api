@@ -268,7 +268,7 @@ let updateProfileImage = async (req, res) => {
             }
             let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
             doer = doer.toJSON();
-            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0", doer.userExtra.profile_image);
+            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", req.body.user_id, doer.userExtra.profile_image);
         }
     }
     res.status(OK_CODE).json({auth: true, msg: "Profile Picture Updated Successfully", data: filename});

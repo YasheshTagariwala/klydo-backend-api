@@ -116,6 +116,7 @@ let rejectFriend = async (req, res) => {
 
 let getFollowers = async (req, res) => {
     let [friendData, err] = await catchError(FeelPals.select(['id', 'followers'])
+        .whereHas('userProfileFollower')
         .withSelect('userProfileFollower', ['first_name', 'last_name'], (q) => {
             q.withSelect('userExtra', ['profile_image', 'emotion'])
         })

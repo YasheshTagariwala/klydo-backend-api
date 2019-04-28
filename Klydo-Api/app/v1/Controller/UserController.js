@@ -70,43 +70,49 @@ let getUserDetail = async (req, res) => {
             res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
             return;
         } else {
-            users = users.toJSON();
-            users.reaction = reaction;
-            users.klyspace_data = null;
-            let [klySpaceData, err1] = await catchError(KlyspaceData.select('klyspace_data')
-                .where('doee_profile_id', req.params.id)
-                // .whereNot('doer_profile_id', req.params.id)
-                .get());
-            if (klySpaceData) {
-                klySpaceData = klySpaceData.toJSON();
-
-                let [variables, err2] = await catchError(Klyspace.select(['id'])
-                    .where('status', true)
-                    .orderBy('id', 'asc')
+            if (users) {
+                users = users.toJSON();
+                users.reaction = reaction;
+                users.klyspace_data = null;
+                let [klySpaceData, err1] = await catchError(KlyspaceData.select('klyspace_data')
+                    .where('doee_profile_id', req.params.id)
+                    // .whereNot('doer_profile_id', req.params.id)
                     .get());
+                if (klySpaceData) {
+                    klySpaceData = klySpaceData.toJSON();
 
-                variables = variables.toJSON();
+                    let [variables, err2] = await catchError(Klyspace.select(['id'])
+                        .where('status', true)
+                        .orderBy('id', 'asc')
+                        .get());
 
-                let vector = [];
-                for (let i = 0; i < variables.length; i++) {
-                    let tempData = klySpaceData.filter((obj) => {
-                        return obj.klyspace_data.indexOf((+variables[i].id)) > -1 || obj.klyspace_data.indexOf(variables[i].id) > -1
-                    });
+                    variables = variables.toJSON();
 
-                    let countData = {
-                        'klyspace_id': variables[i].id,
-                        'count': tempData.length
-                    };
-                    vector.push(countData);
+                    let vector = [];
+                    for (let i = 0; i < variables.length; i++) {
+                        let tempData = klySpaceData.filter((obj) => {
+                            return obj.klyspace_data.indexOf((+variables[i].id)) > -1 || obj.klyspace_data.indexOf(variables[i].id) > -1
+                        });
+
+                        let countData = {
+                            'klyspace_id': variables[i].id,
+                            'count': tempData.length
+                        };
+                        vector.push(countData);
+                    }
+
+                    vector.sort(SortByID);
+                    vector = vector.splice(0, 8);
+
+                    users.klyspace_data = vector;
                 }
-
-                vector.sort(SortByID);
-                vector = vector.splice(0, 8);
-
-                users.klyspace_data = vector;
+            } else {
+                console.log(err);
+                res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+                return;
             }
+            res.status(OK_CODE).json({auth: true, msg: 'Success', data: users});
         }
-        res.status(OK_CODE).json({auth: true, msg: 'Success', data: users});
     }
 };
 
@@ -189,7 +195,7 @@ let updateProfileImage = async (req, res) => {
             }
             let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
             doer = doer.toJSON();
-            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
+            await PushNotification.sendPushNotificationToMultipleDevice(tokens, 9, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", req.body.user_id, doer.userExtra.profile_image);
         }
     }
     res.status(OK_CODE).json({auth: true, msg: "Profile Picture Updated Successfully", data: filename});
@@ -208,7 +214,7 @@ let changeStatus = async (req, res) => {
             return;
         } else {
             let activity_id = null;
-            if(user.toJSON().activity_id == null) {
+            if (user.toJSON().activity_id == null) {
                 let [activityId, err1] = await catchError(Activity.createActivity(8));
                 if (activityId == null || err1) {
                     console.log(err1);
@@ -253,7 +259,7 @@ let changeStatus = async (req, res) => {
                         }
                         let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                         doer = doer.toJSON();
-                        await PushNotification.sendPushNotificationToMultipleDevice(tokens, 8, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0",doer.userExtra.profile_image);
+                        await PushNotification.sendPushNotificationToMultipleDevice(tokens, 8, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", "0", doer.userExtra.profile_image);
                     }
                 }
                 res.status(OK_CODE).json({auth: true, msg: "Status Updated Successfully"});

@@ -111,8 +111,9 @@ let forgetPasswordVerificationCode = async (req, res) => {
         res.status(NO_CONTENT_CODE).json({auth: false, msg: NO_CONTENT_MESSAGE});
         return;
     }
-
-    var data = generateVerificationCode(uname);
+    var data = "To verify your identity, please use the following code in application. \n\n";
+    data += generateVerificationCode(uname);
+    data += "\n\nThis OTP is confidential. For security reasons, DO NOT share with anyone.";
 
     var mailOptions = {
         from: 'kloudforj@gmail.com',

@@ -4,6 +4,7 @@ let Validation = loadUtility('Validations');
 
 let getFollowings = async (req, res) => {
     let [friendData, err] = await catchError(FeelPals.select(['id', 'followings','is_favourite'])
+        .whereHas('userProfileFollowing')
         .withSelect('userProfileFollowing', ['first_name', 'last_name'], (q) => {
             q.withSelect('userExtra', ['profile_image', 'emotion'])
         })
@@ -56,6 +57,7 @@ let getFollowings = async (req, res) => {
 let getBubbleFriends = async (req, res) => {
 
     let [friendData, err] = await catchError(FeelPals.select(['id', 'followings'])
+        .whereHas('userProfileFollowing')
         .withSelect('userProfileFollowing', ['first_name', 'last_name'], (q) => {
             q.withSelect('userExtra', ['profile_image', 'emotion'])
         })
