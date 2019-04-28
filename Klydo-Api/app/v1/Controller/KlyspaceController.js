@@ -10,6 +10,7 @@ let ActivityV1 = loadV1Controller('ActivityController');
 let getKlyspaceData = async (req, res) => {
 
     let [data, err] = await catchError(KlyspaceData.select(['id', 'klyspace_data', 'doer_profile_id', 'doee_profile_id'])
+        .whereHas('doerUserProfile')
         .withSelect('doerUserProfile', ['first_name', 'last_name'], (q) => {
             q.withSelect('userExtra', ['profile_image'])
         })
