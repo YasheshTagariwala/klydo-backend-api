@@ -442,6 +442,9 @@ let getUserActivity = async (req, res) => {
                 q.whereHas('userProfileFollower', (q) => {
                     q.where('id', req.params.id);
                 });
+                q.whereHas('userProfileFollowing', (q) => {
+                    q.where('id', req.params.id);
+                });
                 q.where('accepted', true);
             });
             q.orWhereHas('klyspaceData', (q) => {
