@@ -20,18 +20,35 @@ let getSearch = async (req, res) => {
 };
 
 let getTrends = async (req, res) => {
-    let data = '';
-    http.get('http://' + host + '/get_trending_today', (resp) => {
-        resp.on('data', (chunk) => {
-            data += chunk;
-        });
+    // let data = '';
+    // http.get('http://' + host + '/get_trending_today', (resp) => {
+    //     resp.on('data', (chunk) => {
+    //         data += chunk;
+    //     });
+    //
+    //     resp.on('end', () => {
+    //         parseData(data, res, req);
+    //     })
+    // }).on("error", (err) => {
+    //     console.log("Error: " + err.message);
+    // })
 
-        resp.on('end', () => {
-            parseData(data, res, req);
-        })
-    }).on("error", (err) => {
-        console.log("Error: " + err.message);
-    })
+    let [post, err] = await catchError(Post.with({
+        'userProfile': (q) => {
+            q.select(['first_name', 'last_name']);
+            q.withSelect('userExtra', ['profile_image']);
+        }
+    }).orderByRaw('random()')
+        .offset(0)
+        .limit(80)
+        .get());
+    if (err) {
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE, data: []});
+    } else {
+        let finalPostPeopleData = {"people": [], "posts": post.toJSON()};
+        res.status(OK_CODE).json({auth: true, msg: 'Data Found', data: finalPostPeopleData});
+    }
 };
 
 let getReactionBased = async (req, res) => {
