@@ -9,9 +9,9 @@ var UserProfile = bookshelf.Model.extend({
 		return this.belongsTo(loadModal('UserExtra'), 'id', 'user_profile_id');
 	},
 
-	token: function() {
-		return this.belongsTo(loadV1Modal('UserTokenMaster'), 'id', 'profile_id');
-	},
+    token: function() {
+        return this.belongsTo(loadV1Modal('UserTokenMaster'), 'id', 'profile_id');
+    },
 
 	userFollowings: function() {
 		return this.belongsTo(loadModal('Feelpals'), 'id', 'followings');

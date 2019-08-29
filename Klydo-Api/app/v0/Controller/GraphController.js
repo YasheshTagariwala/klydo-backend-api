@@ -1,12 +1,13 @@
 let http = require('http');
 let UserProfile = loadModal('UserProfile');
+let UserExtra = loadModal('UserExtra');
 let Post = loadModal('Posts');
 // let host = "owyulen.com";
 let host = "localhost:5000";
 
 let getSearch = async (req, res) => {
     let data = '';
-    http.get('http://' + host + '/search_for/' + req.params.query.replace("?", "."), (resp) => {
+    http.get('http://'+ host +'/search_for/' + req.params.query.replace("?", "."), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -21,7 +22,7 @@ let getSearch = async (req, res) => {
 
 let getTrends = async (req, res) => {
     // let data = '';
-    // http.get('http://' + host + '/get_trending_today', (resp) => {
+    // http.get('http://'+ host +'/get_trending_today', (resp) => {
     //     resp.on('data', (chunk) => {
     //         data += chunk;
     //     });
@@ -40,7 +41,7 @@ let getTrends = async (req, res) => {
         }
     }).orderByRaw('random()')
         .offset(0)
-        .limit(80)
+        .limit(10)
         .get());
     if (err) {
         console.log(err);
@@ -53,7 +54,7 @@ let getTrends = async (req, res) => {
 
 let getReactionBased = async (req, res) => {
     let data = '';
-    http.get('http://' + host + '/get_reaction_based/' + req.params.query.replace("?", "."), (resp) => {
+    http.get('http://'+ host +'/get_reaction_based/' + req.params.query.replace("?", "."), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -68,7 +69,7 @@ let getReactionBased = async (req, res) => {
 
 let getNetworkInteractionBased = async (req, res) => {
     let data = '';
-    http.get('http://' + host + '/get_network_interaction_based/' + req.params.query.replace("?", "."), (resp) => {
+    http.get('http://'+ host +'/get_network_interaction_based/' + req.params.query.replace("?", "."), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -83,7 +84,7 @@ let getNetworkInteractionBased = async (req, res) => {
 
 let getWyuRecommended = async (req, res) => {
     let data = '';
-    http.get('http://' + host + '/get_wyu_recommended/' + req.params.query.replace("?", "."), (resp) => {
+    http.get('http://'+ host +'/get_wyu_recommended/' + req.params.query.replace("?", "."), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -98,7 +99,7 @@ let getWyuRecommended = async (req, res) => {
 
 let getSimilarBeliefs = async (req, res) => {
     let data = '';
-    http.get('http://' + host + '/get_similar_beliefs/' + req.params.query.replace("?", "."), (resp) => {
+    http.get('http://'+ host +'/get_similar_beliefs/' + req.params.query.replace("?", "."), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -112,56 +113,56 @@ let getSimilarBeliefs = async (req, res) => {
 };
 
 let filterAndAddBeliefsFrom = async (user_id, content) => {
-    http.get('http://' + host + '/filter_and_add_beliefs_from/' + user_id + '_|||_' + encodeURIComponent(content.replace("?", ".")), (resp) => {
+    http.get('http://'+ host +'/filter_and_add_beliefs_from/' + user_id + '_|||_' + encodeURIComponent(content.replace("?", ".")), (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
 };
 
 let addAffinity = async (doer, doee) => {
-    http.get('http://' + host + '/add_affinity/' + doer + ',' + doee, (resp) => {
+    http.get('http://'+ host +'/add_affinity/' + doer + ',' + doee, (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
 };
 
 let manipulateUser = async (userID, firstName, lastName, birthYear) => {
-    http.get('http://' + host + '/mainpulate_user/' + userID + ',' + encodeURIComponent(firstName.replace("?", ".")) + ',' + encodeURIComponent(lastName.replace("?", ".")) + ',' + birthYear, (resp) => {
+    http.get('http://'+ host +'/mainpulate_user/' + userID + ',' + encodeURIComponent(firstName.replace("?", ".")) + ',' + encodeURIComponent(lastName.replace("?", ".")) + ',' + birthYear, (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
 };
 
 let updateUserRype = async (userID, reactOne, reactTwo) => {
-    http.get('http://' + host + '/update_user_rype/' + userID + ',' + reactOne + '|' + reactTwo, (resp) => {
+    http.get('http://'+ host +'/update_user_rype/' + userID + ',' + reactOne + '|' + reactTwo, (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
 };
 
 let updateUserWyu = async (userID, oldWyuID, newWyuID) => {
-    http.get('http://' + host + '/update_user_wyu/' + userID + ',' + oldWyuID + ',' + newWyuID, (resp) => {
+    http.get('http://'+ host +'/update_user_wyu/' + userID + ',' + oldWyuID + ',' + newWyuID, (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
 };
 
 let addPost = async (post_id, post_title, post_content) => {
-    http.get('http://' + host + '/add_post/' + post_id + '_|||_' + encodeURIComponent(post_title.replace("?", ".")) + '_|||_' + encodeURIComponent(post_content.replace("?", ".")), (resp) => {
+    http.get('http://'+ host +'/add_post/' + post_id + '_|||_' + encodeURIComponent(post_title.replace("?", ".")) + '_|||_' + encodeURIComponent(post_content.replace("?", ".")), (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
 };
 
 let deletePost = async (post_id) => {
-    http.get('http://' + host + '/delete_post/' + post_id, (resp) => {
+    http.get('http://'+ host +'/delete_post/' + post_id, (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
 };
 
 let updateReactWeights = async (post_id, reactionId) => {
-    http.get('http://' + host + '/update_react_weights/' + post_id + ',' + reactionId, (resp) => {
+    http.get('http://'+ host +'/update_react_weights/' + post_id + ',' + reactionId, (resp) => {
     }).on("error", (err) => {
         console.log("Error: " + err.message);
     })
@@ -169,7 +170,7 @@ let updateReactWeights = async (post_id, reactionId) => {
 
 let trackUser = async (req, res) => {
     let data = '';
-    http.get('http://' + host + '/track_add/' + req.params.query.replace("?", "."), (resp) => {
+    http.get('http://'+ host +'/track_add/' + req.params.query.replace("?", "."), (resp) => {
         resp.on('data', (chunk) => {
             data += chunk;
         });
@@ -185,7 +186,7 @@ let trackUser = async (req, res) => {
 //Ishaan API
 let getBeliefsAndViews = async (req, res) => {
     let beliefsAndViews = '';
-    http.get('http://' + host + '/get_views_and_beliefs/' + req.params.userID, (q) => {
+    http.get('http://'+ host +'/get_views_and_beliefs/' + req.params.userID, (q) => {
         q.on('data', (akjcnawkjnc) => {
             beliefsAndViews += akjcnawkjnc;
         });
@@ -198,7 +199,7 @@ let getBeliefsAndViews = async (req, res) => {
 
 let getReactFilteredPosts = async (req, res) => {
     let reactFilteredPosts = '';
-    http.get('http://' + host + '/get_reaction_based/' + req.params.reaction_id, (q) => {
+    http.get('http://'+ host +'/get_reaction_based/' + req.params.reaction_id, (q) => {
         q.on('data', (fuckyoumarkzuckmydick) => {
             reactFilteredPosts += fuckyoumarkzuckmydick;
         });
@@ -217,7 +218,7 @@ let parseBeliefsAndViews = async (data, res, req) => {
     if (finalData.hasOwnProperty("beliefs")) {
         if (finalData.beliefs.length > 0) {
             let bf = finalData.beliefs;
-            for (let i = 0; i < bf.length; i++) {
+            for (let i = 0;i < bf.length; i++){
                 beliefs.push(bf[i]);
             }
         }
@@ -226,7 +227,7 @@ let parseBeliefsAndViews = async (data, res, req) => {
     if (finalData.hasOwnProperty("views")) {
         if (finalData.views.length > 0) {
             let vs = finalData.views;
-            for (let i = 0; i < vs.length; i++) {
+            for (let i = 0;i < vs.length; i++){
                 views.push(vs[i]);
             }
         }
@@ -241,6 +242,9 @@ let parseBeliefsAndViews = async (data, res, req) => {
 };
 
 let parseData = async (data, res, req) => {
+    if (req.params.preference) {
+        await catchError(UserExtra.where('user_profile_id', req.params.query[0]).save({preference : req.params.preference}, {patch: true}));
+    }
     let finalData = JSON.parse(data);
     let peopleData = [];
     let postData = [];
@@ -266,6 +270,20 @@ let parseData = async (data, res, req) => {
                         } else if (req.params.gender == 3) {
                             q.where('gender', 'O');
                         }
+                    }
+                })
+                .where((q) => {
+                    if (req.params.preference) {
+                        q.whereHas('userExtra', (q) => {
+                            let prefrence = req.params.preference.split(",");
+                            for (let i = 0;i < prefrence.length;i++) {
+                                if(i == 0) {
+                                    q.where('preference','like','%'+prefrence[i]+'%');
+                                }else {
+                                    q.orWhere('preference','like','%'+prefrence[i]+'%');
+                                }
+                            }
+                        });
                     }
                 })
                 .orderByRaw('array_position(ARRAY[' + people.join(',') + ']::bigint[],id)')
@@ -345,6 +363,6 @@ module.exports = {
     'deletePost': deletePost,
     'updateReactWeights': updateReactWeights,
     'trackUser': trackUser,
-    'getBeliefsAndViews': getBeliefsAndViews,
-    'getReactFilteredPosts': getReactFilteredPosts
+    'getBeliefsAndViews' : getBeliefsAndViews,
+    'getReactFilteredPosts' : getReactFilteredPosts
 };

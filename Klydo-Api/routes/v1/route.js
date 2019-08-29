@@ -63,6 +63,6 @@ module.exports = (app, express) => {
         res.send('Write the whole URL you lazy ass.');
     });
 
-    app.use('/app/v1', router);
+    app.use('/sandbox/v1', router);
 
 };

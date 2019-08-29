@@ -15,7 +15,11 @@ var PostComment = bookshelf.Model.extend({
 
 	commentReaction : function () {
 		return this.belongsTo(loadV1Modal('CommentReaction'), 'id', 'comment_id')
-	}
+	},
+
+    commentReactions : function () {
+        return this.hasMany(loadV1Modal('CommentReaction'), 'comment_id', 'id')
+    }
 
 });
 

@@ -1,7 +1,9 @@
 let v0Paths = APP_ROOT_PATH + '/app/v0/';
 let v1Paths = APP_ROOT_PATH + '/app/v1/';
+let v2Paths = APP_ROOT_PATH + '/app/v2/';
 let v0RoutePaths = APP_ROOT_PATH + '/routes/';
 let v1RoutePaths = APP_ROOT_PATH + '/routes/';
+let v2RoutePaths = APP_ROOT_PATH + '/routes/';
 
 //v0 Paths
 let APP_MODEL_PATH = v0Paths + 'Models/';
@@ -22,6 +24,9 @@ let APP_ROUTES_PATH = v0RoutePaths + 'v0/';
 
 //v1 route paths
 let APP_V1_ROUTES_PATH = v1RoutePaths + 'v1/';
+
+let APP_V2_CONTROLLER_PATH = v2Paths + 'Controller/';
+let APP_V2_ROUTES_PATH = v2RoutePaths + 'v2/';
 
 let APP_MEDIA_PATH = APP_ROOT_PATH + '/app/media';
 
@@ -77,6 +82,14 @@ global.loadV1Modal = (fileName) => {
 
 global.loadV1Route = (fileName) => {
     return require(APP_V1_ROUTES_PATH + fileName);
+};
+
+global.loadV2Controller = (fileName) => {
+    return require(APP_V2_CONTROLLER_PATH + fileName);
+};
+
+global.loadV2Route = (fileName) => {
+    return require(APP_V2_ROUTES_PATH + fileName);
 };
 
 global.getMailTrasporter = () => {

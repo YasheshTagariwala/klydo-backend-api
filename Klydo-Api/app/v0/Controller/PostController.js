@@ -173,6 +173,14 @@ let getSinglePostWithComments = async (req, res) => {
                 q1.withSelect('commentReaction', ['reaction_id'], (q) => {
                     q.where('profile_id', req.params.user_id ? req.params.user_id : null);
                 });
+                q1.withSelect('commentReactions', ['reaction_id','id','profile_id'], (q) => {
+                    q.whereHas('postComment', (q) => {
+                        q.where('profile_id', req.params.user_id ? req.params.user_id : null);
+                    });
+                    q.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
+                        q2.withSelect('userExtra', ['profile_image']);
+                    });
+                });
                 q1.take(RECORED_PER_PAGE);
             }
         })

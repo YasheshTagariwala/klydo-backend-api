@@ -48,7 +48,7 @@ let getKlyspaceData = async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
         return;
     } else {
-        res.status(OK_CODE).json({auth: true, data: data});
+        res.status(OK_CODE).json({auth: true,msg: "Data Found" ,data: data});
     }
 };
 
@@ -81,9 +81,9 @@ let addKlyspaceData = async (req, res) => {
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
                 return;
             }
-
+            
             let [activityId, err1] = await catchError(ActivityV1.updateActivityId(6, checkData.toJSON().activity_id));
-            if (activityId == null || err1) {
+            if (!activityId || activityId == null || err1) {
                 console.log(err1);
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
                 return;
@@ -92,7 +92,7 @@ let addKlyspaceData = async (req, res) => {
         } else {
 
             let [activityId, err1] = await catchError(Activity.createActivity(6));
-            if (activityId == null || err1) {
+            if (!activityId || activityId == null || err1) {
                 console.log(err1);
                 res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
                 return;

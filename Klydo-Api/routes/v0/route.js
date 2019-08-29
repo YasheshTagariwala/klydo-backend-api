@@ -56,7 +56,7 @@ module.exports = (app,express) => {
 	router.get('/graph/search/:query',loadController('GraphController').getSearch);
 	// router.get('/graph/affinity/:query',loadController('GraphController').getAffinity);
     router.get('/graph/trends',loadController('GraphController').getTrends);
-    router.get('/graph/similar/:query/:gender',loadController('GraphController').getSimilarBeliefs);
+	router.get('/graph/similar/:query/:gender/:preference?',loadController('GraphController').getSimilarBeliefs);
 	router.get('/graph/beyond/:query',loadController('GraphController').getNetworkInteractionBased);
 	router.get('/graph/beliefs-and-views/:userID',loadController('GraphController').getBeliefsAndViews);
 	router.get('/graph/get-react-filtered/:reaction_id',loadController('GraphController').getReactFilteredPosts);
@@ -76,6 +76,6 @@ module.exports = (app,express) => {
 		res.send('Write the whole URL you lazy ass.');
 	});
 
-	app.use('/app/v0', router);
+	app.use('/sandbox/v0', router);
 	
 };
