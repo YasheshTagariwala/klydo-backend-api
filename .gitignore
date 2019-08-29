@@ -1,7 +1,0 @@
-.vscode
-.idea
-Klydo-Api/node_modules
-package-lock.json
-Klydo-Api/Config/Config.js
-Klydo-Api/app/LoginMedia
-Klydo-Api/app/media
