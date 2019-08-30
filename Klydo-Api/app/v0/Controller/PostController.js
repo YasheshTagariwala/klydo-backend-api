@@ -23,6 +23,8 @@ let getAllDiaryPost = async (req, res) => {
                 q.withSelect('userExtra', ['profile_image']);
             }
         })
+        .withCount('reactions')
+        .withCount('comments')
         .where({'profile_id': req.params.id, 'post_published': false})
         .select(['emotion', 'profile_id', 'id', 'post_content', 'post_published', 'post_title', 'post_hashes', 'created_at'])
         .orderBy('id', 'desc')
@@ -71,6 +73,8 @@ let getAllHomePost = async (req, res) => {
             q1.take(5);
             q1.orderBy('id', 'desc');
         })
+        .withCount('reactions')
+        .withCount('comments')
         // .where('post_published' , true)
         .whereNot('profile_id', req.params.id)
         .orderBy('id', 'desc')
@@ -128,6 +132,8 @@ let getAllProfilePost = async (req, res) => {
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.friend_id);
         })
+        .withCount('reactions')
+        .withCount('comments')
         .where({'profile_id': req.params.id})
         .orderBy('id', 'desc')
         .offset(offset)
@@ -184,6 +190,8 @@ let getSinglePostWithComments = async (req, res) => {
                 q1.take(RECORED_PER_PAGE);
             }
         })
+        .withCount('reactions')
+        .withCount('comments')
         .where('id', req.params.id)
         .first());
 
@@ -614,6 +622,8 @@ let filterProfilePost = async (req, res) => {
                 })
             }
         })
+        .withCount('reactions')
+        .withCount('comments')
         .orderBy('id', 'desc')
         .offset(offset)
         .limit(RECORED_PER_PAGE)

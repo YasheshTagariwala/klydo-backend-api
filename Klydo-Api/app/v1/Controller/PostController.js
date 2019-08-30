@@ -244,6 +244,8 @@ let getAllWatchPost = async (req, res) => {
             q.where('profile_id',req.params.user_id);
             q.where('watch',true);
         })
+        .withCount('reactions')
+        .withCount('comments')
         .orderBy('id', 'desc')
         .offset(offset)
         .limit(RECORED_PER_PAGE)

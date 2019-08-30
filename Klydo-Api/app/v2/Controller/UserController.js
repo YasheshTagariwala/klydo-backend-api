@@ -1,4 +1,6 @@
 let UserProfile = loadModal('UserProfile');
+let FeelPals = loadModal('Feelpals');
+let Posts = loadModal('Posts');
 let KlyspaceData = loadModal('KlyspaceData');
 let Reaction = loadModal('PostReaction');
 const bookshelf = loadConfig('Bookshelf.js');
@@ -14,6 +16,7 @@ let getUserDetail = async (req, res) => {
                 }
             });
             q.withCount('reactions');
+            q.withCount('comments');
             q.where({'profile_id': req.params.id});
             q.query((q) => {
                 q.orderBy('reactionsCount', 'desc')
@@ -63,9 +66,28 @@ let getUserDetail = async (req, res) => {
         var [klyspaceData,err2] = await catchError(KlyspaceData
             .where('doee_profile_id',req.params.id)
             .get());
+
+        var [postcount,err3] = await catchError(Posts
+            .where('profile_id',req.params.id)
+            .get().count());
+
+        var [friendcount,err4] = await catchError(FeelPals
+            .where('following',req.params.id)
+            .get().count());
+
+        var [reactioncount,err5] = await catchError(Reaction
+            .whereHas('posts',(q) => {
+                q.where('profile_id',req.params.id)
+            })
+            .get().count());
+
         users = users.toJSON();
         users.reaction = reaction;
         users.klyspaceData = klyspaceData;
+        users.klyspacecount = klyspaceData.toJSON().length;
+        users.postcount = postcount;
+        users.friendcount = friendcount;
+        users.reactioncount = reactioncount;
     }
 
     res.status(OK_CODE).json({auth: true, msg: 'Success', data: users});
