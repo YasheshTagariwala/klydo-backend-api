@@ -72,7 +72,7 @@ let getUserDetail = async (req, res) => {
             .count());
 
         var [friendcount,err4] = await catchError(FeelPals
-            .where('following',req.params.id)
+            .where('followings',req.params.id)
             .count());
 
         var [reactioncount,err5] = await catchError(Reaction
