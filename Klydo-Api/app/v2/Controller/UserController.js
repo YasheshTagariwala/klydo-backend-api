@@ -69,17 +69,17 @@ let getUserDetail = async (req, res) => {
 
         var [postcount,err3] = await catchError(Posts
             .where('profile_id',req.params.id)
-            .get().count());
+            .count());
 
         var [friendcount,err4] = await catchError(FeelPals
             .where('following',req.params.id)
-            .get().count());
+            .count());
 
         var [reactioncount,err5] = await catchError(Reaction
             .whereHas('posts',(q) => {
                 q.where('profile_id',req.params.id)
             })
-            .get().count());
+            .count());
 
         users = users.toJSON();
         users.reaction = reaction;
