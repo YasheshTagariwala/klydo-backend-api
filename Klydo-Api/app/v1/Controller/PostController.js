@@ -5,6 +5,7 @@ let CommentReaction = loadV1Modal('CommentReaction');
 let Activity = loadController('ActivityController');
 let ActivityV1 = loadV1Controller('ActivityController');
 let PushNotification = loadV1Controller('PushNotification');
+const bookshelf = loadConfig('Bookshelf.js');
 
 let updatePost = async (req, res) => {
 
@@ -245,6 +246,14 @@ let getAllWatchPost = async (req, res) => {
             q.where('watch',true);
         })
         .withCount('reactions')
+        .with('reactions', (q) => {
+            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.query((q) => {
+                q.groupBy('reaction_id');
+                q.groupBy('post_id')
+            });
+            q.orderBy('count','desc');
+        })
         .withCount('comments')
         .orderBy('id', 'desc')
         .offset(offset)

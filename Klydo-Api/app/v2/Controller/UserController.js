@@ -28,6 +28,14 @@ let getUserDetail = async (req, res) => {
                     q.where('profile_id', req.params.friend_id);
                 })
             }
+            q.with('reactions', (q) => {
+                q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+                q.query((q) => {
+                    q.groupBy('reaction_id');
+                    q.groupBy('post_id')
+                });
+                q.orderBy('count','desc');
+            });
         })
         .withSelect('usersFollowings',['id','followings','followers','is_favourite'] ,(q) => {
             q.with({'userProfileFollower': (q) => {

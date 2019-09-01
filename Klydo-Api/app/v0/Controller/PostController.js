@@ -24,6 +24,14 @@ let getAllDiaryPost = async (req, res) => {
             }
         })
         .withCount('reactions')
+        .with('reactions', (q) => {
+            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.query((q) => {
+                q.groupBy('reaction_id');
+                q.groupBy('post_id')
+            });
+            q.orderBy('count','desc');
+        })
         .withCount('comments')
         .where({'profile_id': req.params.id, 'post_published': false})
         .select(['emotion', 'profile_id', 'id', 'post_content', 'post_published', 'post_title', 'post_hashes', 'created_at'])
@@ -72,6 +80,14 @@ let getAllHomePost = async (req, res) => {
             });
             q1.take(5);
             q1.orderBy('id', 'desc');
+        })
+        .with('reactions', (q) => {
+            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.query((q) => {
+                q.groupBy('reaction_id');
+                q.groupBy('post_id')
+            });
+            q.orderBy('count','desc');
         })
         .withCount('reactions')
         .withCount('comments')
@@ -132,6 +148,14 @@ let getAllProfilePost = async (req, res) => {
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.friend_id);
         })
+        .with('reactions', (q) => {
+            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.query((q) => {
+                q.groupBy('reaction_id');
+                q.groupBy('post_id')
+            });
+            q.orderBy('count','desc');
+        })
         .withCount('reactions')
         .withCount('comments')
         .where({'profile_id': req.params.id})
@@ -189,6 +213,14 @@ let getSinglePostWithComments = async (req, res) => {
                 });
                 q1.take(RECORED_PER_PAGE);
             }
+        })
+        .with('reactions', (q) => {
+            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.query((q) => {
+                q.groupBy('reaction_id');
+                q.groupBy('post_id')
+            });
+            q.orderBy('count','desc');
         })
         .withCount('reactions')
         .withCount('comments')
@@ -621,6 +653,14 @@ let filterProfilePost = async (req, res) => {
                     q.where({'profile_id': req.params.id})
                 })
             }
+        })
+        .with('reactions', (q) => {
+            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.query((q) => {
+                q.groupBy('reaction_id');
+                q.groupBy('post_id')
+            });
+            q.orderBy('count','desc');
         })
         .withCount('reactions')
         .withCount('comments')
