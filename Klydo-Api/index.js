@@ -15,22 +15,22 @@ app.use(express.json());
 
 //TODO:'use concat in user names where neccessary'
 let urls = [
-    '/sandbox/v0/login/authenticate',
-    '/sandbox/v0/login/signup',
-    '/sandbox/v0/login/forget',
-    '/sandbox/v0/login/forget-password-code',
-    '/sandbox/v0/graph/trendsLogin',
-    '/sandbox/v0/login/loginMedia',
-    '/sandbox/v1/send-push'
+    '/app/v0/login/authenticate',
+    '/app/v0/login/signup',
+    '/app/v0/login/forget',
+    '/app/v0/login/forget-password-code',
+    '/app/v0/graph/trendsLogin',
+    '/app/v0/login/loginMedia',
+    '/app/v1/send-push'
 ];
 
-app.post('/sandbox/v0/login/authenticate', loadController('LoginController').loginCheck);
-app.post('/sandbox/v0/login/signup', loadController('LoginController').signupUser);
-app.post('/sandbox/v0/login/forget', loadController('LoginController').forgetPassword);
-app.get('/sandbox/v0/login/trendsLogin', loadController('LoginController').getTrendsLogin);
-app.get('/sandbox/v0/login/loginMedia/:filename', loadController('LoginController').LoginMedia);
-app.post('/sandbox/v0/login/forgot-password-code', loadController('LoginController').forgetPasswordVerificationCode);
-app.post('/sandbox/v1/send-push',loadV1Controller('PushNotification').sendMessagePush);
+app.post('/app/v0/login/authenticate', loadController('LoginController').loginCheck);
+app.post('/app/v0/login/signup', loadController('LoginController').signupUser);
+app.post('/app/v0/login/forget', loadController('LoginController').forgetPassword);
+app.get('/app/v0/login/trendsLogin', loadController('LoginController').getTrendsLogin);
+app.get('/app/v0/login/loginMedia/:filename', loadController('LoginController').LoginMedia);
+app.post('/app/v0/login/forgot-password-code', loadController('LoginController').forgetPasswordVerificationCode);
+app.post('/app/v1/send-push',loadV1Controller('PushNotification').sendMessagePush);
 
 //validate user before calling any routes
 app.use(async (req, res, next) => {
