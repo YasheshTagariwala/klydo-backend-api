@@ -56,8 +56,8 @@ app.use(async (req, res, next) => {
     }
 });
 
-app.listen(3200, () => {
-    console.log('Listening on 3200');
+app.listen(3100, () => {
+    console.log('Listening on 3100');
 });
 
 process.on('unhandledRejection', (reason, p) => {
