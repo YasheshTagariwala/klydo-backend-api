@@ -2,7 +2,8 @@ let http = require('http');
 let UserProfile = loadModal('UserProfile');
 let Post = loadModal('Posts');
 // let host = "owyulen.com/graph/";
-let host = "localhost:5000";
+const config = loadConfig('Config.js');
+let host = (config.env === 'test' ? "localhost:5100" : "localhost:5000");
 
 let getSimilarBeliefs = async (req, res) => {
     let data = '';

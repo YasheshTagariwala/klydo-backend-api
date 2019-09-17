@@ -3,7 +3,8 @@ let UserProfile = loadModal('UserProfile');
 let UserExtra = loadModal('UserExtra');
 let Post = loadModal('Posts');
 // let host = "owyulen.com";
-let host = "localhost:5000";
+const config = loadConfig('Config.js');
+let host = (config.env === 'test' ? "localhost:5100" : "localhost:5000");
 
 let getSearch = async (req, res) => {
     let data = '';
