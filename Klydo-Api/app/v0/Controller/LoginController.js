@@ -144,10 +144,11 @@ let verifyEmail = async (req, res) => {
         res.status(NO_CONTENT_CODE).json({auth: false, msg: NO_CONTENT_MESSAGE});
         return;
     }
-    var data = "<html><body>";
-    data += "<p>Please click below link to confirm email to access Owyulen</p>";
-    data += "<p><a href='http://owyulen.com/sandbox/v2/verify-email/'" + generateVerificationCode(uname, 'T3$t94a5sW02d') + "></a></p>";
-    data += "</body></html>";
+
+    let code = generateVerificationCode(uname, 'T3$t94a5sW02d');
+
+    var data = "<p>Please click below link to confirm email to access Owyulen</p>";
+    data += "<p><a href='http://owyulen.com/sandbox/v2/verify-email/" + code + "'>http://owyulen.com/sandbox/v2/verify-email/" + code + "</a></p>";
 
     var mailOptions = {
         from: 'kloudforj@gmail.com',
