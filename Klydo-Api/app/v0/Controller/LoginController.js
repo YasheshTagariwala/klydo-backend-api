@@ -144,28 +144,7 @@ let verifyEmail = async (req, res) => {
         res.status(NO_CONTENT_CODE).json({auth: false, msg: NO_CONTENT_MESSAGE});
         return;
     }
-    var data = "<html>";
-    data += "<p>Please click below link to confirm email to access Owyulen</p>";
-    data += "<p><a href='http://owyulen.com/sandbox/v2/verify-email/'" + generateVerificationCode(uname, 'T3$t94a5sW02d') + "></a></p>";
-    data += "</html>";
 
-    var mailOptions = {
-        from: 'kloudforj@gmail.com',
-        to: uname,
-        subject: 'Forgot Password OTP',
-        html: data
-    };
-
-    getMailTrasporter().sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log(error);
-            res.status(UNAUTHORIZED_CODE).json({auth: false, msg: UNAUTHORIZED_MESSAGE});
-        } else {
-            console.log('Email sent: ' + info.response);
-            res.status(OK_CODE).json({auth: true, msg: "Verification Code Sent Successfully"});
-        }
-        getMailTrasporter().close();
-    })
 };
 
 let verifyEmailCode = async (req, res) => {
@@ -231,7 +210,7 @@ let signupUser = async (req, res) => {
 
     let [check, er] = await catchError(UserProfile.where({'user_email': requestData.mail}).first());
     if (er) {
-        console.log(err);
+        console.log(er);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
         return;
     }
@@ -327,6 +306,30 @@ let signupUser = async (req, res) => {
             let [jwt_token, err] = await catchError(authenticate.createToken(requestData.mail));
             let [users, err3] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy']).select(['id'])
                 .where({'id': userId}).first());
+
+            var data = "<html>";
+            data += "<p>Please click below link to confirm email to access Owyulen</p>";
+            data += "<p><a href='http://owyulen.com/sandbox/v2/verify-email/'" + generateVerificationCode(users.user_email, 'T3$t94a5sW02d') + "></a></p>";
+            data += "</html>";
+
+            var mailOptions = {
+                from: 'kloudforj@gmail.com',
+                to: users.user_email,
+                subject: 'Forgot Password OTP',
+                html: data
+            };
+
+            getMailTrasporter().sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log(error);
+                    res.status(UNAUTHORIZED_CODE).json({auth: false, msg: UNAUTHORIZED_MESSAGE});
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    res.status(OK_CODE).json({auth: true, msg: "Verification Code Sent Successfully"});
+                }
+                getMailTrasporter().close();
+            });
+
             res.status(OK_CODE).json({auth: true, msg: "Sign Up Success", token: jwt_token, data: users});
             // }
         }
