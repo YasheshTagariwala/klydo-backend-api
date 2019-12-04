@@ -19,9 +19,10 @@ let loginCheck = async (req, res) => {
         return;
     }
 
-    let [users, err] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy'])
-        .select(['id','first_name','last_name','user_password']).where({'username': uname
-    }).orWhere({'user_email': uname}).first());
+    let [users, err] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy', 'is_verified'])
+        .select(['id', 'first_name', 'last_name', 'user_password']).where({
+            'username': uname
+        }).orWhere({'user_email': uname}).first());
 
     if (err) {
         console.log(err);
@@ -69,7 +70,7 @@ let forgetPassword = async (req, res) => {
         return;
     }
 
-    uname = verifyVerificationCode(uname);
+    uname = verifyVerificationCode(uname, 'T3$t94a5sW02d');
 
     let [users, err] = await catchError(UserProfile.where({'username': uname})
         .orWhere({'user_email': uname}).first());
@@ -112,7 +113,7 @@ let forgetPasswordVerificationCode = async (req, res) => {
         return;
     }
     var data = "To verify your identity, please use the following code in application. \n\n";
-    data += generateVerificationCode(uname);
+    data += generateVerificationCode(uname, 'T3$t94a5sW02d');
     data += "\n\nThis OTP is confidential. For security reasons, DO NOT share with anyone.";
 
     var mailOptions = {
@@ -135,6 +136,87 @@ let forgetPasswordVerificationCode = async (req, res) => {
 
 }
 
+let verifyEmail = async (req, res) => {
+    let validations = loadUtility('Validations');
+    let uname = req.body.uname;
+
+    if (validations.empty(uname)) {
+        res.status(NO_CONTENT_CODE).json({auth: false, msg: NO_CONTENT_MESSAGE});
+        return;
+    }
+
+    let code = generateVerificationCode(uname, 'T3$t94a5sW02d');
+
+    var data = "<p>Please click below link to confirm email to access Owyulen</p>";
+    data += "<p><a href='http://owyulen.com/sandbox/v2/verify-email/" + code + "'>http://owyulen.com/sandbox/v2/verify-email/" + code + "</a></p>";
+
+    var mailOptions = {
+        from: 'kloudforj@gmail.com',
+        to: uname,
+        subject: 'Email Verification',
+        html: data
+    };
+
+    getMailTrasporter().sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+            res.status(UNAUTHORIZED_CODE).json({auth: false, msg: UNAUTHORIZED_MESSAGE});
+        } else {
+            console.log('Email sent: ' + info.response);
+            res.status(OK_CODE).json({auth: true, msg: "Verification Code Sent Successfully"});
+        }
+        getMailTrasporter().close();
+    });
+};
+
+let verifyEmailCode = async (req, res) => {
+    let validations = loadUtility('Validations');
+    let UserProfile = loadModal('UserProfile');
+    let UserExtra = loadModal('UserExtra');
+    let uname = req.params.code;
+
+    if (validations.empty(uname)) {
+        res.status(NO_CONTENT_CODE).json({auth: false, msg: NO_CONTENT_MESSAGE});
+        return;
+    }
+
+    uname = verifyVerificationCode(uname, 'T3$t94a5sW02d');
+
+    let [users, err] = await catchError(UserProfile.withSelect('userExtra', ['is_verified'])
+        .where({'username': uname}).orWhere({'user_email': uname}).first());
+    if (err) {
+        console.log(err);
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+        return;
+    } else {
+        if (validations.objectEmpty(users)) {
+            res.status(NOT_FOUND_CODE).json({auth: false, msg: NOT_FOUND_MESSAGE});
+            return;
+        } else {
+            users = users.toJSON();
+            if (users.userExtra.is_verified) {
+                res.sendFile(APP_ROOT_PATH + '/htmls/email-already-verified.html');
+            } else {
+                let UpdateProfileData = {
+                    is_verified: true
+                };
+
+                let [data, err] = await catchError(UserExtra.where({'user_profile_id': users.id})
+                    .save(UpdateProfileData, {patch: true})
+                );
+
+                if (err) {
+                    console.log(err);
+                    res.status(UNAUTHORIZED_CODE).json({auth: false, msg: UNAUTHORIZED_MESSAGE});
+                    return;
+                } else {
+                    res.sendFile(APP_ROOT_PATH + '/htmls/email-verified.html');
+                }
+            }
+        }
+    }
+};
+
 //sign up users
 let signupUser = async (req, res) => {
     let UserExtra = loadModal('UserExtra');
@@ -150,7 +232,7 @@ let signupUser = async (req, res) => {
 
     let [check, er] = await catchError(UserProfile.where({'user_email': requestData.mail}).first());
     if (er) {
-        console.log(err);
+        console.log(er);
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
         return;
     }
@@ -218,7 +300,7 @@ let signupUser = async (req, res) => {
             res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
             return;
         } else {
-            if(req.body.klyspace_data){
+            if (req.body.klyspace_data) {
                 let insertData = {
                     'klyspace_data': JSON.stringify(req.body.klyspace_data),
                     'doer_profile_id': userId,
@@ -243,10 +325,10 @@ let signupUser = async (req, res) => {
             //     res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
             //     return;
             // } else {
-                let [jwt_token, err] = await catchError(authenticate.createToken(requestData.mail));
-                let [users, err3] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy']).select(['id'])
-                    .where({'id': userId}).first());
-                res.status(OK_CODE).json({auth: true, msg: "Sign Up Success", token: jwt_token, data: users});
+            let [jwt_token, err] = await catchError(authenticate.createToken(requestData.mail));
+            let [users, err3] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy']).select(['id'])
+                .where({'id': userId}).first());
+            res.status(OK_CODE).json({auth: true, msg: "Sign Up Success", token: jwt_token, data: users});
             // }
         }
     }
@@ -293,5 +375,7 @@ module.exports = {
     'forgetPassword': forgetPassword,
     'forgetPasswordVerificationCode': forgetPasswordVerificationCode,
     'getTrendsLogin': getTrendsLogin,
-    'LoginMedia': LoginMedia
+    'LoginMedia': LoginMedia,
+    'verifyEmail': verifyEmail,
+    'verifyEmailCode': verifyEmailCode
 };

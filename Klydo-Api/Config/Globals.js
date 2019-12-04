@@ -117,18 +117,18 @@ global.getMailTrasporter = () => {
     });
 };
 
-global.generateVerificationCode = (data) => {    
+global.generateVerificationCode = (data, password) => {
     let crypto = require('crypto');
-    var myCipher = crypto.createCipher('aes-128-cbc', 'testpassword');
+    var myCipher = crypto.createCipher('aes-128-cbc', password);
     var code = myCipher.update(data, 'utf8', 'hex');
     code += myCipher.final('hex');
     return code;
 }
 
-global.verifyVerificationCode = (data) => {    
-    let crypto = require('crypto');    
-    var myCipher = crypto.createDecipher('aes-128-cbc', 'testpassword');    
-    var code = myCipher.update(data, 'hex', 'utf8');    
-    code += myCipher.final('utf8');    
+global.verifyVerificationCode = (data, password) => {
+    let crypto = require('crypto');
+    var myCipher = crypto.createDecipher('aes-128-cbc', password);
+    var code = myCipher.update(data, 'hex', 'utf8');
+    code += myCipher.final('utf8');
     return code;
 }
