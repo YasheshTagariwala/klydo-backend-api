@@ -152,7 +152,7 @@ let verifyEmail = async (req, res) => {
     var mailOptions = {
         from: 'kloudforj@gmail.com',
         to: uname,
-        subject: 'Forgot Password OTP',
+        subject: 'Email Verification',
         html: data
     };
 
