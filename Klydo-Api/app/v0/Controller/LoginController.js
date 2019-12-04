@@ -307,16 +307,16 @@ let signupUser = async (req, res) => {
             let [users, err3] = await catchError(UserProfile.withSelect('userExtra', ['profile_image', 'profile_privacy']).select(['id'])
                 .where({'id': userId}).first());
 
-            var data = "<html>";
-            data += "<p>Please click below link to confirm email to access Owyulen</p>";
-            data += "<p><a href='http://owyulen.com/sandbox/v2/verify-email/'" + generateVerificationCode(users.user_email, 'T3$t94a5sW02d') + "></a></p>";
-            data += "</html>";
+            var html = "<html>";
+            html += "<p>Please click below link to confirm email to access Owyulen</p>";
+            html += "<p><a href='http://owyulen.com/sandbox/v2/verify-email/'" + generateVerificationCode(users.user_email, 'T3$t94a5sW02d') + "></a></p>";
+            html += "</html>";
 
             var mailOptions = {
                 from: 'kloudforj@gmail.com',
                 to: users.user_email,
                 subject: 'Forgot Password OTP',
-                html: data
+                html: html
             };
 
             getMailTrasporter().sendMail(mailOptions, (error, info) => {
