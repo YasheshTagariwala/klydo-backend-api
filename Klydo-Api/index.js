@@ -1,5 +1,6 @@
 global.APP_ROOT_PATH = __dirname;
 
+require('dotenv').config();
 require('./Config/Globals');
 loadUtility('HTTPStatusCodes');
 global.catchError = loadConfig('ErrorHandling');
