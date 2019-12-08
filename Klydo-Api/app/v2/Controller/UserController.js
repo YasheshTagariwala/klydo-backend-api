@@ -1,8 +1,4 @@
-let UserProfile = loadModal('UserProfile');
-let FeelPals = loadModal('Feelpals');
-let Posts = loadModal('Posts');
-let KlyspaceData = loadModal('KlyspaceData');
-let Reaction = loadModal('PostReaction');
+let ProfileReport = loadV2Modal('ProfileReport');
 const bookshelf = loadConfig('Bookshelf.js');
 
 //Get single User details
@@ -101,6 +97,37 @@ let getUserDetail = async (req, res) => {
     res.status(OK_CODE).json({auth: true, msg: 'Success', data: users});
 };
 
+let reportProfile = async (req, res) => {
+
+    if (!req.body.user_id || !req.body.report_id) {
+        res.status(OK_CODE).json({auth: true, msg: "Missing Parameters"});
+        return ;
+    }
+
+    let [profile, err] = await catchError(ProfileReport.where({profile_id: req.body.user_id,report_profile_id: req.body.report_id}).first());
+
+    if (profile) {
+        res.status(OK_CODE).json({auth: true, msg: "You Already Reported This Profile"});
+    } else {
+        let report = {
+            profile_id: req.body.user_id,
+            report_profile_id: req.body.report_id,
+            reason: req.body.reason
+        };
+
+        let [data, err] = await catchError(ProfileReport.forge(report).save());
+
+        if (err) {
+            console.log(err);
+            res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: true, msg: INTERNAL_SERVER_ERROR_MESSAGE});
+            return;
+        } else {
+            res.status(OK_CODE).json({auth: true, msg: "Profile Reported Successfully"});
+        }
+    }
+};
+
 module.exports = {
-    'getUserDetail': getUserDetail
+    'getUserDetail': getUserDetail,
+    'reportProfile': reportProfile
 };

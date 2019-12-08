@@ -26,6 +26,7 @@ let APP_ROUTES_PATH = v0RoutePaths + 'v0/';
 let APP_V1_ROUTES_PATH = v1RoutePaths + 'v1/';
 
 let APP_V2_CONTROLLER_PATH = v2Paths + 'Controller/';
+let APP_V2_MODEL_PATH = v2Paths + 'Models/';
 let APP_V2_ROUTES_PATH = v2RoutePaths + 'v2/';
 
 let APP_MEDIA_PATH = APP_ROOT_PATH + '/app/media';
@@ -86,6 +87,10 @@ global.loadV1Route = (fileName) => {
 
 global.loadV2Controller = (fileName) => {
     return require(APP_V2_CONTROLLER_PATH + fileName);
+};
+
+global.loadV2Modal = (fileName) => {
+    return require(APP_V2_MODEL_PATH + fileName);
 };
 
 global.loadV2Route = (fileName) => {
