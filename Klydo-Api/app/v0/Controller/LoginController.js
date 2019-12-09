@@ -148,7 +148,7 @@ let verifyEmail = async (req, res) => {
     let code = generateVerificationCode(uname, 'T3$t94a5sW02d');
 
     var data = "<p>Please click below link to confirm email to access Owyulen</p>";
-    data += "<p><a href='http://owyulen.com/app/v2/verify-email/" + code + "'>http://owyulen.com/sandbox/v2/verify-email/" + code + "</a></p>";
+    data += "<p><a href='http://owyulen.com/app/v2/verify-email/" + code + "'>http://owyulen.com/app/v2/verify-email/" + code + "</a></p>";
 
     var mailOptions = {
         from: 'kloudforj@gmail.com',
