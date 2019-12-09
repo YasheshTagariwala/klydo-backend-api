@@ -5,3 +5,4 @@ package-lock.json
 Klydo-Api/Config/Config.js
 Klydo-Api/app/LoginMedia
 Klydo-Api/app/media
+Klydo-Api/.env
