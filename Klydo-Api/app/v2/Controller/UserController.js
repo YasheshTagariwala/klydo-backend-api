@@ -1,5 +1,10 @@
 let ProfileReport = loadV2Modal('ProfileReport');
 const bookshelf = loadConfig('Bookshelf.js');
+const UserProfile = loadModal('UserProfile');
+let FeelPals = loadModal('Feelpals');
+let Posts = loadModal('Posts');
+let KlyspaceData = loadModal('KlyspaceData');
+let Reaction = loadModal('PostReaction');
 
 //Get single User details
 let getUserDetail = async (req, res) => {
@@ -72,8 +77,9 @@ let getUserDetail = async (req, res) => {
             .get());
 
         var [postcount,err3] = await catchError(Posts
+            .select(['id','post_chips'])
             .where('profile_id',req.params.id)
-            .count());
+            .get());
 
         var [friendcount,err4] = await catchError(FeelPals
             .where('followings',req.params.id)
@@ -85,13 +91,34 @@ let getUserDetail = async (req, res) => {
             })
             .count());
 
+        postcount = postcount.toJSON();
+        let chips = [];
+        for (let i = 0; i < postcount.length; i++) {
+            if (postcount[i].post_chips && postcount[i].post_chips.length) {
+                chips = [...chips, ...postcount[i].post_chips];
+            }
+        }
+        let counts = {};
+        let countArray = [];
+        chips.forEach(function(x) { counts[x] = (counts[x] || 0)+1; });
+        for(let a in counts){
+            countArray.push([a,counts[a]])
+        }
+        countArray.sort((a, b) => { return b[1] - a[1]});
+        countArray = countArray.splice(0,5);
+        let top5Chips = [];
+        countArray.forEach((value) => {
+           top5Chips.push(value[0]);
+        });
+
         users = users.toJSON();
         users.reaction = reaction;
         users.klyspaceData = klyspaceData;
         users.klyspacecount = klyspaceData.toJSON().length;
-        users.postcount = postcount;
+        users.postcount = postcount.length;
         users.friendcount = friendcount;
         users.reactioncount = reactioncount;
+        users.top5Chips = top5Chips;
     }
 
     res.status(OK_CODE).json({auth: true, msg: 'Success', data: users});
