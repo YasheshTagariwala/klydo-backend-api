@@ -3,6 +3,7 @@ let UserExtra = loadModal('UserExtra');
 let Reaction = loadModal('PostReaction');
 let KlyspaceData = loadModal('KlyspaceData');
 let Klyspace = loadModal('Klyspace');
+let Posts = loadModal('Posts');
 let bookshelf = loadConfig('Bookshelf.js');
 let UserTokenMaster = loadV1Modal('UserTokenMaster');
 let PushNotification = loadV1Controller('PushNotification');
@@ -105,6 +106,31 @@ let getUserDetail = async (req, res) => {
                     vector = vector.splice(0, 8);
 
                     users.klyspace_data = vector;
+
+                    var [postcount,err3] = await catchError(Posts
+                        .select(['id','post_chips'])
+                        .where('profile_id',req.params.id)
+                        .get());
+                    postcount = postcount.toJSON();
+                    let chips = [];
+                    for (let i = 0; i < postcount.length; i++) {
+                        if (postcount[i].post_chips && postcount[i].post_chips.length) {
+                            chips = [...chips, ...postcount[i].post_chips];
+                        }
+                    }
+                    let counts = {};
+                    let countArray = [];
+                    chips.forEach(function(x) { counts[x] = (counts[x] || 0)+1; });
+                    for(let a in counts){
+                        countArray.push([a,counts[a]])
+                    }
+                    countArray.sort((a, b) => { return b[1] - a[1]});
+                    countArray = countArray.splice(0,5);
+                    let top5Chips = [];
+                    countArray.forEach((value) => {
+                        top5Chips.push(value[0]);
+                    });
+                    users.top5Chips = top5Chips;
                 }
             } else {
                 console.log(err);
