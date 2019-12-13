@@ -255,7 +255,7 @@ let parseData = async (data, res, req) => {
             for (let i = 0; i < people.length; i++) {
                 people[i] = people[i].replace("u", '');
             }
-            let [users, err] = await catchError(UserProfile.with('userExtra').with('posts')
+            let [users, err] = await catchError(UserProfile.with(['userExtra','posts'])
                 .whereIn('id', people)
                 // .where((q) => {
                 //     if (!isNaN(req.params.query)) {
@@ -296,25 +296,32 @@ let parseData = async (data, res, req) => {
                 return;
             } else {
                 peopleData = users.toJSON();
-                let chips = [];
-                for (let i = 0; i < peopleData.posts.length; i++) {
-                    if (peopleData.posts[i].post_chips && peopleData.posts[i].post_chips.length) {
-                        chips = [...chips, ...peopleData.posts[i].post_chips];
+                for (let z = 0; z < peopleData.length; z++) {
+                    if (peopleData[z].hasOwnProperty('posts')) {
+                        let chips = [];
+                        for (let x = 0; x < peopleData[z].posts.length; x++) {
+                            if (peopleData[z].posts[x].post_chips && peopleData[z].posts[x].post_chips.length) {
+                                chips = [...chips, ...peopleData[z].posts[x].post_chips];
+                            }
+                        }
+                        let counts = {};
+                        let countArray = [];
+                        chips.forEach(function(x) { counts[x] = (counts[x] || 0)+1; });
+                        for(let a in counts){
+                            countArray.push([a,counts[a]])
+                        }
+                        countArray.sort((a, b) => { return b[1] - a[1]});
+                        countArray = countArray.splice(0,5);
+                        let top5Chips = [];
+                        countArray.forEach((value) => {
+                            top5Chips.push(value[0]);
+                        });
+                        peopleData[z].top5Chips = top5Chips;
+                    } else {
+                        peopleData[z].top5Chips = [];
                     }
+                    delete peopleData[z].posts;
                 }
-                let counts = {};
-                let countArray = [];
-                chips.forEach(function(x) { counts[x] = (counts[x] || 0)+1; });
-                for(let a in counts){
-                    countArray.push([a,counts[a]])
-                }
-                countArray.sort((a, b) => { return b[1] - a[1]});
-                countArray = countArray.splice(0,5);
-                let top5Chips = [];
-                countArray.forEach((value) => {
-                    top5Chips.push(value[0]);
-                });
-                peopleData.top5Chips = top5Chips;
             }
         }
     }
