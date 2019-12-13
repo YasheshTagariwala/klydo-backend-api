@@ -230,10 +230,11 @@ let signupUser = async (req, res) => {
         return;
     }
 
+    requestData.mail = requestData.mail.toLowerCase().trim();
     let [check, er] = await catchError(UserProfile.where({'user_email': requestData.mail}).first());
     if (er) {
         console.log(er);
-        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
+        res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE});
         return;
     }
 
