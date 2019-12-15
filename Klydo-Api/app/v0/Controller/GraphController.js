@@ -255,7 +255,7 @@ let parseData = async (data, res, req) => {
             for (let i = 0; i < people.length; i++) {
                 people[i] = people[i].replace("u", '');
             }
-            let [users, err] = await catchError(UserProfile.with(['userExtra','posts'])
+            let [users, err] = await catchError(UserProfile.with(['userExtra','klyspaceData'])
                 .whereIn('id', people)
                 // .where((q) => {
                 //     if (!isNaN(req.params.query)) {
@@ -297,30 +297,34 @@ let parseData = async (data, res, req) => {
             } else {
                 peopleData = users.toJSON();
                 for (let z = 0; z < peopleData.length; z++) {
-                    if (peopleData[z].hasOwnProperty('posts')) {
-                        let chips = [];
-                        for (let x = 0; x < peopleData[z].posts.length; x++) {
-                            if (peopleData[z].posts[x].post_chips && peopleData[z].posts[x].post_chips.length) {
-                                chips = [...chips, ...peopleData[z].posts[x].post_chips];
+                    if (peopleData[z].hasOwnProperty('klyspaceData')) {
+                        let kld = peopleData[z].klyspaceData;
+                        for (let x = 0; x < kld.length; x++) {
+                            let vector = [];
+                            let klyData = kld[x].klyspace_data;
+                            for (let q = 0; q < klyData.length; q++) {
+                                let tempData = kld.filter((obj) => {
+                                    return obj.klyspace_data.indexOf((+klyData[q])) > -1 || obj.klyspace_data.indexOf(klyData[q]) > -1
+                                });
+
+                                let countData = {
+                                    'klyspace_id': klyData[q],
+                                    'count': tempData.length
+                                };
+                                vector.push(countData);
                             }
+                            vector.sort(SortByID);
+                            vector = vector.splice(0, 5);
+                            let top5Chips = [];
+                            for (let g = 0; g < vector.length; g++) {
+                                top5Chips.push(vector[g].klyspace_id);
+                            }
+                            peopleData[z].top5Chips = top5Chips;
                         }
-                        let counts = {};
-                        let countArray = [];
-                        chips.forEach(function(x) { counts[x] = (counts[x] || 0)+1; });
-                        for(let a in counts){
-                            countArray.push([a,counts[a]])
-                        }
-                        countArray.sort((a, b) => { return b[1] - a[1]});
-                        countArray = countArray.splice(0,5);
-                        let top5Chips = [];
-                        countArray.forEach((value) => {
-                            top5Chips.push(value[0]);
-                        });
-                        peopleData[z].top5Chips = top5Chips;
                     } else {
                         peopleData[z].top5Chips = [];
                     }
-                    delete peopleData[z].posts;
+                    delete peopleData[z].klyspaceData;
                 }
             }
         }
@@ -357,6 +361,11 @@ let parseData = async (data, res, req) => {
         res.status(OK_CODE).json({auth: true, msg: 'No Data Found', data: []});
     }
 };
+
+
+function SortByID(x, y) {
+    return y.count - x.count;
+}
 
 // let getAffinity = async (req , res) => {
 //     let data = '';
