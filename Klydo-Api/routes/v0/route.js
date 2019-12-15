@@ -49,7 +49,9 @@ module.exports = (app,express) => {
 	    let fs = require('fs');
         if(fs.existsSync(MediaPath + '/' + req.params.filename)){
             res.sendFile(MediaPath + '/' + req.params.filename);
-        }
+        } else {
+			res.send(400);
+		}
 	});
 
 	//all graph controller routes
