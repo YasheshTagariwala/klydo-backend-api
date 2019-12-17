@@ -277,6 +277,7 @@ let updateProfileImage = async (req, res) => {
 let chosenOne = async (req, res) => {
     let [users, err] = await catchError(UserProfile.select(['id', 'first_name', 'middle_name', 'last_name', 'dob', 'city', 'gender', 'user_email', 'username', 'mobile_number', 'about_me'])
         .withSelect('userExtra', ['id', 'report_count', 'is_reported', 'profile_privacy', 'profile_image', 'is_verified', 'is_paid', 'interest', 'emotion', 'avg_emotions', 'avg_interests', 'hobbies'])
+        .whereHas('userExtra')
         .orderByRaw('random()').get());
 
     if (err) {
