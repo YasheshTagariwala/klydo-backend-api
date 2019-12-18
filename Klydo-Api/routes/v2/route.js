@@ -8,6 +8,10 @@ module.exports = (app, express) => {
     router.post('/report-post', loadV2Controller('PostController').reportPost);
     router.post('/report-profile', loadV2Controller('UserController').reportProfile);
 
+    //Feedback Routes
+    router.post('/add-feedback', loadV2Controller('FeedbackController').addFeedback);
+    router.get('/get-feedback', loadV2Controller('FeedbackController').getAllFeedback);
+
     router.get('/', (req, res) => {
         res.send('Write the whole URL you lazy ass.');
     });
