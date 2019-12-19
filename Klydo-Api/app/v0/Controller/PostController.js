@@ -25,12 +25,12 @@ let getAllDiaryPost = async (req, res) => {
         })
         .withCount('reactions')
         .with('reactions', (q) => {
-            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.select(['reaction_id', bookshelf.knex.raw('count(*) as count')]);
             q.query((q) => {
                 q.groupBy('reaction_id');
                 q.groupBy('post_id')
             });
-            q.orderBy('count','desc');
+            q.orderBy('count', 'desc');
         })
         .withCount('comments')
         .where({'profile_id': req.params.id, 'post_published': false})
@@ -56,7 +56,7 @@ let getAllDiaryPost = async (req, res) => {
 //Get Home Posts
 let getAllHomePost = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
-    let [posts, err] = await catchError(Post.select(['id', 'profile_id', 'post_content','post_chips', 'post_title', 'post_media', 'post_hashes', 'emotion', 'created_at'])
+    let [posts, err] = await catchError(Post.select(['id', 'profile_id', 'post_content', 'post_chips', 'post_title', 'post_media', 'post_hashes', 'emotion', 'created_at'])
         .withSelect('userProfile', ['id', 'first_name', 'last_name'], (q) => {
             q.withSelect('userExtra', ['profile_image']);
             q.withSelect('userFollowings', ['followings'], (q) => {
@@ -71,8 +71,8 @@ let getAllHomePost = async (req, res) => {
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.id);
         })
-        .withSelect('watch',['watch'] , (q) => {
-            q.where('profile_id',req.params.id);
+        .withSelect('watch', ['watch'], (q) => {
+            q.where('profile_id', req.params.id);
         })
         .withSelect('comments', ['comment_content', 'created_at', 'profile_id', 'id'], (q1) => {
             q1.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
@@ -82,12 +82,12 @@ let getAllHomePost = async (req, res) => {
             q1.orderBy('id', 'desc');
         })
         .with('reactions', (q) => {
-            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.select(['reaction_id', bookshelf.knex.raw('count(*) as count')]);
             q.query((q) => {
                 q.groupBy('reaction_id');
                 q.groupBy('post_id')
             });
-            q.orderBy('count','desc');
+            q.orderBy('count', 'desc');
         })
         .withCount('reactions')
         .withCount('comments')
@@ -130,7 +130,7 @@ let getPostReactions = async (req, res) => {
 let getAllProfilePost = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
     let [profilePost, err] = await catchError(Post
-        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_chips' ,'post_title', 'post_media', 'created_at', 'post_published'])
+        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_chips', 'post_title', 'post_media', 'created_at', 'post_published'])
         .with({
             'userProfile': (q) => {
                 q.select(['first_name', 'last_name']);
@@ -149,12 +149,12 @@ let getAllProfilePost = async (req, res) => {
             q.where('profile_id', req.params.friend_id);
         })
         .with('reactions', (q) => {
-            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.select(['reaction_id', bookshelf.knex.raw('count(*) as count')]);
             q.query((q) => {
                 q.groupBy('reaction_id');
                 q.groupBy('post_id')
             });
-            q.orderBy('count','desc');
+            q.orderBy('count', 'desc');
         })
         .withCount('reactions')
         .withCount('comments')
@@ -191,7 +191,7 @@ let getSinglePostWithComments = async (req, res) => {
         .withSelect('reaction', ['reaction_id', 'profile_id'], (q) => {
             q.where('profile_id', req.params.user_id ? req.params.user_id : null);
         })
-        .withSelect('watch',['watch'] , (q) => {
+        .withSelect('watch', ['watch'], (q) => {
             q.where('profile_id', req.params.user_id ? req.params.user_id : null);
         })
         .with({
@@ -203,7 +203,7 @@ let getSinglePostWithComments = async (req, res) => {
                 q1.withSelect('commentReaction', ['reaction_id'], (q) => {
                     q.where('profile_id', req.params.user_id ? req.params.user_id : null);
                 });
-                q1.withSelect('commentReactions', ['reaction_id','id','profile_id'], (q) => {
+                q1.withSelect('commentReactions', ['reaction_id', 'id', 'profile_id'], (q) => {
                     q.whereHas('postComment', (q) => {
                         q.where('profile_id', req.params.user_id ? req.params.user_id : null);
                     });
@@ -215,12 +215,12 @@ let getSinglePostWithComments = async (req, res) => {
             }
         })
         .with('reactions', (q) => {
-            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.select(['reaction_id', bookshelf.knex.raw('count(*) as count')]);
             q.query((q) => {
                 q.groupBy('reaction_id');
                 q.groupBy('post_id')
             });
-            q.orderBy('count','desc');
+            q.orderBy('count', 'desc');
         })
         .withCount('reactions')
         .withCount('comments')
@@ -331,7 +331,7 @@ let createPost = async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
         return;
     } else {
-        let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = '+req.body.user_id+' and is_favourite = true)').get());
+        let [token, err5] = await catchError(UserTokenMaster.whereRaw('profile_id in (select followers from feelpals where followings = ' + req.body.user_id + ' and is_favourite = true)').get());
         if (err5) {
             console.log(err5);
         } else {
@@ -343,7 +343,7 @@ let createPost = async (req, res) => {
                 }
                 let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                 doer = doer.toJSON();
-                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 6, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", data.id,doer.userExtra.profile_image);
+                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 6, doer.first_name.trim() + ' ' + doer.last_name.trim(), "", data.id, doer.userExtra.profile_image);
             }
         }
         res.status(OK_CODE).json({auth: true, msg: "Posted"})
@@ -415,7 +415,7 @@ let addComment = async (req, res) => {
 
     let [post, err2] = await catchError(Post
         .with('watches', (q) => {
-            q.where('watch',true);
+            q.where('watch', true);
             q.with('userProfile', (q) => {
                 q.with('token')
             })
@@ -429,7 +429,7 @@ let addComment = async (req, res) => {
     } else {
         post = post.toJSON();
 
-        if(req.body.user_id != post.profile_id) {
+        if (req.body.user_id != post.profile_id) {
             let [checkData, watchErr] = await catchError(PostWatch.where({
                 'profile_id': req.body.user_id,
                 'post_id': req.body.post_id
@@ -453,16 +453,16 @@ let addComment = async (req, res) => {
                 token = token.toJSON();
                 let tokens = [];
                 for (let i = 0; i < post.watches.length; i++) {
-                    if(req.body.user_id != post.watches[i].profile_id) {
+                    if (req.body.user_id != post.watches[i].profile_id) {
                         tokens.push(post.watches[i].userProfile.token.firebase_token);
                     }
                 }
                 let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                 doer = doer.toJSON();
-                if(req.body.user_id != post.profile_id){
-                    await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 2, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.content, req.body.post_id,doer.userExtra.profile_image);
+                if (req.body.user_id != post.profile_id) {
+                    await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 2, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.content, req.body.post_id, doer.userExtra.profile_image);
                 }
-                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 11, doer.first_name.trim() + ' ' + doer.last_name.trim(), post.userProfile.first_name.trim() + ' ' + post.userProfile.last_name.trim(), req.body.post_id,doer.userExtra.profile_image);
+                await PushNotification.sendPushNotificationToMultipleDevice(tokens, 11, doer.first_name.trim() + ' ' + doer.last_name.trim(), post.userProfile.first_name.trim() + ' ' + post.userProfile.last_name.trim(), req.body.post_id, doer.userExtra.profile_image);
             }
         }
         await Graph.addAffinity(req.body.user_id, post.profile_id);
@@ -473,7 +473,11 @@ let addComment = async (req, res) => {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth: false, msg: INTERNAL_SERVER_ERROR_MESSAGE})
         return;
     } else {
-        res.status(OK_CODE).json({auth: true, msg: "Commented"})
+        let [comment, err1] = await catchError(Comment.select(['comment_content', 'created_at', 'profile_id', 'id'])
+            .withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
+                q2.withSelect('userExtra', ['profile_image']);
+            }).where('activity_id', activityId).first());
+        res.status(OK_CODE).json({auth: true, msg: "Commented", data: comment})
     }
 };
 
@@ -535,7 +539,7 @@ let addReaction = async (req, res) => {
                             token = token.toJSON();
                             let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                             doer = doer.toJSON();
-                            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id,doer.userExtra.profile_image);
+                            await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id, doer.userExtra.profile_image);
                         }
                     }
                     await Graph.addAffinity(req.body.user_id, post.profile_id);
@@ -604,7 +608,7 @@ let addReaction = async (req, res) => {
                         token = token.toJSON();
                         let [doer, err] = await catchError(UserProfile.with('userExtra').where('id', req.body.user_id).first());
                         doer = doer.toJSON();
-                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id,doer.userExtra.profile_image);
+                        await PushNotification.sendPushNotificationToSingleDevice(token.firebase_token, 1, doer.first_name.trim() + ' ' + doer.last_name.trim(), req.body.reaction_id, req.body.post_id, doer.userExtra.profile_image);
                     }
                 }
                 await Graph.addAffinity(req.body.user_id, post.profile_id);
@@ -625,7 +629,7 @@ let addReaction = async (req, res) => {
 let filterProfilePost = async (req, res) => {
     let offset = (req.query.page) ? (req.query.page - 1) * RECORED_PER_PAGE : 0;
     let [profilePost, err] = await catchError(Post
-        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes','post_chips' , 'post_title', 'post_media', 'created_at', 'post_published'])
+        .select(['emotion', 'profile_id', 'id', 'post_content', 'post_hashes', 'post_chips', 'post_title', 'post_media', 'created_at', 'post_published'])
         .with({
             'userProfile': (q) => {
                 q.select(['first_name', 'last_name']);
@@ -655,12 +659,12 @@ let filterProfilePost = async (req, res) => {
             }
         })
         .with('reactions', (q) => {
-            q.select(['reaction_id',bookshelf.knex.raw('count(*) as count')]);
+            q.select(['reaction_id', bookshelf.knex.raw('count(*) as count')]);
             q.query((q) => {
                 q.groupBy('reaction_id');
                 q.groupBy('post_id')
             });
-            q.orderBy('count','desc');
+            q.orderBy('count', 'desc');
         })
         .withCount('reactions')
         .withCount('comments')
