@@ -476,6 +476,17 @@ let addComment = async (req, res) => {
         let [comment, err1] = await catchError(Comment.select(['comment_content', 'created_at', 'profile_id', 'id'])
             .withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
                 q2.withSelect('userExtra', ['profile_image']);
+            })
+            .withSelect('commentReaction', ['reaction_id'], (q) => {
+                q.where('profile_id', req.body.user_id ? req.body.user_id : null);
+            })
+            .withSelect('commentReactions', ['reaction_id', 'id', 'profile_id'], (q) => {
+                q.whereHas('postComment', (q) => {
+                    q.where('profile_id', req.body.user_id ? req.body.user_id : null);
+                });
+                q.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
+                    q2.withSelect('userExtra', ['profile_image']);
+                });
             }).where('activity_id', activityId).first());
         res.status(OK_CODE).json({auth: true, msg: "Commented", data: comment})
     }
