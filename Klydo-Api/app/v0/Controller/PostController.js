@@ -78,8 +78,8 @@ let getAllHomePost = async (req, res) => {
             q1.withSelect('userProfile', ['first_name', 'last_name', 'id'], (q2) => {
                 q2.withSelect('userExtra', ['profile_image']);
             });
-            q1.take(5);
-            q1.orderBy('id', 'desc');
+            q1.take(RECORED_PER_PAGE);
+            // q1.orderBy('id', 'desc');
         })
         .with('reactions', (q) => {
             q.select(['reaction_id', bookshelf.knex.raw('count(*) as count')]);
@@ -235,7 +235,7 @@ let getSinglePostWithComments = async (req, res) => {
         if (!Validation.objectEmpty(postWithComment)) {
             res.status(OK_CODE).json({auth: true, msg: 'Success', data: postWithComment});
         } else {
-            res.status(OK_CODE).json({auth: true, msg: 'No Data Found', data: []});
+            res.status(OK_CODE).json({auth: true, msg: 'No Data Found'});
         }
     }
 }
