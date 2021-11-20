@@ -215,7 +215,7 @@ let getMessage = (type) => {
 };
 
 let sendMessagePush = async (req, res) => {
-    let token = 'a249b595-161d-426e-9623-50fd9333933a';
+    let token = '';
     if(token == req.body.token){
         let [pushUser, err] = await catchError(UserTokenMaster.where('profile_id', req.body.to.replace("@message.owyulen.com","")).first());
         if(err) {
@@ -256,7 +256,7 @@ let sendMessagePush = async (req, res) => {
     }else {
         res.status(INTERNAL_SERVER_ERROR_CODE).json({auth : true,msg : INTERNAL_SERVER_ERROR_MESSAGE});
     }
-    // { token: 'a249b595-161d-426e-9623-50fd9333933a',
+    // { token: '',
     //     from: '6@message.owyulen.com',
     //     to: '5@message.owyulen.com',
     //     body:
